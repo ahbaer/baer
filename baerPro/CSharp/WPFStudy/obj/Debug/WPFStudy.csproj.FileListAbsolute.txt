@@ -1,0 +1,15 @@
+D:\Data\baer\baerPro\CSharp\WPFStudy\bin\Debug\WPFStudy.exe.config
+D:\Data\baer\baerPro\CSharp\WPFStudy\bin\Debug\WPFStudy.exe
+D:\Data\baer\baerPro\CSharp\WPFStudy\bin\Debug\WPFStudy.pdb
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\WPFStudy.csprojResolveAssemblyReference.cache
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\MainWindow.g.cs
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\App.g.cs
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\WPFStudy_MarkupCompile.cache
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\WPFStudy_MarkupCompile.lref
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\MainWindow.baml
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\WPFStudy.g.resources
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\WPFStudy.Properties.Resources.resources
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\WPFStudy.csproj.GenerateResource.Cache
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\WPFStudy.exe
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\WPFStudy.pdb
+D:\Data\baer\baerPro\CSharp\WPFStudy\obj\Debug\GeneratedInternalTypeHelper.g.cs

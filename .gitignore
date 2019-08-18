@@ -244,3 +244,4 @@ ModelManifest.xml
 #baer's rule
 #ignore bin and chlid file
 bin
+obj

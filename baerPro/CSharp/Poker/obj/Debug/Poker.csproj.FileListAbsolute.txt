@@ -1,7 +1,0 @@
-D:\Data\baer\baerPro\CSharp\Poker\bin\Debug\Poker.exe.config
-D:\Data\baer\baerPro\CSharp\Poker\bin\Debug\Poker.exe
-D:\Data\baer\baerPro\CSharp\Poker\bin\Debug\Poker.pdb
-D:\Data\baer\baerPro\CSharp\Poker\bin\Debug\BaersTool.dll
-D:\Data\baer\baerPro\CSharp\Poker\obj\Debug\Poker.exe
-D:\Data\baer\baerPro\CSharp\Poker\obj\Debug\Poker.pdb
-D:\Data\baer\baerPro\CSharp\Poker\obj\Debug\Poker.csprojResolveAssemblyReference.cache

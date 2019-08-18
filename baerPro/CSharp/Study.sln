@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Poker", "Poker\Poker.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFStudy", "WPFStudy\WPFStudy.csproj", "{99E41A1A-95BE-4854-8662-864EA24C4BFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileUpload", "FileUpload\FileUpload.csproj", "{AC415A5D-F676-4512-A82A-E80B136A5914}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{99E41A1A-95BE-4854-8662-864EA24C4BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99E41A1A-95BE-4854-8662-864EA24C4BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99E41A1A-95BE-4854-8662-864EA24C4BFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC415A5D-F676-4512-A82A-E80B136A5914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC415A5D-F676-4512-A82A-E80B136A5914}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC415A5D-F676-4512-A82A-E80B136A5914}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC415A5D-F676-4512-A82A-E80B136A5914}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

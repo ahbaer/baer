@@ -151,6 +151,8 @@ namespace BaersTool.DB
             try
             {
                 int ret = 0;
+                ConnectionString = new Conn("Database=baer;Server=(local);User ID=sa;Password=11111;Min Pool Size=100;Max Pool Size=200;").ConnectionString;
+
                 using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {
                     conn.Open();
@@ -198,6 +200,8 @@ namespace BaersTool.DB
         {
             try
             {
+                ConnectionString = new Conn("Database=baer;Server=(local);User ID=sa;Password=11111;Min Pool Size=100;Max Pool Size=200;").ConnectionString;
+
                 DataView dv = new DataView();
                 using (SqlConnection conn = new SqlConnection(ConnectionString))
                 {

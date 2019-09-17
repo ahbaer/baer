@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFStudy", "WPFStudy\WPFStu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileUpload", "FileUpload\FileUpload.csproj", "{AC415A5D-F676-4512-A82A-E80B136A5914}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sign", "Sign\Sign.csproj", "{A7846CE5-A7FE-45C9-9612-078F3F15F102}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snake", "Snake\Snake.csproj", "{206E4F9F-2CD6-44DC-85C8-D066830EA975}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{AC415A5D-F676-4512-A82A-E80B136A5914}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC415A5D-F676-4512-A82A-E80B136A5914}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC415A5D-F676-4512-A82A-E80B136A5914}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7846CE5-A7FE-45C9-9612-078F3F15F102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7846CE5-A7FE-45C9-9612-078F3F15F102}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7846CE5-A7FE-45C9-9612-078F3F15F102}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7846CE5-A7FE-45C9-9612-078F3F15F102}.Release|Any CPU.Build.0 = Release|Any CPU
+		{206E4F9F-2CD6-44DC-85C8-D066830EA975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{206E4F9F-2CD6-44DC-85C8-D066830EA975}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{206E4F9F-2CD6-44DC-85C8-D066830EA975}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{206E4F9F-2CD6-44DC-85C8-D066830EA975}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

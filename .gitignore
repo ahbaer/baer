@@ -245,3 +245,5 @@ ModelManifest.xml
 #ignore bin and chlid file
 bin
 obj
+/BlogSystem
+/Blog

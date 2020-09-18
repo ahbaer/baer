@@ -200,7 +200,7 @@ namespace BaersTool.DB
         {
             try
             {
-                ConnectionString = new Conn("Database=baer;Server=(local);User ID=sa;Password=11111;Min Pool Size=100;Max Pool Size=200;").ConnectionString;
+                ConnectionString = new Conn("Database=baer;Server=(localhost);User ID=sa;Password=11111;Min Pool Size=100;Max Pool Size=200;").ConnectionString;
 
                 DataView dv = new DataView();
                 using (SqlConnection conn = new SqlConnection(ConnectionString))

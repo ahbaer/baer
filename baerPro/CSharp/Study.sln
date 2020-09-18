@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileUpload", "FileUpload\Fi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sign", "Sign\Sign.csproj", "{A7846CE5-A7FE-45C9-9612-078F3F15F102}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Snake", "Snake\Snake.csproj", "{206E4F9F-2CD6-44DC-85C8-D066830EA975}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplitExecl", "SplitExecl\SplitExecl.csproj", "{51B3BF52-8212-4DFC-BFC1-2E7AF3557362}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,10 @@ Global
 		{A7846CE5-A7FE-45C9-9612-078F3F15F102}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7846CE5-A7FE-45C9-9612-078F3F15F102}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7846CE5-A7FE-45C9-9612-078F3F15F102}.Release|Any CPU.Build.0 = Release|Any CPU
-		{206E4F9F-2CD6-44DC-85C8-D066830EA975}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{206E4F9F-2CD6-44DC-85C8-D066830EA975}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{206E4F9F-2CD6-44DC-85C8-D066830EA975}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{206E4F9F-2CD6-44DC-85C8-D066830EA975}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51B3BF52-8212-4DFC-BFC1-2E7AF3557362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51B3BF52-8212-4DFC-BFC1-2E7AF3557362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51B3BF52-8212-4DFC-BFC1-2E7AF3557362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51B3BF52-8212-4DFC-BFC1-2E7AF3557362}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

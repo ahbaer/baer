@@ -29,7 +29,7 @@ namespace NFine.Web.Areas.SystemSecurity.Controllers
         {
             var data = new
             {
-                rows = logApp.GetList(pagination, queryJson),
+                rows = logApp.GetList(pagination, queryJson, Convert.ToString(Session["F_Account"])),
                 total = pagination.total,
                 page = pagination.page,
                 records = pagination.records

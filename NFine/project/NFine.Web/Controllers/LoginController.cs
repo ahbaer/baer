@@ -15,6 +15,7 @@ using NFine.Domain.Entity.SystemManage;
 using NFine.Application.SystemManage;
 using NFine.Code;
 using NFine.Application;
+using NFine.Data.Extensions;
 
 namespace NFine.Web.Controllers
 {
@@ -90,6 +91,11 @@ namespace NFine.Web.Controllers
                     logEntity.F_Result = true;
                     logEntity.F_Description = "登录成功";
                     new LogApp().WriteDbLog(logEntity);
+
+                    #region 创建Session
+                    WebHelper.WriteSession("F_Account", userEntity.F_Account);
+                    WebHelper.WriteSession("F_RoleId", userEntity.F_RoleId);
+                    #endregion
                 }
                 return Content(new AjaxResult { state = ResultType.success.ToString(), message = "登录成功。" }.ToJson());
             }

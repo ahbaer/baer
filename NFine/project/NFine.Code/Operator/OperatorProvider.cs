@@ -12,7 +12,9 @@ namespace NFine.Code
         {
             get { return new OperatorProvider(); }
         }
-        private string LoginUserKey = "nfine_loginuserkey_2016";
+
+        //private string LoginUserKey = "nfine_loginuserkey_2016";
+        private string LoginUserKey = "zmb_baer_2020";
         private string LoginProvider = Configs.GetValue("LoginProvider");
 
         public OperatorModel GetCurrent()

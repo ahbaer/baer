@@ -7,6 +7,7 @@
 using NFine.Application.SystemManage;
 using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,7 +38,7 @@ namespace NFine.Web.Controllers
         {
             var itemdata = new ItemsDetailApp().GetList();
             Dictionary<string, object> dictionaryItem = new Dictionary<string, object>();
-            foreach (var item in new ItemsApp().GetList())
+            foreach (var item in new ItemsApp().GetList(Convert.ToString(Session["F_Account"])))
             {
                 var dataItemList = itemdata.FindAll(t => t.F_ItemId.Equals(item.F_Id));
                 Dictionary<string, string> dictionaryItemList = new Dictionary<string, string>();

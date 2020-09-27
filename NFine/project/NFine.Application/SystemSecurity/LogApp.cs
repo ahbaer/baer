@@ -17,10 +17,14 @@ namespace NFine.Application.SystemSecurity
     {
         private ILogRepository service = new LogRepository();
 
-        public List<LogEntity> GetList(Pagination pagination, string queryJson)
+        public List<LogEntity> GetList(Pagination pagination, string queryJson, string account)
         {
             var expression = ExtLinq.True<LogEntity>();
             var queryParam = queryJson.ToJObject();
+            if(string.IsNullOrEmpty(account) || !account.Equals("admin"))
+            {
+                expression = expression.And(t => !t.F_Account.Equals("admin"));
+            }
             if (!queryParam["keyword"].IsEmpty())
             {
                 string keyword = queryParam["keyword"].ToString();

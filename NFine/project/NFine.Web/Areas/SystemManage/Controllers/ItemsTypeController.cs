@@ -21,7 +21,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         [HandlerAjaxOnly]
         public ActionResult GetTreeSelectJson()
         {
-            var data = itemsApp.GetList();
+            var data = itemsApp.GetList(Convert.ToString(Session["F_Account"]));
             var treeList = new List<TreeSelectModel>();
             foreach (ItemsEntity item in data)
             {
@@ -37,7 +37,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         [HandlerAjaxOnly]
         public ActionResult GetTreeJson()
         {
-            var data = itemsApp.GetList();
+            var data = itemsApp.GetList(Convert.ToString(Session["F_Account"]));
             var treeList = new List<TreeViewModel>();
             foreach (ItemsEntity item in data)
             {
@@ -58,7 +58,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         [HandlerAjaxOnly]
         public ActionResult GetTreeGridJson()
         {
-            var data = itemsApp.GetList();
+            var data = itemsApp.GetList(Convert.ToString(Session["F_Account"]));
             var treeList = new List<TreeGridModel>();
             foreach (ItemsEntity item in data)
             {

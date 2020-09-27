@@ -17,9 +17,15 @@ namespace NFine.Application.SystemManage
     {
         private IItemsRepository service = new ItemsRepository();
 
-        public List<ItemsEntity> GetList()
+        public List<ItemsEntity> GetList(string account)
         {
-            return service.IQueryable().ToList();
+            var expression = ExtLinq.True<ItemsEntity>();
+
+            if (string.IsNullOrEmpty(account) || !account.Equals("admin"))
+            {
+                expression = expression.And(t => t.F_FullName != "通用字典");
+            }
+            return service.IQueryable(expression).ToList();
         }
         public ItemsEntity GetForm(string keyValue)
         {

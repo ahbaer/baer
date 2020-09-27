@@ -1,0 +1,258 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/css/upload.css" />
+<script src="~/Content/layui/layui.js" charset="utf-8"></script>
+<script>
+    var pro_Id = $.request("pro_Id");
+    var count = 0;
+    var _creatorUserId = "", _astModifyUserId = "";
+
+    $(function () {
+        initControl();
+
+        $.ajax({
+            url: "/ProductManage/Product/GetFormJson",
+            data: { pro_Id: pro_Id },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#form1").formSerialize(data);
+                $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
+                $("#form1").find('div.ckbox label').attr('for', '');
+
+                _creatorUserId = data.F_CreatorUserId;
+                _lastModifyUserId = data.F_LastModifyUserId;
+            }
+        });
+
+        //获取新增/修改人姓名
+        $.ajax({
+            url: "/SystemManage/SelData/GetSelectJson",
+            data: { table: "Sys_User", itemCode: "F_Id", itemName: "F_RealName", condition: " and F_Id in ('" + _creatorUserId + "','" + _lastModifyUserId + "')" },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].id == _creatorUserId) {
+                        $("#F_CreatorUserId").val(data[i].text);
+                    }
+
+                    if (data[i].id == _lastModifyUserId) {
+                        $("#F_LastModifyUserId").val(data[i].text);
+                    }
+                }
+            }
+        });
+
+        //缩略图获取
+        $.ajax({
+            url: "/SystemManage/File/GetListJson",
+            data: { related_Id: pro_Id },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#pic_" + i).attr("src", "/" + data[i].FilePath);
+                    $("#picRel_" + i).attr("src", "/" + data[i].FilePath);
+                    count++;
+                }
+            }
+        });
+
+        //缩略图展示
+        $("#gallery_output img").not(":first").hide();
+        $("#gallery a").click(function () {
+            $("#gallery a").removeClass('on');
+            $(this).addClass("on");
+            if ($("#" + this.rel).is(":hidden")) {
+                $("#gallery_output img").slideUp();
+                $("#" + this.rel).slideDown();
+            }
+        });
+    })
+
+    function initControl() {
+        //产地
+        $("#OriginCode").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0202" },
+        });
+        //港口
+        $("#Harbor").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0203" },
+        });
+        //品类
+        $("#Pro_Type").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0201" },
+        });
+        //年度
+        $("#Year").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0204" },
+        });
+        //清关
+        $("#IsCustomsClearance").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0205" },
+        });
+
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $next = $("#btn_next");
+            if (data.direction == "next") {
+                switch (data.step) {
+                    case 1:
+                        $next.attr('disabled', 'disabled');
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $next.removeAttr('disabled');
+            }
+        });
+    }
+</script>
+<form id="form1">
+    <div class="widget-body">
+        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+            <ul class="steps">
+                <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
+                <li data-target="#step-2"><span class="step">2</span>展示图片<span class="chevron"></span></li>
+            </ul>
+        </div>
+        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+            <div class="step-pane active" id="step-1" style="padding-left: 5px; padding-top: 20px; margin-right: 20px;">
+                <table class="form">
+                    <tr>
+                        <th class="formTitle">名称</th>
+                        <td class="formValue">
+                            <input id="Pro_Name" name="Pro_Name" type="text" class="form-control required" />
+                        </td>
+                        <th class="formTitle">代码</th>
+                        <td class="formValue">
+                            <input id="Pro_Code" name="Pro_Code" type="text" class="form-control required" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">产地</th>
+                        <td class="formValue">
+                            <select id="OriginCode" name="OriginCode" class="form-control required" disabled="disabled"></select>
+                        </td>
+                        <th class="formTitle">港口</th>
+                        <td class="formValue">
+                            <select id="Harbor" name="Harbor" class="form-control required" disabled="disabled"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">品类</th>
+                        <td class="formValue">
+                            <select id="Pro_Type" name="Pro_Type" class="form-control required" disabled="disabled"></select>
+                        </td>
+                        <th class="formTitle">年度</th>
+                        <td class="formValue">
+                            <select id="Year" name="Year" class="form-control required" disabled="disabled"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">马值</th>
+                        <td class="formValue">
+                            <input id="HorseValue" name="HorseValue" type="text" class="form-control required" />
+                        </td>
+                        <th class="formTitle">强力</th>
+                        <td class="formValue">
+                            <input id="Strength" name="Strength" type="text" class="form-control required" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">长度</th>
+                        <td class="formValue">
+                            <input id="Length" name="Length" type="text" class="form-control required" />
+                        </td>
+                        <th class="formTitle">单价</th>
+                        <td class="formValue">
+                            <input id="Price" name="Price" type="text" class="form-control required" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">清关状态</th>
+                        <td class="formValue">
+                            <select id="IsCustomsClearance" name="IsCustomsClearance" class="form-control required" disabled="disabled"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">备注</th>
+                        <td class="formValue" colspan="3">
+                            <input id="Pro_Description" name="Pro_Description" type="text" class="form-control required" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">创建人员</th>
+                        <td class="formValue">
+                            <input id="F_CreatorUserId" name="F_CreatorUserId" type="text" class="form-control" />
+                        </td>
+                        <th class="formTitle">创建时间</th>
+                        <td class="formValue">
+                            <input id="F_CreatorTime" name="F_CreatorTime" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">修改人员</th>
+                        <td class="formValue">
+                            <input id="F_LastModifyUserId" name="F_LastModifyUserId" type="text" class="form-control" />
+                        </td>
+                        <th class="formTitle">修改时间</th>
+                        <td class="formValue">
+                            <input id="F_LastModifyTime" name="F_LastModifyTime" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="step-pane" id="step-2">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <td class="formValue">
+                                <div class="layui-upload">
+                                    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                                        <div id="gallery" style="height:280px;margin-left:90px;margin-top:5px;">
+                                            <div id="gallery_nav">
+                                                <a class="on" rel="picRel_0" href="javascript:;">
+                                                    <img id="pic_0" src="~/Content/img/picBackground.jpeg" />
+                                                </a>
+                                                <a rel="picRel_1" href="javascript:;">
+                                                    <img id="pic_1" src="~/Content/img/picBackground.jpeg" />
+                                                </a>
+                                                <a rel="picRel_2" href="javascript:;">
+                                                    <img id="pic_2" src="~/Content/img/picBackground.jpeg" />
+                                                </a>
+                                                <a rel="picRel_3" href="javascript:;">
+                                                    <img id="pic_3" src="~/Content/img/picBackground.jpeg" />
+                                                </a>
+                                            </div>
+                                            <div id="gallery_output" style="float:left;margin-left:10px;">
+                                                <img id="picRel_0" src="~/Content/img/picBackground.jpeg" />
+                                                <img id="picRel_1" src="~/Content/img/picBackground.jpeg" />
+                                                <img id="picRel_2" src="~/Content/img/picBackground.jpeg" />
+                                                <img id="picRel_3" src="~/Content/img/picBackground.jpeg" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="form-button" id="wizard-actions">
+            <a id="btn_last" disabled class="btn btn-default btn-prev">上一步</a>
+            <a id="btn_next" class="btn btn-default btn-next">下一步</a>
+        </div>
+    </div>
+</form>

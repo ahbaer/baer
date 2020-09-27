@@ -1,0 +1,38 @@
+﻿input[type=file] {
+        display: none;
+    }
+
+    #gallery img {
+        border: none;
+    }
+
+    #gallery_nav {
+        float: left;
+        text-align: center;
+        margin:1px;
+    }
+
+    #gallery_nav a {
+        display: block;
+    }
+
+    #gallery_nav img {
+        display: block;
+        height: 65px;
+        margin: 2px;
+    }
+
+    #gallery_output {
+        float: left;
+        overflow: hidden;
+    }
+
+    #gallery_output img {
+        display: block;
+        height: 260px;
+        margin: 5px;
+    }
+
+    .on {
+        border: 1px solid rgba(92,92,92,1.00);
+    }

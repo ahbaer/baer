@@ -34,5 +34,23 @@ namespace NFine.Code
                 }
             }
         }
+
+        /// <summary>
+        /// 获取连接字符串
+        /// </summary>
+        /// <param name="connectionName">连接字符串名称</param>
+        /// <param name="encrypt">是否加密</param>
+        /// <returns></returns>
+        public static string GetConnectionString(string connectionName = "", bool encrypt = false)
+        {
+            if(string.IsNullOrEmpty(connectionName))
+            {
+                connectionName = "NFineDbContext";
+            }
+
+            string connection = System.Configuration.ConfigurationManager.ConnectionStrings[connectionName].ConnectionString;
+
+            return encrypt ? DESEncrypt.Decrypt(connection) : connection;
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace NFine.Domain
 {
     public class IEntity<TEntity>
     {
-        public void Create()
+        public string Create()
         {
             var entity = this as ICreationAudited;
             entity.F_Id = Common.GuId();
@@ -21,11 +21,14 @@ namespace NFine.Domain
                 entity.F_CreatorUserId = LoginInfo.UserId;
             }
             entity.F_CreatorTime = DateTime.Now;
+
+            return entity.F_Id;
         }
-        public void Modify(string keyValue)
+
+        public void Modify(string f_Id)
         {
             var entity = this as IModificationAudited;
-            entity.F_Id = keyValue;
+            entity.F_Id = f_Id;
             var LoginInfo = OperatorProvider.Provider.GetCurrent();
             if (LoginInfo != null)
             {
@@ -33,6 +36,7 @@ namespace NFine.Domain
             }
             entity.F_LastModifyTime = DateTime.Now;
         }
+
         public void Remove()
         {
             var entity = this as IDeleteAudited;

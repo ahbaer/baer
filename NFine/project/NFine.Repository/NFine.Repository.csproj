@@ -39,7 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\InventoryRepository.cs" />
+    <Compile Include="Application\ProductRepository.cs" />
+    <Compile Include="Application\WareHouseRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SystemManage\FileRepository.cs" />
+    <Compile Include="SystemManage\SelDataRepository.cs" />
     <Compile Include="SystemManage\ItemsDetailRepository.cs" />
     <Compile Include="SystemManage\ItemsRepository.cs" />
     <Compile Include="SystemManage\ModuleButtonRepository.cs" />

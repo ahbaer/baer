@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<script>
+    var keyValue = $.request("keyValue");
+    var _wareHouseId = $.request("wareHouseId");
+
+    $(function () {
+        if (!!keyValue) {
+            $.ajax({
+                url: "/ProductManage/Inventory/GetFormJson",
+                data: { keyValue: keyValue },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                    _wareHouseId = data.Ware_Id;
+                }
+            });
+        }
+
+        initControl();
+    })
+
+    function initControl() {
+        $("#Ware_Id").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "WareHouse", itemCode: "F_Id", itemName: "Ware_Name", condition: " and F_Id='" + _wareHouseId + "'" },
+        });
+
+        $("#Pro_Id").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "Product", itemCode: "F_Id", itemName: "Pro_Name" },
+        });
+
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $finish = $("#btn_finish");
+            var $next = $("#btn_next");
+            if (data.direction == "next") {
+                switch (data.step) {
+                    case 1:
+                        if (!$('#form1').formValid()) {
+                            return false;
+                        }
+                        $finish.show();
+                        $next.hide();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $finish.hide();
+                $next.show();
+            }
+        });
+    }
+
+    function submitForm() {
+        $("#Pro_Name").val($("#Pro_Id").find("option:selected").text());
+
+        var postData = $("#form1").formSerialize();
+        $.submitForm({
+            url: "/ProductManage/Inventory/SubmitForm?keyValue=" + keyValue,
+            param: postData,
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        });
+    }
+
+</script>
+<form id="form1">
+    <div class="widget-body">
+        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+            <ul class="steps">
+                <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
+                <li data-target="#step-2"><span class="step">2</span>扩展信息<span class="chevron"></span></li>
+            </ul>
+        </div>
+        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+            <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">表单信息</h3>
+                    </div>
+                    <div class="panel-body" style="width: 98%;">
+                        <table class="form">
+                            <tr>
+                                <th class="formTitle">仓库</th>
+                                <td class="formValue">
+                                    <select id="Ware_Id" name="Ware_Id" class="form-control required" disabled="disabled"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">商品</th>
+                                <td class="formValue">
+                                    <select id="Pro_Id" name="Pro_Id" class="form-control required"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">库存</th>
+                                <td class="formValue">
+                                    <input id="Inventory_Count" name="Inventory_Count" type="text" class="form-control required" placeholder="请输入库存" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle" valign="top" style="padding-top: 5px;">备注</th>
+                                <td class="formValue">
+                                    <textarea id="Inventory_Description" name="Inventory_Description" class="form-control" style="height: 60px;"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="display:none">
+                        <input id="Pro_Name" name="Pro_Name" type="text" />
+                    </div>
+                </div>
+            </div>
+            <div class="step-pane" id="step-2">
+            </div>
+        </div>
+        <div class="form-button" id="wizard-actions">
+            <a id="btn_last" disabled class="btn btn-default btn-prev">上一步</a>
+            <a id="btn_next" class="btn btn-default btn-next">下一步</a>
+            <a id="btn_finish" class="btn btn-default" style="display: none;" onclick="submitForm()">完成</a>
+        </div>
+    </div>
+</form>

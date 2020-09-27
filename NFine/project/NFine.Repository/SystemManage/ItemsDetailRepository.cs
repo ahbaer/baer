@@ -20,14 +20,7 @@ namespace NFine.Repository.SystemManage
         public List<ItemsDetailEntity> GetItemList(string enCode)
         {
             StringBuilder strSql = new StringBuilder();
-            strSql.Append(@"SELECT  d.*
-                            FROM    Sys_ItemsDetail d
-                                    INNER  JOIN Sys_Items i ON i.F_Id = d.F_ItemId
-                            WHERE   1 = 1
-                                    AND i.F_EnCode = @enCode
-                                    AND d.F_EnabledMark = 1
-                                    AND d.F_DeleteMark = 0
-                            ORDER BY d.F_SortCode ASC");
+            strSql.Append(@"select d.* from Sys_ItemsDetail d inner join Sys_Items i on i.F_Id = d.F_ItemId where i.F_EnCode=@enCode and d.F_EnabledMark = 1 and isnull(d.F_DeleteMark,0)=0 order by d.F_SortCode asc");
             DbParameter[] parameter = 
             {
                  new SqlParameter("@enCode",enCode)

@@ -53,6 +53,6 @@ namespace NFine.Code
             return encrypt ? DESEncrypt.Decrypt(connection) : connection;
         }
 
-        //你都不懂fork怎么使用
+        //我就不信研究不出来
     }
 }

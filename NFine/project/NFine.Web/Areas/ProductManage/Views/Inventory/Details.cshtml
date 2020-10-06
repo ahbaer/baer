@@ -3,10 +3,23 @@
     Layout = "~/Views/Shared/_Form.cshtml";
 }
 
+<link rel="stylesheet" href="~/Content/css/upload.css" />
+<style>
+    input[type=text]{
+        border-top:none;
+        border-left:none;
+        border-right:none;
+    }
+</style>
+<script src="~/Content/layui/layui.js" charset="utf-8"></script>
 <script>
     var keyValue = $.request("keyValue");
-    var _creatorUserId = "", _astModifyUserId = "";
+    var count = 0;
+    var _creatorUserId = "", _astModifyUserId = "",  _wareId = "";
+
     $(function () {
+        initControl();
+
         $.ajax({
             url: "/ProductManage/Inventory/GetFormJson",
             data: { keyValue: keyValue },
@@ -16,13 +29,69 @@
                 $("#form1").formSerialize(data);
                 $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
                 $("#form1").find('div.ckbox label').attr('for', '');
-                _wareHouseId = data.Ware_Id;
+
                 _creatorUserId = data.F_CreatorUserId;
                 _lastModifyUserId = data.F_LastModifyUserId;
+                _wareId = data.WareId;
             }
         });
 
-        //获取新增/修改人姓名
+        //仓库
+        $("#WareId").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "WareHouse", itemCode: "F_Id", itemName: "WareName", condition: " and F_Id='" + _wareId + "'" },
+        });
+
+        getUserName();
+        getFile()
+        showFile();
+    })
+
+    function initControl() {
+        //产地
+        $("#OriginCode").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0202" },
+        });
+        //港口
+        $("#Harbor").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0203" },
+        });
+        //品类
+        $("#ProductType").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0201" },
+        });
+        //年度
+        $("#Year").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0204" },
+        });
+        //清关
+        $("#IsCustomsClearance").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0205" },
+        });
+
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $next = $("#btn_next");
+            if (data.direction == "next") {
+                switch (data.step) {
+                    case 2:
+                        $next.attr('disabled', 'disabled');
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $next.removeAttr('disabled');
+            }
+        });
+    }
+
+    //获取新增/修改人姓名
+    function getUserName() {
         $.ajax({
             url: "/SystemManage/SelData/GetSelectJson",
             data: { table: "Sys_User", itemCode: "F_Id", itemName: "F_RealName", condition: " and F_Id in ('" + _creatorUserId + "','" + _lastModifyUserId + "')" },
@@ -40,33 +109,34 @@
                 }
             }
         });
+    }
 
-        initControl();
-    })
-
-    function initControl() {
-        $("#Ware_Id").bindSelect({
-            url: "/SystemManage/SelData/GetSelectJson",
-            param: { table: "WareHouse", itemCode: "F_Id", itemName: "Ware_Name", condition: " and F_Id='" + _wareHouseId + "'" },
-        });
-
-        $("#Pro_Id").bindSelect({
-            url: "/SystemManage/SelData/GetSelectJson",
-            param: { table: "Product", itemCode: "F_Id", itemName: "Pro_Name" },
-        });
-
-        $('#wizard').wizard().on('change', function (e, data) {
-            var $next = $("#btn_next");
-            if (data.direction == "next") {
-                switch (data.step) {
-                    case 1:
-                        $next.attr('disabled', 'disabled');
-                        break;
-                    default:
-                        break;
+    //预览图获取
+    function getFile() {
+        $.ajax({
+            url: "/SystemManage/File/GetListJson",
+            data: { related_Id: keyValue },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#pic_" + i).attr("src", "/" + data[i].FilePath);
+                    $("#picRel_" + i).attr("src", "/" + data[i].FilePath);
+                    count++;
                 }
-            } else {
-                $next.removeAttr('disabled');
+            }
+        });
+    }
+
+    //预览图展示
+    function showFile() {
+        $("#gallery_output img").not(":first").hide();
+        $("#gallery a").click(function () {
+            $("#gallery a").removeClass('on');
+            $(this).addClass("on");
+            if ($("#" + this.rel).is(":hidden")) {
+                $("#gallery_output img").slideUp();
+                $("#" + this.rel).slideDown();
             }
         });
     }
@@ -76,7 +146,8 @@
         <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
             <ul class="steps">
                 <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
-                <li data-target="#step-2"><span class="step">2</span>扩展信息<span class="chevron"></span></li>
+                <li data-target="#step-2"><span class="step">2</span>详细信息<span class="chevron"></span></li>
+                <li data-target="#step-3"><span class="step">3</span>展示图片<span class="chevron"></span></li>
             </ul>
         </div>
         <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
@@ -84,56 +155,134 @@
                 <table class="form">
                     <tr>
                         <th class="formTitle">仓库</th>
-                        <td class="formValue">
-                            <select id="Ware_Id" name="Ware_Id" class="form-control required" disabled="disabled"></select>
+                        <td class="formValue" colspan="3">
+                            <select id="WareId" name="WareId" class="form-control" disabled="disabled"></select>
+                            <div style="display:none">
+                                @*仓库名称*@
+                                <input id="WareName" name="WareName" type="text" class="form-control" />
+                            </div>
                         </td>
                     </tr>
                     <tr>
-                        <th class="formTitle">商品</th>
+                        <th class="formTitle">名称</th>
                         <td class="formValue">
-                            <select id="Pro_Id" name="Pro_Id" class="form-control required" disabled="disabled"></select>
+                            <input id="ProductName" name="ProductName" type="text" class="form-control" placeholder="请输入商品名称" />
+                        </td>
+                        <th class="formTitle">代码</th>
+                        <td class="formValue">
+                            <input id="ProductCode" name="ProductCode" type="text" class="form-control" placeholder="请输入商品代码" />
                         </td>
                     </tr>
                     <tr>
-                        <th class="formTitle">库存</th>
+                        <th class="formTitle">产地</th>
                         <td class="formValue">
-                            <input id="Inventory_Count" name="Inventory_Count" type="text" class="form-control" />
+                            <select id="OriginCode" name="OriginCode" class="form-control" disabled="disabled">
+                                <option value="">==请选择==</option>
+                            </select>
+                            <div style="display:none">
+                                @*产地代码*@
+                                <input id="Origin" name="Origin" type="text" class="form-control" />
+                            </div>
+                        </td>
+                        <th class="formTitle">港口</th>
+                        <td class="formValue">
+                            <select id="Harbor" name="Harbor" class="form-control" disabled="disabled">
+                                <option value="">==请选择==</option>
+                            </select>
                         </td>
                     </tr>
                     <tr>
-                        <th class="formTitle">备注</th>
+                        <th class="formTitle">品类</th>
                         <td class="formValue">
-                            <input id="Inventory_Description" name="Inventory_Description" type="text" class="form-control" />
+                            <select id="ProductType" name="ProductType" class="form-control" disabled="disabled">
+                                <option value="">==请选择==</option>
+                            </select>
+                        </td>
+                        <th class="formTitle">年度</th>
+                        <td class="formValue">
+                            <select id="Year" name="Year" class="form-control" disabled="disabled">
+                                <option value="">==请选择==</option>
+                            </select>
                         </td>
                     </tr>
                     <tr>
-                        <th class="formTitle">创建人员</th>
+                        <th class="formTitle">清关状态</th>
                         <td class="formValue">
-                            <input id="F_CreatorUserId" name="F_CreatorUserId" type="text" class="form-control" />
+                            <select id="IsCustomsClearance" name="IsCustomsClearance" class="form-control" disabled="disabled"></select>
                         </td>
-                    </tr>
-                    <tr>
-                        <th class="formTitle">创建时间</th>
+                        <th class="formTitle">单价</th>
                         <td class="formValue">
-                            <input id="F_CreatorTime" name="F_CreatorTime" type="text" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="formTitle">修改人员</th>
-                        <td class="formValue">
-                            <input id="F_LastModifyUserId" name="F_LastModifyUserId" type="text" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="formTitle">修改时间</th>
-                        <td class="formValue">
-                            <input id="F_LastModifyTime" name="F_LastModifyTime" type="text" class="form-control" />
+                            <input id="Price" name="Price" type="text" class="form-control" placeholder="单位：元/每吨 or 美元/每吨" />
                         </td>
                     </tr>
                 </table>
             </div>
-            <div class="step-pane" id="step-2">
-                <div id="permissionTree"></div>
+            <div class="step-pane" id="step-2" style="padding-left: 5px; padding-top: 20px; margin-right: 20px;">
+                <table class="form">
+                    <tr>
+                        <th class="formTitle">马值</th>
+                        <td class="formValue">
+                            <input id="HorseValue" name="HorseValue" type="text" class="form-control required" placeholder="请输入马值" />
+                        </td>
+                        <th class="formTitle">强力</th>
+                        <td class="formValue">
+                            <input id="Strength" name="Strength" type="text" class="form-control required" placeholder="请输入强力" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">长度</th>
+                        <td class="formValue">
+                            <input id="Length" name="Length" type="text" class="form-control required" placeholder="请输入长度" />
+                        </td>
+                        <th class="formTitle">重量</th>
+                        <td class="formValue">
+                            <input id="Weight" name="Weight" type="text" class="form-control required" placeholder="单位：吨" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle" valign="top" style="padding-top: 5px;">备注</th>
+                        <td class="formValue" colspan="3">
+                            <textarea id="Description" name="Pro_Description" class="form-control" style="height: 60px;"></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="step-pane" id="step-3">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <td class="formValue">
+                                <div class="layui-upload">
+                                    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                                        <div id="gallery" style="height:280px;margin-left:70px;margin-top:5px;">
+                                            <div id="gallery_nav">
+                                                <a class="on" rel="picRel_0" href="javascript:;">
+                                                    <img id="pic_0" src="~/Content/img/background.jpg" />
+                                                </a>
+                                                <a rel="picRel_1" href="javascript:;">
+                                                    <img id="pic_1" src="~/Content/img/background.jpg" />
+                                                </a>
+                                                <a rel="picRel_2" href="javascript:;">
+                                                    <img id="pic_2" src="~/Content/img/background.jpg" />
+                                                </a>
+                                                <a rel="picRel_3" href="javascript:;">
+                                                    <img id="pic_3" src="~/Content/img/background.jpg" />
+                                                </a>
+                                            </div>
+                                            <div id="gallery_output" style="float:left;margin-left:10px;">
+                                                <img id="picRel_0" src="~/Content/img/background.jpg" />
+                                                <img id="picRel_1" src="~/Content/img/background.jpg" />
+                                                <img id="picRel_2" src="~/Content/img/background.jpg" />
+                                                <img id="picRel_3" src="~/Content/img/background.jpg" />
+                                            </div>
+                                            <div class="clear"></div>
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="form-button" id="wizard-actions">

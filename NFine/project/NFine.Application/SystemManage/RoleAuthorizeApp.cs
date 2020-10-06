@@ -25,6 +25,7 @@ namespace NFine.Application.SystemManage
         {
             return service.IQueryable(t => t.F_ObjectId == ObjectId).ToList();
         }
+
         public List<ModuleEntity> GetMenuList(string roleId)
         {
             var data = new List<ModuleEntity>();
@@ -47,6 +48,7 @@ namespace NFine.Application.SystemManage
             }
             return data.OrderBy(t => t.F_SortCode).ToList();
         }
+
         public List<ModuleButtonEntity> GetButtonList(string roleId)
         {
             var data = new List<ModuleButtonEntity>();
@@ -69,6 +71,7 @@ namespace NFine.Application.SystemManage
             }
             return data.OrderBy(t => t.F_SortCode).ToList();
         }
+
         public bool ActionValidate(string roleId, string moduleId, string action)
         {
             var authorizeurldata = new List<AuthorizeActionModel>();
@@ -83,12 +86,18 @@ namespace NFine.Application.SystemManage
                     if (item.F_ItemType == 1)
                     {
                         ModuleEntity moduleEntity = moduledata.Find(t => t.F_Id == item.F_ItemId);
-                        authorizeurldata.Add(new AuthorizeActionModel { F_Id = moduleEntity.F_Id, F_UrlAddress = moduleEntity.F_UrlAddress });
+                        authorizeurldata.Add(
+                            new AuthorizeActionModel {
+                                F_Id = moduleEntity.F_Id,
+                                F_UrlAddress = moduleEntity.F_UrlAddress });
                     }
                     else if (item.F_ItemType == 2)
                     {
                         ModuleButtonEntity moduleButtonEntity = buttondata.Find(t => t.F_Id == item.F_ItemId);
-                        authorizeurldata.Add(new AuthorizeActionModel { F_Id = moduleButtonEntity.F_ModuleId, F_UrlAddress = moduleButtonEntity.F_UrlAddress });
+                        authorizeurldata.Add(
+                            new AuthorizeActionModel {
+                                F_Id = moduleButtonEntity.F_ModuleId,
+                                F_UrlAddress = moduleButtonEntity.F_UrlAddress });
                     }
                 }
                 CacheFactory.Cache().WriteCache(authorizeurldata, "authorizeurldata_" + roleId, DateTime.Now.AddMinutes(5));

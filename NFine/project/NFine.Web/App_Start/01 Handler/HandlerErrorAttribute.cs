@@ -1,4 +1,5 @@
 ﻿using NFine.Code;
+using System;
 using System.Web.Mvc;
 
 namespace NFine.Web
@@ -11,7 +12,10 @@ namespace NFine.Web
             context.ExceptionHandled = true;
             context.HttpContext.Response.StatusCode = 200;
             context.Result = new ContentResult { Content = new AjaxResult { state = ResultType.error.ToString(), message = context.Exception.Message }.ToJson() };
+
+            WriteLog(context);
         }
+
         private void WriteLog(ExceptionContext context)
         {
             if (context == null)

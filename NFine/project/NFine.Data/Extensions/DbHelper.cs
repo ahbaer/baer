@@ -25,6 +25,21 @@ namespace NFine.Data.Extensions
             }
         }
 
+        private static void PrepareCommand(DbCommand cmd, DbConnection conn, DbTransaction isOpenTrans, CommandType cmdType, string cmdText, DbParameter[] cmdParms)
+        {
+            if (conn.State != ConnectionState.Open)
+                conn.Open();
+            cmd.Connection = conn;
+            cmd.CommandText = cmdText;
+            if (isOpenTrans != null)
+                cmd.Transaction = isOpenTrans;
+            cmd.CommandType = cmdType;
+            if (cmdParms != null)
+            {
+                cmd.Parameters.AddRange(cmdParms);
+            }
+        }
+
         #region ToNonQuery
         public static int ExecuteNonQuery(string cmdText, string connectionName)
         {
@@ -45,7 +60,7 @@ namespace NFine.Data.Extensions
 
         public static int ExecuteNonQuery(string cmdText)
         {
-            return ExecuteNonQuery(cmdText, ConnectionString);
+            return ExecuteNonQuery(cmdText, "");
         }
 
         public static int ExecuteNonQuery(string cmdText, string connectionName, bool encrypt)
@@ -58,7 +73,7 @@ namespace NFine.Data.Extensions
         public static string ExecuteToString(string cmdText, string connectionName)
         {
             string ret = "";
-            using (SqlConnection conn = new SqlConnection(connectionName))
+            using (SqlConnection conn = new SqlConnection(DBConnection.GetConnectionString(connectionName)))
             {
                 conn.Open();
                 if (conn.State == ConnectionState.Open)
@@ -86,7 +101,7 @@ namespace NFine.Data.Extensions
 
         public static string ExecuteToString(string cmdText)
         {
-            return ExecuteToString(cmdText, ConnectionString);
+            return ExecuteToString(cmdText, "");
         }
 
         public static string ExecuteToString(string cmdText, string connectionName, bool encrypt)
@@ -117,7 +132,7 @@ namespace NFine.Data.Extensions
 
         public static DataView ExecuteToDataView(string cmdText)
         {
-            return ExecuteToDataView(cmdText, ConnectionString);
+            return ExecuteToDataView(cmdText, "");
         }
 
         public static DataView ExecuteToDataView(string cmdText, string connectionName, bool encrypt)
@@ -125,20 +140,5 @@ namespace NFine.Data.Extensions
             return ExecuteToDataView(cmdText, DBConnection.GetConnectionString(connectionName, encrypt));
         }
         #endregion
-
-        private static void PrepareCommand(DbCommand cmd, DbConnection conn, DbTransaction isOpenTrans, CommandType cmdType, string cmdText, DbParameter[] cmdParms)
-        {
-            if (conn.State != ConnectionState.Open)
-                conn.Open();
-            cmd.Connection = conn;
-            cmd.CommandText = cmdText;
-            if (isOpenTrans != null)
-                cmd.Transaction = isOpenTrans;
-            cmd.CommandType = cmdType;
-            if (cmdParms != null)
-            {
-                cmd.Parameters.AddRange(cmdParms);
-            }
-        }
     }
 }

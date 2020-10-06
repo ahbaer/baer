@@ -15,18 +15,21 @@
             height: $(window).height() - 96,
             colModel: [
                 { label: "主键", name: "F_Id", hidden: true, key: true },
-                { label: '仓库名称', name: 'Ware_Name', width: 150, align: 'center' },
+                { label: '仓库', name: 'WareName', width: 150, align: 'left' },
+                { label: '主管', name: 'Director', width: 150, align: 'left' },
+                { label: '主管电话', name: 'Mobile', width: 150, align: 'left' },
                 {
-                    label: '坐标', name: '', width: 150, align: 'center',
+                    label: '坐标', name: '', width: 150, align: 'left',
                     formatter: function (val, obj, row, act) {
-                        return '(' + row.Ware_Longitude + ',' + row.Ware_Latitude + ')';
+                        return '(' + row.Longitude + ',' + row.Latitude + ')';
                     }
                 },
-                { label: '备注', name: 'Ware_Description', width: 150, align: 'center' },
+                { label: '地址', name: 'Address', width: 300, align: 'left' },
+                { label: '备注', name: 'Description', width: 150, align: 'left' },
                 {
-                    label: '库存', name: '', width: 150, align: 'center',
+                    label: '库存', name: '', width: 150, align: 'left',
                     formatter: function (val, obj, row, act) {
-                        return '<a onclick="btn_inventoryIndex(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                        return '<button id="NF-inventoryIndex" type="button" style="border:none;background:none;" onclick="btn_inventoryIndex(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></button>';
                     }
                 },
             ]
@@ -86,9 +89,9 @@
 
     function btn_inventoryIndex(f_Id) {
         $.modalOpen({
-            id: "ProIndex",
+            id: "InventoryIndex",
             title: "库存信息",
-            url: "/ProductManage/Inventory/Index?wareHouseId=" + f_Id,
+            url: "/ProductManage/Inventory/Index?wareId=" + f_Id,
             width: "1000px",
             height: "560px",
             btn: null,

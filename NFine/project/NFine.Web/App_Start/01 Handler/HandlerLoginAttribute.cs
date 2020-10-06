@@ -10,6 +10,7 @@ namespace NFine.Web
         {
             Ignore = ignore;
         }
+
         public override void OnAuthorization(AuthorizationContext filterContext)
         {
             if (Ignore == false)

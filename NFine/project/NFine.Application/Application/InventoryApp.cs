@@ -15,14 +15,14 @@ namespace NFine.Application.Application
     {
         private IInventoryRepository service = new InventoryRepository();
 
-        public List<InventoryEntity> GetList(string ware_Id, string keyword = "")
+        public List<InventoryEntity> GetList(string ware_Id, string keyword)
         {
             var expression = ExtLinq.True<InventoryEntity>();
             if (!string.IsNullOrEmpty(keyword))
             {
-                expression = expression.And(t => t.Pro_Name.Contains(keyword));
+                expression = expression.And(t => t.ProductName.Contains(keyword));
             }
-            expression = expression.And(t => t.Ware_Id.Equals(ware_Id));
+            expression = expression.And(t => t.WareId.Equals(ware_Id));
             return service.IQueryable(expression).OrderByDescending(t => t.F_CreatorTime).ToList();
         }
 
@@ -36,18 +36,23 @@ namespace NFine.Application.Application
             service.Delete(t => t.F_Id == keyValue);
         }
 
-        public void SubmitForm(InventoryEntity inventoryEntity, string keyValue)
+        public string SubmitForm(InventoryEntity inventoryEntity, string keyValue)
         {
+            string f_Id;
             if (!string.IsNullOrEmpty(keyValue))
             {
                 inventoryEntity.Modify(keyValue);
                 service.Update(inventoryEntity);
+
+                f_Id = keyValue;
             }
             else
             {
-                inventoryEntity.Create();
+                f_Id = inventoryEntity.Create();
                 service.Insert(inventoryEntity);
             }
+
+            return f_Id;
         }
     }
 }

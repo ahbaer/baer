@@ -1,0 +1,30 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<script>
+    var inventoryId = $.request("inventoryId");
+
+    $(function () {
+        gridList();
+    })
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/ProductManage/OutInventory/GetGridJson?inventoryId=" + inventoryId,
+            height: $(window).height() - 96,
+            colModel: [
+                { label: "主键", name: "F_Id", hidden: true, key: true },
+                { label: '出库员', name: 'F_CreatorUserId', width: 150, align: 'center' },
+                { label: '出库时间', name: 'F_CreatorTime', width: 150, align: 'center' },
+                { label: '出库重量', name: 'Weight', width: 150, align: 'center' }
+            ]
+        });
+    }
+</script>
+
+<div class="gridPanel">
+    <table id="gridList"></table>
+</div>

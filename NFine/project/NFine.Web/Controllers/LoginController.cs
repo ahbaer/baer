@@ -27,11 +27,13 @@ namespace NFine.Web.Controllers
             var test = string.Format("{0:E2}", 1);
             return View();
         }
+
         [HttpGet]
         public ActionResult GetAuthCode()
         {
             return File(new VerifyCode().GetVerifyCode(), @"image/Gif");
         }
+
         [HttpGet]
         public ActionResult OutLogin()
         {
@@ -49,6 +51,7 @@ namespace NFine.Web.Controllers
             OperatorProvider.Provider.RemoveCurrent();
             return RedirectToAction("Index", "Login");
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         public ActionResult CheckLogin(string username, string password, string code)
@@ -94,6 +97,7 @@ namespace NFine.Web.Controllers
 
                     #region 创建Session
                     WebHelper.WriteSession("F_Account", userEntity.F_Account);
+                    WebHelper.WriteSession("F_RealName", userEntity.F_RealName);
                     WebHelper.WriteSession("F_RoleId", userEntity.F_RoleId);
                     #endregion
                 }

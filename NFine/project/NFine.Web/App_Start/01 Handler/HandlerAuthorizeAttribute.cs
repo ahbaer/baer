@@ -13,6 +13,7 @@ namespace NFine.Web
         {
             Ignore = ignore;
         }
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (OperatorProvider.Provider.GetCurrent().IsSystem)
@@ -31,6 +32,7 @@ namespace NFine.Web
                 return;
             }
         }
+
         private bool ActionAuthorize(ActionExecutingContext filterContext)
         {
             var operatorProvider = OperatorProvider.Provider.GetCurrent();

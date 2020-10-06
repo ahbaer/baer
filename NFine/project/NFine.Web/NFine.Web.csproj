@@ -131,7 +131,7 @@
     <Compile Include="Areas\ExampleManage\Controllers\SignetController.cs" />
     <Compile Include="Areas\ExampleManage\ExampleManageAreaRegistration.cs" />
     <Compile Include="Areas\ProductManage\Controllers\InventoryController.cs" />
-    <Compile Include="Areas\ProductManage\Controllers\ProductController.cs" />
+    <Compile Include="Areas\ProductManage\Controllers\OutInventoryController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\WareHouseController.cs" />
     <Compile Include="Areas\ProductManage\ProductManageAreaRegistration.cs" />
     <Compile Include="Areas\ReportManage\Controllers\EchartsController.cs" />
@@ -166,6 +166,13 @@
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Content Include="Content\css\jqgridcol.css" />
+    <Content Include="Content\img\background.jpg" />
+    <Content Include="Content\img\delete.gif" />
+    <Content Include="Content\img\delete.jpg" />
+    <Content Include="Content\img\slide\slide1.jpeg" />
+    <Content Include="Content\img\slide\slide2.jpg" />
+    <Content Include="Content\img\slide\slide3.jpg" />
     <Content Include="map.html" />
     <Content Include="Content\css\framework-font.css" />
     <Content Include="Content\css\framework-ui.css" />
@@ -190,7 +197,6 @@
     <Content Include="Content\img\iphone_4.jpg" />
     <Content Include="Content\img\iphone_4b.jpg" />
     <Content Include="Content\img\loading.gif" />
-    <Content Include="Content\img\picBackground.jpeg" />
     <Content Include="Content\img\radio1.jpg" />
     <Content Include="Content\img\radio2.jpg" />
     <Content Include="Content\img\samples\angelina-300.jpg" />
@@ -749,20 +755,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\SystemManage\Views\User\Info.cshtml" />
-    <Content Include="Areas\ProductManage\Views\Product\Details.cshtml" />
-    <Content Include="Areas\ProductManage\Views\Product\Form.cshtml" />
-    <Content Include="Areas\ProductManage\Views\Product\Index.cshtml" />
+    <Content Include="Areas\ProductManage\Views\Inventory\Details.cshtml" />
+    <Content Include="Areas\ProductManage\Views\Inventory\Form.cshtml" />
     <Content Include="Areas\ProductManage\Views\WareHouse\Details.cshtml" />
     <Content Include="Areas\ProductManage\Views\WareHouse\Form.cshtml" />
     <Content Include="Areas\ProductManage\Views\WareHouse\Index.cshtml" />
     <Content Include="Areas\ProductManage\Views\Web.config" />
     <Content Include="Areas\ProductManage\Views\Inventory\Index.cshtml" />
-    <Content Include="Areas\ProductManage\Views\Inventory\Form.cshtml" />
     <Content Include="Content\layui\font\iconfont.eot" />
     <Content Include="Content\layui\font\iconfont.ttf" />
     <Content Include="Content\layui\font\iconfont.woff" />
     <Content Include="Content\layui\font\iconfont.woff2" />
-    <Content Include="Areas\ProductManage\Views\Inventory\Details.cshtml" />
+    <Content Include="Areas\SystemManage\Views\File\File.cshtml" />
+    <Content Include="Areas\ProductManage\Views\OutInventory\Index.cshtml" />
+    <Content Include="Areas\ProductManage\Views\OutInventory\Form.cshtml" />
     <None Include="Properties\PublishProfiles\NFine.Framework.Release.pubxml" />
   </ItemGroup>
   <PropertyGroup>

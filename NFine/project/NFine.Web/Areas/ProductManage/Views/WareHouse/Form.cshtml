@@ -46,7 +46,6 @@
 
     function submitForm() {
         var postData = $("#form1").formSerialize();
-        postData["permissionIds"] = String($("#permissionTree").getCheckedNodes());
         $.submitForm({
             url: "/ProductManage/WareHouse/SubmitForm?keyValue=" + keyValue,
             param: postData,
@@ -61,7 +60,6 @@
         <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
             <ul class="steps">
                 <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
-                <li data-target="#step-2"><span class="step">2</span>扩展信息<span class="chevron"></span></li>
             </ul>
         </div>
         <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
@@ -73,49 +71,55 @@
                     <div class="panel-body" style="width: 98%;">
                         <table class="form">
                             <tr>
-                                <th class="formTitle">仓库名称</th>
+                                <th class="formTitle">仓库</th>
                                 <td class="formValue">
-                                    <input id="Ware_Name" name="Ware_Name" type="text" class="form-control required" placeholder="请输入仓库名称" />
+                                    <input id="WareName" name="WareName" type="text" class="form-control required" placeholder="请输入仓库名称" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">地址</th>
+                                <td class="formValue">
+                                    <input id="Address" name="Address" type="text" class="form-control required" placeholder="请输入仓库地址" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">主管</th>
+                                <td class="formValue">
+                                    <input id="Director" name="Director" type="text" class="form-control" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">电话</th>
+                                <td class="formValue">
+                                    <input id="Mobile" name="Mobile" type="text" class="form-control" />
                                 </td>
                             </tr>
                             <tr>
                                 <th class="formTitle">坐标</th>
                                 <td class="formValue">
-                                    <table style="width:100%">
-                                        <tr>
-                                            <td style="width:40%">
-                                                <input id="Ware_Longitude" name="Ware_Longitude" type="text" class="form-control required" placeholder="请输入经度" />
-                                            </td>
-                                            <td style="width:40%">
-                                                <input id="Ware_Latitude" name="Ware_Latitude" type="text" class="form-control required" placeholder="请输入纬度" />
-                                            </td>
-                                            <td style="width:20%">
-                                                <div class="htmleaf-demo">
-                                                    <a id="selAddress" class="btn btn-primary dropdown-text"><i class="fa fa-search"></i>地图选点</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    <div style="width:48%;float:left;">
+                                        <input id="Longitude" name="Longitude" type="text" class="form-control required" placeholder="请输入经度" />
+                                    </div>
+                                    <div style="width:48%;float:right;">
+                                        <input id="Latitude" name="Latitude" type="text" class="form-control required" placeholder="请输入纬度" />
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
                                 <th class="formTitle" valign="top" style="padding-top: 5px;">备注</th>
                                 <td class="formValue">
-                                    <textarea id="Ware_Description" name="Ware_Description" class="form-control" style="height: 60px;"></textarea>
+                                    <textarea id="Description" name="Ware_Description" class="form-control" style="height: 60px;"></textarea>
                                 </td>
                             </tr>
                         </table>
                     </div>
                 </div>
             </div>
-            <div class="step-pane" id="step-2">
-                <div id="permissionTree"></div>
-            </div>
         </div>
         <div class="form-button" id="wizard-actions">
-            <a id="btn_last" disabled class="btn btn-default btn-prev">上一步</a>
-            <a id="btn_next" class="btn btn-default btn-next">下一步</a>
-            <a id="btn_finish" class="btn btn-default" style="display: none;" onclick="submitForm()">完成</a>
+            <a id="btn_last" disabled class="btn btn-default btn-prev" style="display: none;">上一步</a>
+            <a id="btn_next" class="btn btn-default btn-next" style="display: none;">下一步</a>
+            <a id="btn_finish" class="btn btn-default" onclick="submitForm()">完成</a>
         </div>
     </div>
 </form>

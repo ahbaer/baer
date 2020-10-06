@@ -52,10 +52,24 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         }
 
         [HttpPost]
+        public ActionResult DeleteFile(string related_Id, string path)
+        {
+            string filePath = Server.MapPath("~") + path.Trim('/').Replace("/", "\\");
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            string strSql = "delete Frame_File where Related_Id='" + related_Id + "' and FilePath='" + path.Trim('/') + "'";
+            DbHelper.ExecuteNonQuery(strSql);
+            return View();
+        }
+
+        [HttpPost]
         public ActionResult UpdateRelatedId(string guid, string related_Id)
         {
             string strSql = "update Frame_File set Related_Id='" + guid + "' where Related_Id='" + related_Id + "'";
-            DbHelper.ExecuteSqlCommand(strSql);
+            DbHelper.ExecuteNonQuery(strSql);
             return View();
         }
     }

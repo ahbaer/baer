@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<script>
+    var f_Id = $.request("f_Id");
+    var inventoryId = $.request("inventoryId")
+    $(function () {
+        initControl();
+
+        if (!!f_Id) {
+            $.ajax({
+                url: "/ProductManage/OutInventory/GetFormJson",
+                data: { f_Id: f_Id },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                }
+            });
+        } else {
+            $.ajax({
+                url: "/ProductManage/Inventory/GetFormJson",
+                data: { keyValue: inventoryId },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                }
+            });
+        }
+    })
+
+    function initControl() {
+        $("#InventoryId").val(inventoryId);
+
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $finish = $("#btn_finish");
+            var $next = $("#btn_next");
+            if (data.direction == "next") {
+                switch (data.step) {
+                    case 1:
+                        if (!$('#form1').formValid()) {
+                            return false;
+                        }
+                        $finish.show();
+                        $next.hide();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $finish.hide();
+                $next.show();
+            }
+        });
+    }
+
+    function submitForm() {
+        var postData = $("#form1").formSerialize();
+        $.submitForm({
+            url: "/ProductManage/OutInventory/SubmitForm?f_Id=" + f_Id,
+            param: postData,
+            success: function () {
+                top.frames["InventoryIndex"].$("#gridList").trigger("reloadGrid");
+            }
+        });
+    }
+</script>
+<form id="form1">
+    <div class="widget-body">
+        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+            <ul class="steps">
+                <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
+            </ul>
+        </div>
+        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+            <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">表单信息</h3>
+                    </div>
+                    <div class="panel-body" style="width: 98%;">
+                        <table class="form">
+                            <tr>
+                                <th class="formTitle">仓库</th>
+                                <td class="formValue">
+                                    <input id="WareName" name="WareName" type="text" class="form-control" disabled="disabled" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">商品</th>
+                                <td class="formValue">
+                                    <input id="ProductName" name="ProductName" type="text" class="form-control" disabled="disabled"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">出库重量</th>
+                                <td class="formValue">
+                                    <input id="Weight" name="Weight" type="text" class="form-control required" placeholder="请输入出库重量" />
+                                </td>
+                            </tr>
+                            <tr style="display:none">
+                                <th class="formTitle">商品主键</th>
+                                <td class="formValue">
+                                    <input id="InventoryId" name="InventoryId" type="text" class="form-control" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-button" id="wizard-actions">
+            <a id="btn_last" disabled class="btn btn-default btn-prev" style="display: none;">上一步</a>
+            <a id="btn_next" class="btn btn-default btn-next" style="display: none;">下一步</a>
+            <a id="btn_finish" class="btn btn-default" onclick="submitForm()">完成</a>
+        </div>
+    </div>
+</form>

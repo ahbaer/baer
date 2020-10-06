@@ -25,6 +25,7 @@ namespace NFine.Data
     {
         private NFineDbContext dbcontext = new NFineDbContext();
         private DbTransaction dbTransaction { get; set; }
+
         public IRepositoryBase BeginTrans()
         {
             DbConnection dbConnection = ((IObjectContextAdapter)dbcontext).ObjectContext.Connection;
@@ -35,6 +36,7 @@ namespace NFine.Data
             dbTransaction = dbConnection.BeginTransaction();
             return this;
         }
+
         public int Commit()
         {
             try
@@ -59,6 +61,7 @@ namespace NFine.Data
                 this.Dispose();
             }
         }
+
         public void Dispose()
         {
             if (dbTransaction != null)
@@ -67,11 +70,13 @@ namespace NFine.Data
             }
             this.dbcontext.Dispose();
         }
+
         public int Insert<TEntity>(TEntity entity) where TEntity : class
         {
             dbcontext.Entry<TEntity>(entity).State = EntityState.Added;
             return dbTransaction == null ? this.Commit() : 0;
         }
+
         public int Insert<TEntity>(List<TEntity> entitys) where TEntity : class
         {
             foreach (var entity in entitys)
@@ -80,6 +85,7 @@ namespace NFine.Data
             }
             return dbTransaction == null ? this.Commit() : 0;
         }
+
         public int Update<TEntity>(TEntity entity) where TEntity : class
         {
             dbcontext.Set<TEntity>().Attach(entity);
@@ -95,42 +101,51 @@ namespace NFine.Data
             }
             return dbTransaction == null ? this.Commit() : 0;
         }
+
         public int Delete<TEntity>(TEntity entity) where TEntity : class
         {
             dbcontext.Set<TEntity>().Attach(entity);
             dbcontext.Entry<TEntity>(entity).State = EntityState.Deleted;
             return dbTransaction == null ? this.Commit() : 0;
         }
+
         public int Delete<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
         {
             var entitys = dbcontext.Set<TEntity>().Where(predicate).ToList();
             entitys.ForEach(m => dbcontext.Entry<TEntity>(m).State = EntityState.Deleted);
             return dbTransaction == null ? this.Commit() : 0;
         }
+
         public TEntity FindEntity<TEntity>(object keyValue) where TEntity : class
         {
             return dbcontext.Set<TEntity>().Find(keyValue);
         }
+
         public TEntity FindEntity<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
         {
             return dbcontext.Set<TEntity>().FirstOrDefault(predicate);
         }
+
         public IQueryable<TEntity> IQueryable<TEntity>() where TEntity : class
         {
             return dbcontext.Set<TEntity>();
         }
+
         public IQueryable<TEntity> IQueryable<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class
         {
             return dbcontext.Set<TEntity>().Where(predicate);
         }
+
         public List<TEntity> FindList<TEntity>(string strSql) where TEntity : class
         {
             return dbcontext.Database.SqlQuery<TEntity>(strSql).ToList<TEntity>();
         }
+
         public List<TEntity> FindList<TEntity>(string strSql, DbParameter[] dbParameter) where TEntity : class
         {
             return dbcontext.Database.SqlQuery<TEntity>(strSql, dbParameter).ToList<TEntity>();
         }
+
         public List<TEntity> FindList<TEntity>(Pagination pagination) where TEntity : class,new()
         {
             bool isAsc = pagination.sord.ToLower() == "asc" ? true : false;
@@ -159,6 +174,7 @@ namespace NFine.Data
             tempData = tempData.Skip<TEntity>(pagination.rows * (pagination.page - 1)).Take<TEntity>(pagination.rows).AsQueryable();
             return tempData.ToList();
         }
+
         public List<TEntity> FindList<TEntity>(Expression<Func<TEntity, bool>> predicate, Pagination pagination) where TEntity : class,new()
         {
             bool isAsc = pagination.sord.ToLower() == "asc" ? true : false;

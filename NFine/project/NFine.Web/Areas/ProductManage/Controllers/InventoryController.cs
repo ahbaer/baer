@@ -1,8 +1,11 @@
 ﻿using NFine.Application.Application;
 using NFine.Code;
+using NFine.Data;
+using NFine.Data.Extensions;
 using NFine.Domain.Entity.Application;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -15,9 +18,9 @@ namespace NFine.Web.Areas.ProductManage.Controllers
 
         [HttpGet]
         [HandlerAjaxOnly]
-        public ActionResult GetGridJson(string ware_Id, string keyword)
+        public ActionResult GetGridJson(string wareId, string keyword="")
         {
-            var data = inventoryApp.GetList(ware_Id, keyword);
+            var data = inventoryApp.GetList(wareId, keyword);
             return Content(data.ToJson());
         }
 
@@ -34,8 +37,32 @@ namespace NFine.Web.Areas.ProductManage.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SubmitForm(InventoryEntity inventoryEntity, string keyValue)
         {
-            inventoryApp.SubmitForm(inventoryEntity, keyValue);
-            return Success("操作成功。");
+            if (string.IsNullOrEmpty(keyValue))
+            {
+                Fuctions.ChangeStep(
+                    inventoryEntity.ProductName + "入库" + inventoryEntity.Weight + "吨",
+                    "入库");
+
+                inventoryEntity.InitWeight = inventoryEntity.Weight;
+            }
+            else
+            {
+                double nowWeight = Convert.ToDouble(DbHelper.ExecuteToString("select Weight from Inventory where F_Id='" + keyValue + "'"));
+                if(nowWeight != inventoryEntity.Weight)
+                {
+                    Fuctions.ChangeStep(
+                        inventoryEntity.ProductName + "出库" + (nowWeight - inventoryEntity.Weight) + "吨", 
+                        "出库");
+
+                    FRow fRow = new FRow("InventoryOut");
+                    fRow["InventoryId"] = keyValue;
+                    fRow["Weight"] = nowWeight - inventoryEntity.Weight;
+                    fRow.Insert();
+                }
+            }
+
+            string f_Id = inventoryApp.SubmitForm(inventoryEntity, keyValue);
+            return Success("操作成功。", f_Id);
         }
 
         [HttpPost]
@@ -44,6 +71,10 @@ namespace NFine.Web.Areas.ProductManage.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteForm(string keyValue)
         {
+            Fuctions.ChangeStep(
+                DbHelper.ExecuteToString("select ProductName from Inventory where F_Id='" + keyValue + "'") + "商品下架",
+                "商品下架");
+
             inventoryApp.DeleteForm(keyValue);
             return Success("删除成功。");
         }

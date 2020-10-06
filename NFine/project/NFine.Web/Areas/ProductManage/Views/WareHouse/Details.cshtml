@@ -3,6 +3,13 @@
     Layout = "~/Views/Shared/_Form.cshtml";
 }
 
+<style>
+    input[type=text]{
+        border-top:none;
+        border-left:none;
+        border-right:none;
+    }
+</style>
 <script>
     var keyValue = $.request("keyValue");
     var _creatorUserId = "", _astModifyUserId = "";
@@ -18,7 +25,7 @@
             success: function (data) {
                 $("#form1").formSerialize(data);
                 //获取坐标
-                $("#iptCoordinate").val("(" + data.Ware_Longitude + "," + data.Ware_Latitude + ")");
+                $("#iptCoordinate").val("(" + data.Longitude + "," + data.Latitude + ")");
                 $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
                 $("#form1").find('div.ckbox label').attr('for', '');
 
@@ -69,26 +76,39 @@
         <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
             <ul class="steps">
                 <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
-                <li data-target="#step-2"><span class="step">2</span>扩展信息<span class="chevron"></span></li>
             </ul>
         </div>
         <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
             <div class="step-pane active" id="step-1" style="padding-left: 5px; padding-top: 20px; margin-right: 20px;">
                 <table class="form">
                     <tr>
-                        <th class="formTitle">仓库名称</th>
+                        <th class="formTitle">仓库</th>
                         <td class="formValue">
-                            <input id="Ware_Name" name="Ware_Name" type="text" class="form-control" />
+                            <input id="WareName" name="WareName" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">地址</th>
+                        <td class="formValue">
+                            <input id="Address" name="Address" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">主管</th>
+                        <td class="formValue">
+                            <input id="Director" name="Director" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">电话</th>
+                        <td class="formValue">
+                            <input id="Mobile" name="Mobile" type="text" class="form-control" />
                         </td>
                     </tr>
                     <tr>
                         <th class="formTitle">坐标</th>
                         <td class="formValue">
                             <input id="iptCoordinate" name="iptCoordinate" type="text" class="form-control" />
-                            <div style="display:none">
-                                <input id="Ware_Longitude" name="Ware_Longitude" type="text" class="form-control" style="border:0;width:50px" />
-                                <input id="Ware_Latitude" name="Ware_Latitude" type="text" class="form-control" style="border:0;width:50px" />
-                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -123,11 +143,8 @@
                     </tr>
                 </table>
             </div>
-            <div class="step-pane" id="step-2">
-                <div id="permissionTree"></div>
-            </div>
         </div>
-        <div class="form-button" id="wizard-actions">
+        <div class="form-button" id="wizard-actions" style="display:none">
             <a id="btn_last" disabled class="btn btn-default btn-prev">上一步</a>
             <a id="btn_next" class="btn btn-default btn-next">下一步</a>
         </div>

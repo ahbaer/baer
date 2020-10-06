@@ -22,7 +22,7 @@ namespace NFine.Application.Application
             var expression = ExtLinq.True<WareHouseEntity>();
             if (!string.IsNullOrEmpty(keyword))
             {
-                expression = expression.And(t => t.Ware_Name.Contains(keyword));
+                expression = expression.And(t => t.WareName.Contains(keyword));
             }
             return service.IQueryable(expression).OrderByDescending(t => t.F_CreatorTime).ToList();
         }

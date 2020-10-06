@@ -2,8 +2,9 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Index.cshtml";
 }
+
 <script>
-    var wareHouseId = $.request("wareHouseId");
+    var wareId = $.request("wareId");
 
     $(function () {
         gridList();
@@ -13,13 +14,39 @@
         var $gridList = $("#gridList");
         $gridList.dataGrid({
             url: "/ProductManage/Inventory/GetGridJson",
-            postData: { ware_Id: wareHouseId},
+            postData: { wareId: wareId },
             height: $(window).height() - 96,
             colModel: [
                 { label: "主键", name: "F_Id", hidden: true, key: true },
-                { label: '商品名称', name: 'Pro_Name', width: 150, align: 'left' },
-                { label: '库存量', name: 'Inventory_Count', width: 150, align: 'center' },
-                { label: '备注', name: 'Inventory_Description', width: 150, align: 'left' }
+                { label: '商品名称', name: 'ProductName', width: 150, align: 'left' },
+                { label: '商品代码', name: 'ProductCode', width: 150, align: 'center' },
+                {
+                    label: '商品类型', name: 'ProductType', width: 100, align: 'center',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0201"][cellvalue] == null ? "" : top.clients.dataItems["0201"][cellvalue];
+                    }
+                },
+                {
+                    label: '产地', name: 'OriginCode', width: 80, align: 'center',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0202"][cellvalue] == null ? "" : top.clients.dataItems["0202"][cellvalue];
+                    }
+                },
+                { label: '单价', name: 'Price', width: 80, align: 'right' },
+                { label: '入库重量', name: 'InitWeight', width: 80, align: 'right' },
+                { label: '库存重量', name: 'Weight', width: 80, align: 'right' },
+                {
+                    label: '出库', name: '', width: 80, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<button id="NF-inventoryIndex" type="button" style="border:none;background:none;" onclick="btn_out(\'' + row.F_Id + '\')"><i class="fa fa-pencil-square-o"></i></button>';
+                    }
+                },
+                {
+                    label: '出库纪录', name: '', width: 80, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<button id="NF-inventoryIndex" type="button" style="border:none;background:none;" onclick="btn_outIndex(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></button>';
+                    }
+                }
             ]
         });
 
@@ -34,8 +61,8 @@
         $.modalOpen({
             id: "Form",
             title: "商品入库",
-            url: "/ProductManage/Inventory/Form?wareHouseId=" + wareHouseId,
-            width: "550px",
+            url: "/ProductManage/Inventory/Form?wareId=" + wareId,
+            width: "750px",
             height: "570px",
             btn: null
         });
@@ -43,34 +70,72 @@
 
     function btn_edit() {
         var keyValue = $("#gridList").jqGridRowValue().F_Id;
+        if (keyValue == "" || keyValue == undefined) {
+            this.alert("请选中商品更新！");
+            return;
+        }
+
         $.modalOpen({
             id: "Form",
             title: "库存更新",
             url: "/ProductManage/Inventory/Form?keyValue=" + keyValue,
-            width: "550px",
+            width: "750px",
             height: "570px",
             btn: null
         });
     }
 
     function btn_delete() {
+        var keyValue = $("#gridList").jqGridRowValue().F_Id;
+        if (keyValue == "" || keyValue == undefined) {
+            this.alert("请选中商品下架！");
+            return;
+        }
+
         $.deleteForm({
             url: "/ProductManage/Inventory/DeleteForm",
-            param: { keyValue: $("#gridList").jqGridRowValue().F_Id },
+            param: { keyValue: keyValue },
             success: function () {
-                $.currentWindow().$("#gridList").trigger("reloadGrid");
+                top.frames["InventoryIndex"].$("#gridList").trigger("reloadGrid");
             }
         })
     }
 
     function btn_details() {
         var keyValue = $("#gridList").jqGridRowValue().F_Id;
+        if (keyValue == "" || keyValue == undefined) {
+            this.alert("请选中商品查看！");
+            return;
+        }
+
         $.modalOpen({
             id: "Details",
             title: "库存详情",
             url: "/ProductManage/Inventory/Details?keyValue=" + keyValue,
-            width: "550px",
+            width: "750px",
             height: "620px",
+            btn: null,
+        });
+    }
+
+    function btn_out(f_Id) {
+        $.modalOpen({
+            id: "OutForm",
+            title: "出库",
+            url: "/ProductManage/OutInventory/Form?inventoryId=" + f_Id,
+            width: "500px",
+            height: "560px",
+            btn: null,
+        });
+    }
+
+    function btn_outIndex(f_Id) {
+        $.modalOpen({
+            id: "OutIndex",
+            title: "出库纪录",
+            url: "/ProductManage/OutInventory/Index?inventoryId=" + f_Id,
+            width: "600px",
+            height: "560px",
             btn: null,
         });
     }
@@ -88,6 +153,7 @@
             <ul class="nav nav-pills">
                 <li class="first">已选中<span>1</span>项</li>
                 <li><a id="NF-edit" authorize="yes" onclick="btn_edit()"><i class="fa fa-pencil-square-o"></i>库存更新</a></li>
+                <li><a id="NF-delete" authorize="yes" onclick="btn_delete()"><i class="fa fa-trash-o"></i>商品下架</a></li>
                 <li><a id="NF-Details" authorize="yes" onclick="btn_details()"><i class="fa fa-search-plus"></i>库存详情</a></li>
             </ul>
             <a href="javascript:;" class="close"></a>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NFine.Domain.Entity.Application
 {
-    public class WareHouseEntity : IEntity<ProductEntity>, ICreationAudited, IDeleteAudited, IModificationAudited
+    public class WareHouseEntity : IEntity<WareHouseEntity>, ICreationAudited, IDeleteAudited, IModificationAudited
     {
         public string F_Id { get; set; }
         public DateTime? F_CreatorTime { get; set; }
@@ -18,9 +18,12 @@ namespace NFine.Domain.Entity.Application
         public string F_LastModifyUserId { get; set; }
 
         //我的属性
-        public string Ware_Name { get; set; }
-        public double Ware_Longitude { get; set; }//经度
-        public double Ware_Latitude { get; set; }//纬度
-        public string Ware_Description { get; set; }
+        public string WareName { get; set; }
+        public string Address { get; set; }//地址
+        public string Director { get; set; }//仓库主管
+        public string Mobile { get; set; }//联系电话
+        public double Longitude { get; set; }//经度
+        public double Latitude { get; set; }//纬度
+        public string Description { get; set; }//备注
     }
 }

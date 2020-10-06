@@ -15,16 +15,16 @@
         <input type="button" value="确定" onclick="Sure();" />
         <div id="container"
              style="
-                margin-top:10px;
-                margin-left:30px;
-                width: 730px;
-                height: 590px;
-                border: 1px solid gray;
-                overflow:hidden;">
+             margin-top:10px;
+             margin-left:30px;
+             width 730px;
+             height 590px;
+             border 1px solid gray;
+             overflow:hidden;">
         </div>
-
     </div>
 </body>
+
 <script type="text/javascript">
     var map = new BMap.Map("container");
     var nowCity = new BMap.LocalCity();
@@ -37,12 +37,9 @@
 
     map.enableScrollWheelZoom();    //启用滚轮放大缩小，默认禁用
     map.enableContinuousZoom();    //启用地图惯性拖拽，默认禁用
-
     map.enableScrollWheelZoom(true);
     map.addControl(new BMap.NavigationControl());  //添加默认缩放平移控件
     map.addControl(new BMap.OverviewMapControl()); //添加默认缩略地图控件
-    //map.addControl(new BMap.OverviewMapControl({ isOpen: true, anchor: BMAP_ANCHOR_BOTTOM_RIGHT }));   //右下角，打开
-
 
     map.addEventListener("click",
 	    function (e) {
@@ -60,11 +57,8 @@
 	        var infoWindow = new BMap.InfoWindow("<p style='font-size:14px;'>" + content + "</p>");
 	        marker.addEventListener("click", function () { this.openInfoWindow(infoWindow); });
 	        marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
-
-	        //window.parent.returnValue = document.getElementById("result_").value;
 	    }
 	);
-
 
     var localSearch = new BMap.LocalSearch(map);
     localSearch.enableAutoViewport(); //允许自动调节窗体大小
@@ -86,24 +80,18 @@
                         marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
                     }
         );
-        //window.parent.returnValue = document.getElementById("result_").value;
         localSearch.search(keyword);
     }
 
-    function Sure()
-    {
-        // window.parent.returnValue = document.getElementById("result_").value;
-        // alert("您选择的坐标为：" + document.getElementById("result_").value);
-        // //window.close();
-        //
-        if(window.showModalDialog){
-              window.parent.returnValue =document.getElementById("result_").value;
-            }else{
-            window.opener.SelCoordinatesValue( document.getElementById("result_").value);
-            }
-             alert("您选择的坐标为：" + document.getElementById("result_").value);
-            window.close();
+    function Sure() {
+        if (window.showModalDialog) {
+            window.parent.returnValue = document.getElementById("result_").value;
+        } else {
+            window.opener.SelCoordinatesValue(document.getElementById("result_").value);
+        }
+        alert("您选择的坐标为：" + document.getElementById("result_").value);
+        window.close();
     }
-
 </script>
+
 </html>

@@ -5,31 +5,57 @@
  * Website：http://www.nfine.cn
 *********************************************************************************/
 using log4net;
+using System;
 
 namespace NFine.Code
 {
     public class Log
     {
         private ILog logger;
+
         public Log(ILog log)
         {
             this.logger = log;
         }
-        public void Debug(object message)
-        {
-            this.logger.Debug(message);
-        }
+
         public void Error(object message)
         {
-            this.logger.Error(message);
+            string msg = string.Concat(
+                "-----------------Error发生时间：" + DateTime.Now.ToString() + "-----------------",
+                "\r\n",
+                message,
+                "\r\n\r\n\r\n");
+            this.logger.Error(msg);
         }
-        public void Info(object message)
-        {
-            this.logger.Info(message);
-        }
+
         public void Warn(object message)
         {
-            this.logger.Warn(message);
+            string msg = string.Concat(
+                "-----------------Warn发生时间：" + DateTime.Now.ToString() + "-----------------",
+                "\r\n",
+                message,
+                "\r\n\r\n\r\n");
+            this.logger.Warn(msg);
+        }
+
+        public void Info(object message)
+        {
+            string msg = string.Concat(
+                "-----------------Info发生时间：" + DateTime.Now.ToString() + "-----------------",
+                "\r\n",
+                message,
+                "\r\n\r\n\r\n");
+            this.logger.Info(msg);
+        }
+
+        public void Debug(object message)
+        {
+            string msg = string.Concat(
+                "-----------------Debug发生时间：" + DateTime.Now.ToString() + "-----------------",
+                "\r\n",
+                message,
+                "\r\n\r\n\r\n");
+            this.logger.Debug(msg);
         }
     }
 }

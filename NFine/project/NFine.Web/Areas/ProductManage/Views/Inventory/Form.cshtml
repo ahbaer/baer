@@ -3,11 +3,18 @@
     Layout = "~/Views/Shared/_Form.cshtml";
 }
 
+<link rel="stylesheet" href="~/Content/css/upload.css" />
+<script src="~/Content/layui/layui.js" charset="utf-8"></script>
 <script>
     var keyValue = $.request("keyValue");
-    var _wareHouseId = $.request("wareHouseId");
+    var _wareId = $.request("wareId");
+    var count = 0;
+    var guid = guid();
+    var filePath = "";
 
     $(function () {
+        initControl();
+
         if (!!keyValue) {
             $.ajax({
                 url: "/ProductManage/Inventory/GetFormJson",
@@ -16,23 +23,49 @@
                 async: false,
                 success: function (data) {
                     $("#form1").formSerialize(data);
-                    _wareHouseId = data.Ware_Id;
+                    _wareId = data.WareId;
+                    guid = data.F_Id;
                 }
             });
         }
 
-        initControl();
+        //仓库
+        $("#WareId").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "WareHouse", itemCode: "F_Id", itemName: "WareName", condition: " and F_Id='" + _wareId + "'" },
+        });
+
+        //获取图片
+        getFile();
+        //展示图片
+        showFile();
     })
 
     function initControl() {
-        $("#Ware_Id").bindSelect({
-            url: "/SystemManage/SelData/GetSelectJson",
-            param: { table: "WareHouse", itemCode: "F_Id", itemName: "Ware_Name", condition: " and F_Id='" + _wareHouseId + "'" },
+        //产地
+        $("#OriginCode").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0202" },
         });
-
-        $("#Pro_Id").bindSelect({
-            url: "/SystemManage/SelData/GetSelectJson",
-            param: { table: "Product", itemCode: "F_Id", itemName: "Pro_Name" },
+        //港口
+        $("#Harbor").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0203" },
+        });
+        //品类
+        $("#ProductType").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0201" },
+        });
+        //年度
+        $("#Year").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0204" },
+        });
+        //清关
+        $("#IsCustomsClearance").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0205" },
         });
 
         $('#wizard').wizard().on('change', function (e, data) {
@@ -40,7 +73,7 @@
             var $next = $("#btn_next");
             if (data.direction == "next") {
                 switch (data.step) {
-                    case 1:
+                    case 2:
                         if (!$('#form1').formValid()) {
                             return false;
                         }
@@ -58,25 +91,128 @@
     }
 
     function submitForm() {
-        $("#Pro_Name").val($("#Pro_Id").find("option:selected").text());
-
+        $("WareName").val($("WareId").find("option:selected").text().trim());//仓库名称
+        
         var postData = $("#form1").formSerialize();
         $.submitForm({
             url: "/ProductManage/Inventory/SubmitForm?keyValue=" + keyValue,
             param: postData,
-            success: function () {
-                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            success: function (data) {
+                //保存成功后,更新附件关联关系
+                $.ajax({
+                    url: "/SystemManage/File/UpdateRelatedId",
+                    data: { guid: data.data, related_Id: guid },
+                    type: "post",
+                    dataType: "json",
+                    async: false,
+                    success: function (data) {
+                        //成功
+                    }
+                });
+
+                top.frames["InventoryIndex"].$("#gridList").trigger("reloadGrid");
             }
         });
     }
 
+    //预览图获取
+    function getFile() {
+        $.ajax({
+            url: "/SystemManage/File/GetListJson",
+            data: { related_Id: guid },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                count = 0;
+                for (var i = 0; i < data.length; i++) {
+                    $("#pic_" + i).attr("src", "/" + data[i].FilePath);
+                    $("#picRel_" + i).attr("src", "/" + data[i].FilePath);
+                    if (i == 0) {
+                        filePath = data[i].FilePath;
+                    }
+                    count++;
+                }
+                for (var i = data.length; i < 4; i++) {
+                    $("#pic_" + i).attr("src", "/Content/img/background.jpg");
+                    $("#picRel_" + i).attr("src", "/Content/img/background.jpg");
+                }
+            }
+        });
+    }
+
+    //预览图展示
+    function showFile() {
+        $("#gallery_output img").not(":first").hide();
+        $("#gallery a").click(function () {
+            $("#gallery a").removeClass('on');
+            $(this).addClass("on");
+            if ($("#" + this.rel).is(":hidden")) {
+                $("#gallery_output img").slideUp();
+                $("#" + this.rel).slideDown();
+                filePath = $("#" + this.rel).attr("src");
+            }
+        });
+    }
+
+    function deleteFile(){
+        //删除附件
+        $.ajax({
+            url: "/SystemManage/File/DeleteFile",
+            data: { related_Id: guid, path: filePath },
+            type: "post",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                getFile();
+            }
+        });
+    }
+
+    layui.use('upload', function () {
+        var $ = layui.jquery, upload = layui.upload;
+
+        //多图片上传
+        upload.render({
+            elem: '#btnUpload',
+            url: '/SystemManage/File/UploadFile',//接口
+            multiple: true,
+            size: 1024,//单位kb
+            data: { related_Id: guid },
+            param: '',
+            before: function (obj) {
+                if (count > 3) {
+                    alert("最多上传四张图片！");
+                    return;
+                }
+
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#pic_' + count).attr('src', result);//图片链接（base64）
+                    $('#picRel_' + count).attr('src', result);
+                    $('#pic_' + count).click();
+                    count++;
+                });
+            },
+            done: function (res) {
+                getFile();
+            }
+        });
+    });
+
+    function guid() {
+        function S4() {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+        }
+        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+    }
 </script>
 <form id="form1">
     <div class="widget-body">
         <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
             <ul class="steps">
                 <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
-                <li data-target="#step-2"><span class="step">2</span>扩展信息<span class="chevron"></span></li>
+                <li data-target="#step-2"><span class="step">2</span>详细信息<span class="chevron"></span></li>
+                <li data-target="#step-3"><span class="step">3</span>展示图片<span class="chevron"></span></li>
             </ul>
         </div>
         <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
@@ -89,36 +225,150 @@
                         <table class="form">
                             <tr>
                                 <th class="formTitle">仓库</th>
-                                <td class="formValue">
-                                    <select id="Ware_Id" name="Ware_Id" class="form-control required" disabled="disabled"></select>
+                                <td class="formValue" colspan="3">
+                                    <select id="WareId" name="WareId" class="form-control required" disabled="disabled"></select>
+                                    <div style="display:none">
+                                        @*仓库名称*@
+                                        <input id="WareName" name="WareName" type="text" class="form-control" />
+                                    </div>
                                 </td>
                             </tr>
                             <tr>
-                                <th class="formTitle">商品</th>
+                                <th class="formTitle">名称</th>
                                 <td class="formValue">
-                                    <select id="Pro_Id" name="Pro_Id" class="form-control required"></select>
+                                    <input id="ProductName" name="ProductName" type="text" class="form-control required" placeholder="请输入商品名称" />
+                                </td>
+                                <th class="formTitle">代码</th>
+                                <td class="formValue">
+                                    <input id="ProductCode" name="ProductCode" type="text" class="form-control required" placeholder="请输入商品代码" />
                                 </td>
                             </tr>
                             <tr>
-                                <th class="formTitle">库存</th>
+                                <th class="formTitle">产地</th>
                                 <td class="formValue">
-                                    <input id="Inventory_Count" name="Inventory_Count" type="text" class="form-control required" placeholder="请输入库存" />
+                                    <select id="OriginCode" name="OriginCode" class="form-control required">
+                                        <option value="">==请选择==</option>
+                                    </select>
+                                    <div style="display:none">
+                                        @*产地代码*@
+                                        <input id="Origin" name="Origin" type="text" class="form-control" />
+                                    </div>
+                                </td>
+                                <th class="formTitle">港口</th>
+                                <td class="formValue">
+                                    <select id="Harbor" name="Harbor" class="form-control required">
+                                        <option value="">==请选择==</option>
+                                    </select>
                                 </td>
                             </tr>
                             <tr>
-                                <th class="formTitle" valign="top" style="padding-top: 5px;">备注</th>
+                                <th class="formTitle">品类</th>
                                 <td class="formValue">
-                                    <textarea id="Inventory_Description" name="Inventory_Description" class="form-control" style="height: 60px;"></textarea>
+                                    <select id="ProductType" name="ProductType" class="form-control required">
+                                        <option value="">==请选择==</option>
+                                    </select>
+                                </td>
+                                <th class="formTitle">年度</th>
+                                <td class="formValue">
+                                    <select id="Year" name="Year" class="form-control required">
+                                        <option value="">==请选择==</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">清关状态</th>
+                                <td class="formValue">
+                                    <select id="IsCustomsClearance" name="IsCustomsClearance" class="form-control required">
+                                    </select>
+                                </td>
+                                <th class="formTitle">单价</th>
+                                <td class="formValue">
+                                    <input id="Price" name="Price" type="text" class="form-control required" placeholder="单位：元/每吨 or 美元/每吨" />
                                 </td>
                             </tr>
                         </table>
                     </div>
-                    <div style="display:none">
-                        <input id="Pro_Name" name="Pro_Name" type="text" />
+                </div>
+            </div>
+            <div class="step-pane" id="step-2" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">表单信息</h3>
+                    </div>
+                    <div class="panel-body" style="width: 98%;">
+                        <table class="form">
+                            <tr>
+                                <th class="formTitle">马值</th>
+                                <td class="formValue">
+                                    <input id="HorseValue" name="HorseValue" type="text" class="form-control required" placeholder="请输入马值" />
+                                </td>
+                                <th class="formTitle">强力</th>
+                                <td class="formValue">
+                                    <input id="Strength" name="Strength" type="text" class="form-control required" placeholder="请输入强力" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">长度</th>
+                                <td class="formValue">
+                                    <input id="Length" name="Length" type="text" class="form-control required" placeholder="请输入长度" />
+                                </td>
+                                <th class="formTitle">重量</th>
+                                <td class="formValue">
+                                    <input id="Weight" name="Weight" type="text" class="form-control required" placeholder="单位：吨" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle" valign="top" style="padding-top: 5px;">备注</th>
+                                <td class="formValue" colspan="3">
+                                    <textarea id="Description" name="Pro_Description" class="form-control" style="height: 60px;"></textarea>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
-            <div class="step-pane" id="step-2">
+            <div class="step-pane" id="step-3">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <td class="formValue">
+                                <div class="layui-upload">
+                                    <button type="button" class="btn btn-default" id="btnUpload" style="margin-left:80px;">图片上传
+                                    </button>
+                                    <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                                        <div id="gallery" style="height:280px;margin-left:55px;">
+                                            <div id="gallery_nav">
+                                                <a class="on" rel="picRel_0" href="javascript:;">
+                                                    <img id="pic_0" />
+                                                </a>
+                                                <a rel="picRel_1" href="javascript:;">
+                                                    <img id="pic_1" />
+                                                </a>
+                                                <a rel="picRel_2" href="javascript:;">
+                                                    <img id="pic_2" />
+                                                </a>
+                                                <a rel="picRel_3" href="javascript:;">
+                                                    <img id="pic_3" />
+                                                </a>
+                                            </div>
+                                            <div id="gallery_output" style="float:left;margin-left:10px;">
+                                                <img id="picRel_0" />
+                                                <img id="picRel_1" />
+                                                <img id="picRel_2" />
+                                                <img id="picRel_3" />
+                                            </div>
+                                            <div style="width:20px;float:left">
+                                                <a href="#" style="position:relative;top:230px;border:0px;" onclick="deleteFile();">
+                                                    <img src="~/Content/img/delete.gif" style="height:25px;" title="删除" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </blockquote>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="form-button" id="wizard-actions">

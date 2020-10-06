@@ -15,11 +15,11 @@
             height: $(window).height() - 96,
             colModel: [
                 { label: "主键", name: "F_Id", hidden: true, key: true },
-                { label: '仓库', name: 'WareName', width: 150, align: 'left' },
-                { label: '主管', name: 'Director', width: 150, align: 'left' },
-                { label: '主管电话', name: 'Mobile', width: 150, align: 'left' },
+                { label: '仓库', name: 'WareName', width: 150, align: 'center' },
+                { label: '主管', name: 'Director', width: 150, align: 'center' },
+                { label: '主管电话', name: 'Mobile', width: 150, align: 'center' },
                 {
-                    label: '坐标', name: '', width: 150, align: 'left',
+                    label: '坐标', name: '', width: 150, align: 'center',
                     formatter: function (val, obj, row, act) {
                         return '(' + row.Longitude + ',' + row.Latitude + ')';
                     }
@@ -66,9 +66,15 @@
     }
 
     function btn_delete() {
+        var keyValue = $("#gridList").jqGridRowValue().F_Id;
+        if (keyValue == "" || keyValue == undefined) {
+            this.alert("请选中仓库删除！");
+            return;
+        }
+
         $.deleteForm({
             url: "/ProductManage/WareHouse/DeleteForm",
-            param: { keyValue: $("#gridList").jqGridRowValue().F_Id },
+            param: { keyValue:  keyValue},
             success: function () {
                 $.currentWindow().$("#gridList").trigger("reloadGrid");
             }
@@ -77,6 +83,11 @@
 
     function btn_details() {
         var keyValue = $("#gridList").jqGridRowValue().F_Id;
+        if (keyValue == "" || keyValue == undefined) {
+            this.alert("请选中仓库查看！");
+            return;
+        }
+
         $.modalOpen({
             id: "Details",
             title: "查看仓库",

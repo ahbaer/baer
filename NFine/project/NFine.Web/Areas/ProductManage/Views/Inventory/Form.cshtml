@@ -73,6 +73,11 @@
             var $next = $("#btn_next");
             if (data.direction == "next") {
                 switch (data.step) {
+                    case 1:
+                        if (!$('#form1').formValid()) {
+                            return false;
+                        }
+                        break;
                     case 2:
                         if (!$('#form1').formValid()) {
                             return false;
@@ -91,8 +96,6 @@
     }
 
     function submitForm() {
-        $("WareName").val($("WareId").find("option:selected").text().trim());//仓库名称
-        
         var postData = $("#form1").formSerialize();
         $.submitForm({
             url: "/ProductManage/Inventory/SubmitForm?keyValue=" + keyValue,
@@ -314,7 +317,7 @@
                                 </td>
                                 <th class="formTitle">重量</th>
                                 <td class="formValue">
-                                    <input id="Weight" name="Weight" type="text" class="form-control required" placeholder="单位：吨" />
+                                    <input id="InitWeight" name="InitWeight" type="text" class="form-control required" placeholder="单位：吨" />
                                 </td>
                             </tr>
                             <tr>

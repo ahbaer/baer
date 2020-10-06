@@ -27,9 +27,6 @@ namespace NFine.Application.Application
 
         public void SubmitForm(InventoryOutEntity inventoryOutEntity, string f_Id)
         {
-            inventoryOutEntity.Create();
-            service.Insert(inventoryOutEntity);
-
             if (!string.IsNullOrEmpty(f_Id))
             {
                 inventoryOutEntity.Modify(f_Id);

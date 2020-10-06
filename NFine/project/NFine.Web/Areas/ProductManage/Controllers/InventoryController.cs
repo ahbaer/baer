@@ -37,27 +37,31 @@ namespace NFine.Web.Areas.ProductManage.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SubmitForm(InventoryEntity inventoryEntity, string keyValue)
         {
+            if(string.IsNullOrEmpty(inventoryEntity.WareName) && !string.IsNullOrEmpty(inventoryEntity.WareId))
+            {
+                inventoryEntity.WareName = DbHelper.ExecuteToString("select WareName from WareHouse where F_Id='" + inventoryEntity.WareId + "'");
+            }
+
             if (string.IsNullOrEmpty(keyValue))
             {
                 Fuctions.ChangeStep(
                     inventoryEntity.ProductName + "入库" + inventoryEntity.Weight + "吨",
                     "入库");
 
-                inventoryEntity.InitWeight = inventoryEntity.Weight;
+                inventoryEntity.Weight = inventoryEntity.InitWeight;
             }
             else
             {
-                double nowWeight = Convert.ToDouble(DbHelper.ExecuteToString("select Weight from Inventory where F_Id='" + keyValue + "'"));
-                if(nowWeight != inventoryEntity.Weight)
+                double lastInitWeight = Convert.ToDouble(DbHelper.ExecuteToString("select InitWeight from Inventory where F_Id='" + keyValue + "'"));
+                if(lastInitWeight != inventoryEntity.InitWeight)//库存变动
                 {
-                    Fuctions.ChangeStep(
-                        inventoryEntity.ProductName + "出库" + (nowWeight - inventoryEntity.Weight) + "吨", 
-                        "出库");
+                    double outWeight = Convert.ToDouble(DbHelper.ExecuteToString("select isnull(sum(Weight),0) Weight from InventoryOut where InventoryId='" + keyValue + "'"));
+                    inventoryEntity.Weight = inventoryEntity.InitWeight - outWeight;
 
-                    FRow fRow = new FRow("InventoryOut");
-                    fRow["InventoryId"] = keyValue;
-                    fRow["Weight"] = nowWeight - inventoryEntity.Weight;
-                    fRow.Insert();
+                    if (outWeight > inventoryEntity.InitWeight)
+                    {
+                        return Error("已出库库存大于当前修改库存，请确认！");
+                    }
                 }
             }
 

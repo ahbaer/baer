@@ -140,7 +140,9 @@
     <Compile Include="Areas\SystemManage\Controllers\AreaController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\DutyController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\FileController.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\ConfigController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\ItemsDataController.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\ConfigCategoryController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\ModuleButtonController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\ModuleController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\OrganizeController.cs" />
@@ -769,6 +771,12 @@
     <Content Include="Areas\SystemManage\Views\File\File.cshtml" />
     <Content Include="Areas\ProductManage\Views\OutInventory\Index.cshtml" />
     <Content Include="Areas\ProductManage\Views\OutInventory\Form.cshtml" />
+    <Content Include="Areas\SystemManage\Views\ConfigCategory\Details.cshtml" />
+    <Content Include="Areas\SystemManage\Views\ConfigCategory\Form.cshtml" />
+    <Content Include="Areas\SystemManage\Views\ConfigCategory\Index.cshtml" />
+    <Content Include="Areas\SystemManage\Views\Config\Details.cshtml" />
+    <Content Include="Areas\SystemManage\Views\Config\Form.cshtml" />
+    <Content Include="Areas\SystemManage\Views\Config\Index.cshtml" />
     <None Include="Properties\PublishProfiles\NFine.Framework.Release.pubxml" />
   </ItemGroup>
   <PropertyGroup>

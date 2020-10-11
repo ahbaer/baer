@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<style>
+    input[type=text] {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+    }
+</style>
+<script>
+    var keyValue = $.request("keyValue");
+    $(function () {
+        $("#F_ParentId").bindSelect({
+            url: "/SystemManage/ConfigCategory/GetTreeSelectJson"
+        });
+
+        if (!!keyValue) {
+            $.ajax({
+                url: "/SystemManage/Config/GetFormJson",
+                data: { keyValue: keyValue },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                    $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
+                    $("#form1").find('div.ckbox label').attr('for', '');
+                }
+            });
+        }
+    });
+</script>
+
+<form id="form1">
+    <div style="padding-top: 20px; margin-right: 20px;">
+        <table class="form">
+            <tr>
+                <th class="formTitle">上级</th>
+                <td class="formValue">
+                    <select id="F_ParentId" name="F_ParentId" class="form-control" disabled="disabled">
+                        <option value="0">父节点</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th class="formTitle">参数名</th>
+                <td class="formValue">
+                    <input id="ConfigName" name="ConfigName" type="text" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <th class="formTitle">参数值</th>
+                <td class="formValue">
+                    <input id="ConfigValue" name="ConfigValue" type="text" class="form-control" />
+                </td>
+            </tr>
+            <tr>
+                <th class="formTitle" valign="top" style="padding-top: 5px;">备注
+                </th>
+                <td class="formValue">
+                    <textarea id="F_Description" name="F_Description" class="form-control" style="height: 60px;"></textarea>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>

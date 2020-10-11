@@ -51,6 +51,8 @@
     <Compile Include="03 Entity\Application\ChartDataEntity.cs" />
     <Compile Include="03 Entity\SystemManage\AreaEntity.cs" />
     <Compile Include="03 Entity\SystemManage\FileEntity.cs" />
+    <Compile Include="03 Entity\SystemManage\ConfigEntity.cs" />
+    <Compile Include="03 Entity\SystemManage\ItemsEntity.cs" />
     <Compile Include="03 Entity\SystemManage\ModuleButtonEntity.cs" />
     <Compile Include="03 Entity\SystemManage\ModuleEntity.cs" />
     <Compile Include="03 Entity\SystemManage\RoleAuthorizeEntity.cs" />
@@ -65,6 +67,8 @@
     <Compile Include="04 IRepository\Application\IInventoryRepository.cs" />
     <Compile Include="04 IRepository\Application\IWareHouseRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IFileRepository.cs" />
+    <Compile Include="04 IRepository\SystemManage\IConfigRepository.cs" />
+    <Compile Include="04 IRepository\SystemManage\IConfigCategroyRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\ISelDataRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IAreaRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IItemsDetailRepository.cs" />
@@ -82,7 +86,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="03 Entity\SystemManage\ItemsEntity.cs" />
+    <Compile Include="03 Entity\SystemManage\ConfigCategoryEntity.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="03 Entity\SystemManage\OrganizeEntity.cs" />

@@ -1,13 +1,10 @@
 ﻿using NFine.Application.Application;
 using NFine.Code;
-using NFine.Data;
 using NFine.Data.Extensions;
 using NFine.Domain.Entity.Application;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace NFine.Web.Areas.ProductManage.Controllers
@@ -55,21 +52,13 @@ namespace NFine.Web.Areas.ProductManage.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult SubmitForm(InventoryOutEntity inventoryOutEntity, string f_Id = "")
         {
-            DataView dv = DbHelper.ExecuteToDataView("select ProductName,Weight from Inventory where F_Id='" + inventoryOutEntity.InventoryId + "'");
-            if(dv.Count == 0)
-            {
-                return Error("参数错误！");
-            }
-            if(Convert.ToDouble(dv[0]["Weight"]) < inventoryOutEntity.Weight)
+            double remainder = Convert.ToDouble(DbHelper.ExecuteToString("select isnull((select isnull(cast(Weight as decimal),0) from Inventory where F_Id = '" + inventoryOutEntity.InventoryId + "') - (select isnull(sum(cast(Weight as decimal)),0) from InventoryOut where InventoryId = '" + inventoryOutEntity.InventoryId + "'),0)"));
+            if(remainder < inventoryOutEntity.Weight)
             {
                 return Error("库存不足！");
             }
-            Fuctions.ChangeStep(
-                DbHelper.ExecuteToString("select ProductName from Inventory where F_Id='" + inventoryOutEntity.InventoryId + "'") + "出库" + inventoryOutEntity.Weight + "吨",
-                "出库");
 
             inventoryOutApp.SubmitForm(inventoryOutEntity, f_Id);
-            DbHelper.ExecuteNonQuery("update Inventory set Weight='" + (Convert.ToDouble(dv[0]["Weight"]) - inventoryOutEntity.Weight) + "' where F_Id='" + inventoryOutEntity.InventoryId + "'");
             return Success("出库成功！");
         }
     }

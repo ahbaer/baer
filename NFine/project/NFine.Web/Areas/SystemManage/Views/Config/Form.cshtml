@@ -41,35 +41,40 @@
 </script>
 
 <form id="form1">
-    <div style="padding-top: 20px; margin-right: 20px;">
-        <table class="form">
-            <tr>
-                <th class="formTitle">上级</th>
-                <td class="formValue">
-                    <select id="F_ParentId" name="F_ParentId" class="form-control required">
-                        <option value=""></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th class="formTitle">参数名</th>
-                <td class="formValue">
-                    <input id="ConfigName" name="ConfigName" type="text" class="form-control required" placeholder="请输入参数名" />
-                </td>
-            </tr>
-            <tr>
-                <th class="formTitle">参数值</th>
-                <td class="formValue">
-                    <input id="ConfigValue" name="ConfigValue" type="text" class="form-control required" placeholder="请输入参数值" />
-                </td>
-            </tr>
-            <tr>
-                <th class="formTitle" valign="top" style="padding-top: 5px;">备注
-                </th>
-                <td class="formValue">
-                    <textarea id="F_Description" name="F_Description" class="form-control" style="height: 60px;"></textarea>
-                </td>
-            </tr>
-        </table>
+    <div style="margin: 10px; margin-bottom: 0px;">
+        <div class="panel panel-default">
+            <div class="panel-body" style="width: 98%;">
+                <table class="form">
+                    <tr>
+                        <th class="formTitle">上级</th>
+                        <td class="formValue">
+                            <select id="F_ParentId" name="F_ParentId" class="form-control required">
+                                <option value=""></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">参数名</th>
+                        <td class="formValue">
+                            <input id="ConfigName" name="ConfigName" type="text" class="form-control required" placeholder="请输入参数名" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">参数值</th>
+                        <td class="formValue">
+                            <input id="ConfigValue" name="ConfigValue" type="text" class="form-control required" placeholder="请输入参数值" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle" valign="top" style="padding-top: 5px;">
+                            备注
+                        </th>
+                        <td class="formValue">
+                            <textarea id="F_Description" name="F_Description" class="form-control" style="height: 60px;"></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 </form>

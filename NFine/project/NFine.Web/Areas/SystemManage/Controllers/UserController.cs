@@ -1,14 +1,6 @@
-﻿/*******************************************************************************
- * Copyright © 2016 NFine.Framework 版权所有
- * Author: NFine
- * Description: NFine快速开发平台
- * Website：http://www.nfine.cn
-*********************************************************************************/
-using NFine.Application.SystemManage;
+﻿using NFine.Application.SystemManage;
 using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 
 
@@ -32,6 +24,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             };
             return Content(data.ToJson());
         }
+
         [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetFormJson(string keyValue)
@@ -39,6 +32,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             var data = userApp.GetForm(keyValue);
             return Content(data.ToJson());
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         [ValidateAntiForgeryToken]
@@ -47,20 +41,26 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             userApp.SubmitForm(userEntity, userLogOnEntity, keyValue);
             return Success("操作成功。");
         }
+
         [HttpPost]
         [HandlerAuthorize]
         [HandlerAjaxOnly]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteForm(string keyValue)
+        public ActionResult DeleteForm(string f_Ids)
         {
-            userApp.DeleteForm(keyValue);
+            foreach (string f_Id in f_Ids.Split(','))
+            {
+                userApp.DeleteForm(f_Id);
+            }
             return Success("删除成功。");
         }
+
         [HttpGet]
         public ActionResult RevisePassword()
         {
             return View();
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         [HandlerAuthorize]
@@ -70,6 +70,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             userLogOnApp.RevisePassword(userPassword, keyValue);
             return Success("重置密码成功。");
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         [HandlerAuthorize]
@@ -82,6 +83,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             userApp.UpdateForm(userEntity);
             return Success("账户禁用成功。");
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         [HandlerAuthorize]

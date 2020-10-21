@@ -12,6 +12,6 @@ namespace NFine.Domain.IRepository.SystemManage
 {
     public interface ISelDataRepository : IRepositoryBase<SelDataEntity>
     {
-        List<SelDataEntity> GetItemList(string table, string itemCode, string itemName, string condition);
+        List<SelDataEntity> GetItemList(string table, string itemCode, string itemName, string condition, string sort, bool asc);
     }
 }

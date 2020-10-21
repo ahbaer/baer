@@ -20,9 +20,9 @@ namespace NFine.Web.Areas.SystemManage.Controllers
 
         [HttpGet]
         [HandlerAjaxOnly]
-        public ActionResult GetSelectJson(string table, string itemCode, string itemName, string condition = "")
+        public ActionResult GetSelectJson(string table, string itemCode, string itemName, string condition = "", string sort = "", bool asc = true)
         {
-            var data = selDataApp.GetItemList(table, itemCode, itemName, condition);
+            var data = selDataApp.GetItemList(table, itemCode, itemName, condition, sort, asc);
             List<object> list = new List<object>();
             foreach (SelDataEntity item in data)
             {

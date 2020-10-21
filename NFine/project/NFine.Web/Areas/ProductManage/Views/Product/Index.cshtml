@@ -1,0 +1,131 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<script>
+    $(function () {
+        gridList();
+
+        var $cb = $("#cb_gridList");
+        if ($cb != null) {
+            $cb.parent().removeClass("ckbox");
+        }
+    })
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/ProductManage/Product/GetGridJson",
+            height: $(window).height() - 96,
+            colModel: [
+                { label: "主键", name: "F_Id", hidden: true, key: true },
+                { label: '分类名称', name: 'ProductName', width: 120, align: 'left' },
+                { label: '分类代码', name: 'ProductCode', width: 100, align: 'center' },
+                { label: '排序', name: 'Sort', width: 80, align: 'center' },
+                {
+                    label: '分类图片', name: 'ImgPath', width: 100, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<img id="img_"' + row.F_Id + ' style="width:30px; height:30px;" src=\'/' + row.ImgPath + '\'/>';
+                    }
+                },
+                {
+                    label: '修改', name: '', width: 60, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.F_Id + '\')"><i class="fa fa-pencil"></i></a>';
+                    }
+                },
+                {
+                    label: '查看', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                    }
+                }
+            ],
+            multiselect: true
+        });
+
+        $("#btnSearch").click(function () {
+            $gridList.jqGrid('setGridParam', {
+                postData: { keyword: $("#txt_keyword").val() },
+            }).trigger('reloadGrid');
+        });
+    }
+
+    function btnOperate(f_Id) {
+        var title = !!f_Id ? "修改产品" : "新增产品";
+        $.modalOpen({
+            id: "Form",
+            title: title,
+            url: "/ProductManage/Product/Form?keyValue=" + f_Id,
+            width: "450px",
+            height: "370px",
+            btn: null
+        });
+    }
+
+    function btnDetails(f_Id) {
+        $.modalOpen({
+            id: "Details",
+            title: "查看产品",
+            url: "/ProductManage/Product/Details?keyValue=" + f_Id,
+            width: "450px",
+            height: "360px",
+            btn: null,
+        });
+    }
+
+    function btnDelete() {
+        var f_Ids = $("#gridList").jqGrid('getGridParam', 'selarrrow');
+        if (f_Ids.length == 0) {
+            this.alert("请选中项删除！");
+            return;
+        }
+
+        $.deleteForm({
+            url: "/ProductManage/Product/DeleteForm",
+            param: { f_Ids: f_Ids.toString() },
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+</script>
+
+<div class="topPanel">
+    <div class="toolbar">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnDelete" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnDelete();">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnAdd" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnOperate('');">
+                <i class="fa fa-plus"></i>新建
+            </a>
+        </div>
+        <script>$('.toolbar').authorizeButton()</script>
+    </div>
+    <div class="search">
+        <table>
+            <tr>
+                <td>
+                    <div class="input-group">
+                        <input id="txt_keyword" type="text" class="form-control" placeholder="产品名称" style="width: 200px;">
+                        <span class="input-group-btn">
+                            <button id="btnSearch" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+</div>

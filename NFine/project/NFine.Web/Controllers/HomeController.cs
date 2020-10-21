@@ -24,7 +24,6 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-
             return View();
         }
 
@@ -113,7 +112,7 @@ namespace NFine.Web.Controllers
 
             string inGroupSql = @"
                 select 
-	                top 12 sum(InitWeight) Weight, cast(year(F_CreatorTime) as varchar(4))+'-'+right('00' +cast(month(F_CreatorTime) as varchar(2)),2) Date 
+	                top 12 sum(Weight) Weight, cast(year(F_CreatorTime) as varchar(4))+'-'+right('00' +cast(month(F_CreatorTime) as varchar(2)),2) Date 
                 from Inventory 
                 group by year(F_CreatorTime),month(F_CreatorTime) order by year(F_CreatorTime) desc,month(F_CreatorTime) desc";
             string outGroupSql = @"

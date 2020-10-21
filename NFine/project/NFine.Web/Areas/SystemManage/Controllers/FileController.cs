@@ -64,13 +64,5 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             DbHelper.ExecuteNonQuery(strSql);
             return View();
         }
-
-        [HttpPost]
-        public ActionResult UpdateRelatedId(string guid, string related_Id)
-        {
-            string strSql = "update Frame_File set Related_Id='" + guid + "' where Related_Id='" + related_Id + "'";
-            DbHelper.ExecuteNonQuery(strSql);
-            return View();
-        }
     }
 }

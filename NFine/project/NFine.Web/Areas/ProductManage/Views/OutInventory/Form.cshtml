@@ -26,6 +26,7 @@
                 dataType: "json",
                 async: false,
                 success: function (data) {
+                    data.Weight = null;
                     $("#form1").formSerialize(data);
                 }
             });
@@ -34,6 +35,11 @@
 
     function initControl() {
         $("#InventoryId").val(inventoryId);
+        //品类
+        $("#ProductType").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0201" },
+        });
 
         $('#wizard').wizard().on('change', function (e, data) {
             var $finish = $("#btn_finish");
@@ -63,7 +69,7 @@
             url: "/ProductManage/OutInventory/SubmitForm?f_Id=" + f_Id,
             param: postData,
             success: function () {
-                top.frames["InventoryIndex"].$("#gridList").trigger("reloadGrid");
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
             }
         });
     }
@@ -78,9 +84,6 @@
         <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
             <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">表单信息</h3>
-                    </div>
                     <div class="panel-body" style="width: 98%;">
                         <table class="form">
                             <tr>
@@ -90,9 +93,10 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th class="formTitle">商品</th>
+                                <th class="formTitle">产品类别</th>
                                 <td class="formValue">
-                                    <input id="ProductName" name="ProductName" type="text" class="form-control" disabled="disabled"/>
+                                    <select id="ProductType" name="ProductType" class="form-control required" disabled="disabled">
+                                    </select>
                                 </td>
                             </tr>
                             <tr>

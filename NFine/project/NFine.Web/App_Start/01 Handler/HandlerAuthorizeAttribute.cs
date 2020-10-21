@@ -16,11 +16,11 @@ namespace NFine.Web
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (OperatorProvider.Provider.GetCurrent().IsSystem)
+            if (Ignore == false)
             {
                 return;
             }
-            if (Ignore == false)
+            if (OperatorProvider.Provider.GetCurrent().IsSystem)
             {
                 return;
             }

@@ -17,7 +17,7 @@ namespace NFine.Application.SystemManage
     {
         private IConfigRepository service = new ConfigRepository();
 
-        public List<ConfigEntity> GetList(string parentId = "", string keyword = "")
+        public List<ConfigEntity> GetList(Pagination pagination, string parentId = "", string keyword = "")
         {
             var expression = ExtLinq.True<ConfigEntity>();
             if (!string.IsNullOrEmpty(parentId))
@@ -29,7 +29,7 @@ namespace NFine.Application.SystemManage
                 expression = expression.And(t => t.ConfigName.Contains(keyword));
                 expression = expression.Or(t => t.ConfigValue.Contains(keyword));
             }
-            return service.IQueryable(expression).OrderByDescending(t => t.F_CreatorTime).ToList();
+            return service.FindList(expression, pagination);
         }
 
         public ConfigEntity GetConfigByName(string configName)

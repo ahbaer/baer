@@ -17,14 +17,15 @@ namespace NFine.Application.Application
     {
         private IWareHouseRepository service = new WareHouseRepository();
 
-        public List<WareHouseEntity> GetList(string keyword = "")
+        public List<WareHouseEntity> GetList(Pagination pagination, string keyword = "")
         {
             var expression = ExtLinq.True<WareHouseEntity>();
             if (!string.IsNullOrEmpty(keyword))
             {
                 expression = expression.And(t => t.WareName.Contains(keyword));
+                expression = expression.Or(t => t.Address.Contains(keyword));
             }
-            return service.IQueryable(expression).OrderByDescending(t => t.F_CreatorTime).ToList();
+            return service.FindList(expression, pagination);
         }
 
         public WareHouseEntity GetForm(string keyValue)

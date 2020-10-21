@@ -1,0 +1,209 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/css/upload.css" />
+<script src="~/Content/layui/layui.js" charset="utf-8"></script>
+<script>
+    var keyValue = $.request("keyValue");
+    var guid = "", filePath = "";
+    $(function () {
+        initControl();
+
+        if (!!keyValue) {
+            $.ajax({
+                url: "/ProductManage/Product/GetFormJson",
+                data: { keyValue: keyValue },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                    guid = data.F_Id;
+
+                    //获取缩略图
+                    getFile();
+                }
+            });
+        }
+
+        
+    })
+
+    function initControl() {
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $finish = $("#btnFinish");
+            var $submit = $("#btnSubmit");
+            if (data.direction == "next") {
+                switch (data.step) {
+                    case 1:
+                        if (!$('#form1').formValid()) {
+                            return false;
+                        }
+                        submitForm();
+                        $finish.show();
+                        $submit.hide();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $finish.hide();
+                $next.show();
+            }
+        });
+    }
+
+    //预览图获取
+    function getFile() {
+        $.ajax({
+            url: "/SystemManage/File/GetListJson",
+            data: { related_Id: guid },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.length > 0) {
+                    filePath = data[0].FilePath;
+                    $("#imgUpload").attr("src", "/" + filePath);
+                    $("#btnUpload").hide();
+                    $("#btnDelete").show();
+                }
+            }
+        });
+    }
+
+    function submitForm() {
+        var postData = $("#form1").formSerialize();
+        $.submitForm({
+            url: "/ProductManage/Product/SubmitForm?keyValue=" + keyValue,
+            param: postData,
+            success: function (data) {
+                guid = data.data;
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+
+                layui.use('upload', function () {
+                    var $ = layui.jquery, upload = layui.upload;
+
+                    //普通图片上传
+                    var uploadInst = upload.render({
+                        elem: '#btnUpload',
+                        url: '/SystemManage/File/UploadFile',
+                        size: 1024,//单位kb
+                        data: { related_Id: guid },
+                        before: function (obj) {
+                            obj.preview(function (index, file, result) {
+                                $('#imgUpload').attr('src', result); //图片链接（base64）
+                            });
+                        },
+                        done: function (res) {
+                            $.ajax({
+                                url: "/ProductManage/Product/SaveImgPath",
+                                data: { f_Id: guid },
+                                type: "post",
+                                dataType: "json",
+                                async: true,
+                                success: function (data) {
+                                }
+                            });
+                            $("#btnUpload").hide();
+                            $("#btnDelete").show();
+                            $.currentWindow().$("#gridList").trigger("reloadGrid");
+                        },
+                        error: function (res) {
+                        }
+                    });
+                });
+            },
+            close: false
+        });
+    }
+
+    //删除预览图
+    function deleteFile() {
+        //删除附件
+        $.ajax({
+            url: "/SystemManage/File/DeleteFile",
+            data: { related_Id: guid, path: filePath },
+            type: "post",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                getFile();
+            }
+        });
+    }
+</script>
+<form id="form1">
+    <div class="widget-body">
+        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+            <ul class="steps">
+                <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
+                <li data-target="#step-2"><span class="step">2</span>缩略图<span class="chevron"></span></li>
+            </ul>
+        </div>
+        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+            <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="width: 98%;">
+                        <table class="form">
+                            <tr>
+                                <th class="formTitle">产品名称</th>
+                                <td class="formValue">
+                                    <input id="ProductName" type="text" class="form-control required" placeholder="请输入产品名称" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">产品代码</th>
+                                <td class="formValue">
+                                    <input id="ProductCode" type="text" class="form-control required" placeholder="请输入产品代码" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">排序</th>
+                                <td class="formValue">
+                                    <input id="Sort" type="text" class="form-control" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle" valign="top" style="padding-top: 5px;">备注</th>
+                                <td class="formValue">
+                                    <textarea id="Description" class="form-control" style="height: 60px;"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="step-pane" id="step-2" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="width: 98%; height:220px;">
+                        <table class="form">
+                            <tr>
+                                <td class="formValue">
+                                    <div class="layui-upload">
+                                        <div style="margin-left:150px;">
+                                            <button id="btnUpload" type="button" class="btn btn-default">图片上传</button>
+                                        </div>
+                                        <div class="layui-upload-list" style="width:100px; margin:auto; margin-top:15px;">
+                                            <img class="layui-upload-img" id="imgUpload" style="height:100px; width:100px;">
+                                        </div>
+                                        <div id="btnDelete" style="display:none;">
+                                            <a href="#" style="position:relative; top:-25px; left:250px; border:0px;" onclick="deleteFile();">
+                                                <img src="~/Content/img/delete.gif" style="height:25px;" title="删除" />
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-button" id="wizard-actions">
+            <a id="btnPrev" disabled class="btn btn-default btn-prev">上一步</a>
+            <a id="btnSubmit" class="btn btn-default btn-next">提交</a>
+            <a id="btnFinish" class="btn btn-default" style="display: none;" onclick="$.modalClose();">完成</a>
+        </div>
+    </div>
+</form>

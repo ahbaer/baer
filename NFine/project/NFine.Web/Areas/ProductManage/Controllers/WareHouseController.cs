@@ -3,10 +3,6 @@ using NFine.Code;
 using NFine.Data;
 using NFine.Data.Extensions;
 using NFine.Domain.Entity.Application;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace NFine.Web.Areas.ProductManage.Controllers
@@ -17,9 +13,15 @@ namespace NFine.Web.Areas.ProductManage.Controllers
 
         [HttpGet]
         [HandlerAjaxOnly]
-        public ActionResult GetGridJson(string keyword)
+        public ActionResult GetGridJson(Pagination pagination, string keyword)
         {
-            var data = wareHouseApp.GetList(keyword);
+            var data = new
+            {
+                rows = wareHouseApp.GetList(pagination, keyword),
+                total = pagination.total,
+                page = pagination.page,
+                records = pagination.records
+            };
             return Content(data.ToJson());
         }
 
@@ -51,13 +53,17 @@ namespace NFine.Web.Areas.ProductManage.Controllers
         [HandlerAjaxOnly]
         [HandlerAuthorize]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteForm(string keyValue)
+        public ActionResult DeleteForm(string f_Ids)
         {
-            Fuctions.ChangeStep(
-                "仓库" + DbHelper.ExecuteToString("select WareName from WareHouse where F_Id='" + keyValue + "'"),
+            foreach (string f_Id in f_Ids.Split(','))
+            {
+                Fuctions.ChangeStep(
+                "仓库" + DbHelper.ExecuteToString("select WareName from WareHouse where F_Id='" + f_Id + "'"),
                 "删除仓库");
 
-            wareHouseApp.DeleteForm(keyValue);
+                wareHouseApp.DeleteForm(f_Id);
+            }
+            
             return Success("删除成功。");
         }
     }

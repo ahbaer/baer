@@ -1,0 +1,127 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Details.cshtml";
+}
+
+
+<script>
+    var keyValue = $.request("keyValue");
+
+    $(function () {
+        initControl();
+
+        $.ajax({
+            url: "/ProductManage/Product/GetFormJson",
+            data: { keyValue: keyValue },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#form1").formSerialize(data);
+                $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
+                $("#form1").find('div.ckbox label').attr('for', '');
+
+                guid = data.F_Id;
+
+                //获取缩略图
+                getFile();
+            }
+        });
+    });
+
+    function initControl() {
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $next = $("#btnNext");
+            if (data.direction == "next") {
+                switch (data.step) {
+                    case 1:
+                        $next.attr('disabled', 'disabled');
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $next.removeAttr('disabled');
+            }
+        });
+    }
+
+    //预览图获取
+    function getFile() {
+        $.ajax({
+            url: "/SystemManage/File/GetListJson",
+            data: { related_Id: guid },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#imgUpload").attr("src", "/" + data[i].FilePath);
+                }
+            }
+        });
+    }
+</script>
+<form id="form1">
+    <div class="widget-body">
+        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+            <ul class="steps">
+                <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
+                <li data-target="#step-2"><span class="step">2</span>缩略图<span class="chevron"></span></li>
+            </ul>
+        </div>
+        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+            <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="width: 98%; height:190px;">
+                        <table class="form">
+                            <tr>
+                                <th class="formTitle">产品名称</th>
+                                <td class="formValue">
+                                    <input id="ProductName" type="text" class="form-control" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">产品代码</th>
+                                <td class="formValue">
+                                    <input id="ProductCode" type="text" class="form-control" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">排序</th>
+                                <td class="formValue">
+                                    <input id="Sort" type="text" class="form-control" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">备注</th>
+                                <td class="formValue">
+                                    <input id="Description" name="Ware_Description" type="text" class="form-control" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="step-pane" id="step-2" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="width: 98%; height:190px;">
+                        <table class="form">
+                            <tr>
+                                <td class="formValue">
+                                    <div class="layui-upload">
+                                        <div class="layui-upload-list" style="width:100px; margin:auto; margin-top:20px;">
+                                            <img class="layui-upload-img" id="imgUpload" style="height:100px; width:100px;">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-button" id="wizard-actions">
+            <a id="btnPrev" disabled class="btn btn-default btn-prev">上一步</a>
+            <a id="btnNext" class="btn btn-default btn-next">下一步</a>
+        </div>
+    </div>
+</form>

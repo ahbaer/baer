@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\ProductMap.cs" />
     <Compile Include="Application\InventoryOutMap.cs" />
     <Compile Include="Application\InventoryMap.cs" />
     <Compile Include="Application\WareHouseMap.cs" />

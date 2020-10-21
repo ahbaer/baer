@@ -6,6 +6,7 @@
     $(function () {
         gridList();
     })
+
     function gridList() {
         var $gridList = $("#gridList");
         $gridList.dataGrid({
@@ -40,12 +41,14 @@
                 { label: '备注', name: 'F_Description', width: 300, align: 'left' }
             ]
         });
+
         $("#btn_search").click(function () {
             $gridList.jqGrid('setGridParam', {
                 postData: { keyword: $("#txt_keyword").val() },
             }).trigger('reloadGrid');
         });
     }
+
     function btn_add() {
         $.modalOpen({
             id: "Form",
@@ -56,6 +59,7 @@
             btn: null
         });
     }
+
     function btn_edit() {
         var keyValue = $("#gridList").jqGridRowValue().F_Id;
         $.modalOpen({
@@ -67,6 +71,7 @@
             btn: null
         });
     }
+
     function btn_delete() {
         $.deleteForm({
             url: "/SystemManage/Role/DeleteForm",
@@ -76,6 +81,7 @@
             }
         })
     }
+
     function btn_details() {
         var keyValue = $("#gridList").jqGridRowValue().F_Id;
         $.modalOpen({

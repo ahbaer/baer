@@ -58,6 +58,7 @@
     <Reference Include="Microsoft.Practices.ObjectBuilder">
       <HintPath>..\packages\Microsoft.Practices.ObjectBuilder.dll.3.1.0\lib\2.0\Microsoft.Practices.ObjectBuilder.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -130,8 +131,10 @@
     <Compile Include="Areas\ExampleManage\Controllers\SendMessagesController.cs" />
     <Compile Include="Areas\ExampleManage\Controllers\SignetController.cs" />
     <Compile Include="Areas\ExampleManage\ExampleManageAreaRegistration.cs" />
+    <Compile Include="Areas\ProductManage\Controllers\BannerController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\InventoryController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\OutInventoryController.cs" />
+    <Compile Include="Areas\ProductManage\Controllers\ProductController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\WareHouseController.cs" />
     <Compile Include="Areas\ProductManage\ProductManageAreaRegistration.cs" />
     <Compile Include="Areas\ReportManage\Controllers\EchartsController.cs" />
@@ -157,6 +160,7 @@
     <Compile Include="Areas\SystemSecurity\Controllers\LogController.cs" />
     <Compile Include="Areas\SystemSecurity\Controllers\ServerMonitoringController.cs" />
     <Compile Include="Areas\SystemSecurity\SystemSecurityAreaRegistration.cs" />
+    <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\ClientsDataController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -170,11 +174,12 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Content Include="Content\css\jqgridcol.css" />
     <Content Include="Content\img\background.jpg" />
+    <Content Include="Content\img\background_small.jpg" />
     <Content Include="Content\img\delete.gif" />
-    <Content Include="Content\img\delete.jpg" />
     <Content Include="Content\img\slide\slide1.jpeg" />
     <Content Include="Content\img\slide\slide2.jpg" />
     <Content Include="Content\img\slide\slide3.jpg" />
+    <Content Include="Content\js\CommonFunction.js" />
     <Content Include="map.html" />
     <Content Include="Content\css\framework-font.css" />
     <Content Include="Content\css\framework-ui.css" />
@@ -190,14 +195,6 @@
     <Content Include="Content\img\alipayimg.png" />
     <Content Include="Content\img\button_pm_close.png" />
     <Content Include="Content\img\cy-reward-title-bg.jpg" />
-    <Content Include="Content\img\iphone_1.jpg" />
-    <Content Include="Content\img\iphone_1b.jpg" />
-    <Content Include="Content\img\iphone_2.jpg" />
-    <Content Include="Content\img\iphone_2b.jpg" />
-    <Content Include="Content\img\iphone_3.jpg" />
-    <Content Include="Content\img\iphone_3b.jpg" />
-    <Content Include="Content\img\iphone_4.jpg" />
-    <Content Include="Content\img\iphone_4b.jpg" />
     <Content Include="Content\img\loading.gif" />
     <Content Include="Content\img\radio1.jpg" />
     <Content Include="Content\img\radio2.jpg" />
@@ -704,6 +701,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\ReportManage\Views\Echarts\" />
+    <Folder Include="Resource\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\ReportManage\Views\Highcharts\Sample1.cshtml" />
@@ -768,7 +766,6 @@
     <Content Include="Content\layui\font\iconfont.ttf" />
     <Content Include="Content\layui\font\iconfont.woff" />
     <Content Include="Content\layui\font\iconfont.woff2" />
-    <Content Include="Areas\SystemManage\Views\File\File.cshtml" />
     <Content Include="Areas\ProductManage\Views\OutInventory\Index.cshtml" />
     <Content Include="Areas\ProductManage\Views\OutInventory\Form.cshtml" />
     <Content Include="Areas\SystemManage\Views\ConfigCategory\Details.cshtml" />
@@ -777,7 +774,12 @@
     <Content Include="Areas\SystemManage\Views\Config\Details.cshtml" />
     <Content Include="Areas\SystemManage\Views\Config\Form.cshtml" />
     <Content Include="Areas\SystemManage\Views\Config\Index.cshtml" />
+    <Content Include="Areas\ProductManage\Views\Banner\Form.cshtml" />
+    <Content Include="Areas\ProductManage\Views\Product\Form.cshtml" />
+    <Content Include="Areas\ProductManage\Views\Product\Index.cshtml" />
+    <Content Include="Areas\ProductManage\Views\Product\Details.cshtml" />
     <None Include="Properties\PublishProfiles\NFine.Framework.Release.pubxml" />
+    <Content Include="Views\Shared\_Details.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

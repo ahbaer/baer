@@ -55,9 +55,12 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         [HandlerAjaxOnly]
         [HandlerAuthorize]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteForm(string keyValue)
+        public ActionResult DeleteForm(string f_Ids)
         {
-            itemsDetailApp.DeleteForm(keyValue);
+            foreach (string f_Id in f_Ids.Split(','))
+            {
+                itemsDetailApp.DeleteForm(f_Id);
+            }
             return Success("删除成功。");
         }
     }

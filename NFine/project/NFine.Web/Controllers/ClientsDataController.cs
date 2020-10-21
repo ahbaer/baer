@@ -1,10 +1,4 @@
-﻿/*******************************************************************************
- * Copyright © 2016 NFine.Framework 版权所有
- * Author: NFine
- * Description: NFine快速开发平台
- * Website：http://www.nfine.cn
-*********************************************************************************/
-using NFine.Application.SystemManage;
+﻿using NFine.Application.SystemManage;
 using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
 using System;
@@ -34,6 +28,7 @@ namespace NFine.Web.Controllers
             };
             return Content(data.ToJson());
         }
+
         private object GetDataItemList()
         {
             var itemdata = new ItemsDetailApp().GetList();
@@ -50,6 +45,7 @@ namespace NFine.Web.Controllers
             }
             return dictionaryItem;
         }
+
         private object GetOrganizeList()
         {
             OrganizeApp organizeApp = new OrganizeApp();
@@ -66,6 +62,7 @@ namespace NFine.Web.Controllers
             }
             return dictionary;
         }
+
         private object GetRoleList()
         {
             RoleApp roleApp = new RoleApp();
@@ -82,10 +79,11 @@ namespace NFine.Web.Controllers
             }
             return dictionary;
         }
+
         private object GetDutyList()
         {
             DutyApp dutyApp = new DutyApp();
-            var data = dutyApp.GetList();
+            var data = dutyApp.GetList("");
             Dictionary<string, object> dictionary = new Dictionary<string, object>();
             foreach (RoleEntity item in data)
             {
@@ -98,11 +96,13 @@ namespace NFine.Web.Controllers
             }
             return dictionary;
         }
+
         private object GetMenuList()
         {
             var roleId = OperatorProvider.Provider.GetCurrent().RoleId;
             return ToMenuJson(new RoleAuthorizeApp().GetMenuList(roleId), "0");
         }
+
         private string ToMenuJson(List<ModuleEntity> data, string parentId)
         {
             StringBuilder sbJson = new StringBuilder();
@@ -121,6 +121,7 @@ namespace NFine.Web.Controllers
             sbJson.Append("]");
             return sbJson.ToString();
         }
+
         private object GetMenuButtonList()
         {
             var roleId = OperatorProvider.Provider.GetCurrent().RoleId;

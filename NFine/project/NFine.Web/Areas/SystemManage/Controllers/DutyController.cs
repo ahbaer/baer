@@ -1,14 +1,6 @@
-﻿/*******************************************************************************
- * Copyright © 2016 NFine.Framework 版权所有
- * Author: NFine
- * Description: NFine快速开发平台
- * Website：http://www.nfine.cn
-*********************************************************************************/
-using NFine.Application.SystemManage;
+﻿using NFine.Application.SystemManage;
 using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 
 namespace NFine.Web.Areas.SystemManage.Controllers
@@ -19,11 +11,26 @@ namespace NFine.Web.Areas.SystemManage.Controllers
 
         [HttpGet]
         [HandlerAjaxOnly]
-        public ActionResult GetGridJson(string keyword)
+        public ActionResult GetGridJson(Pagination pagination, string keyword)
+        {
+            var data = new
+            {
+                rows = dutyApp.GetList(pagination, keyword),
+                total = pagination.total,
+                page = pagination.page,
+                records = pagination.records
+            };
+            return Content(data.ToJson());
+        }
+
+        [HttpGet]
+        [HandlerAjaxOnly]
+        public ActionResult GetDutyJson(string keyword = "")
         {
             var data = dutyApp.GetList(keyword);
             return Content(data.ToJson());
         }
+
         [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetFormJson(string keyValue)
@@ -31,6 +38,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             var data = dutyApp.GetForm(keyValue);
             return Content(data.ToJson());
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         [ValidateAntiForgeryToken]
@@ -39,13 +47,17 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             dutyApp.SubmitForm(roleEntity, keyValue);
             return Success("操作成功。");
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         [HandlerAuthorize]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteForm(string keyValue)
+        public ActionResult DeleteForm(string f_Ids)
         {
-            dutyApp.DeleteForm(keyValue);
+            foreach (string f_Id in f_Ids.Split(','))
+            {
+                dutyApp.DeleteForm(f_Id);
+            }
             return Success("删除成功。");
         }
     }

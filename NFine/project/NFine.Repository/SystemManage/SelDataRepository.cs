@@ -18,9 +18,28 @@ namespace NFine.Repository.SystemManage
 {
     public class SelDataRepository : RepositoryBase<SelDataEntity>, ISelDataRepository
     {
-        public List<SelDataEntity> GetItemList(string table, string itemCode, string itemName, string condition)
+        public List<SelDataEntity> GetItemList(string table, string itemCode, string itemName, string condition, string sort, bool asc)
         {
-            string strSql = "select " + itemCode + " as ItemCode," + itemName + " as ItemName from " + table + " where 1=1 " + condition + " order by F_CreatorTime asc";
+            string strSql = "select " + itemCode + " as ItemCode," + itemName + " as ItemName from " + table + " where 1=1 ";
+            if(!string.IsNullOrEmpty(condition))
+            {
+                strSql += condition;
+            }
+            if(string.IsNullOrEmpty(sort))
+            {
+                strSql += " order by F_CreatorTime asc";
+            }
+            else
+            {
+                if(asc)
+                {
+                    strSql += " order by " + sort + " asc";
+                }
+                else
+                {
+                    strSql += " order by " + sort + " desc";
+                }
+            }
             return this.FindList(strSql);
         }
     }

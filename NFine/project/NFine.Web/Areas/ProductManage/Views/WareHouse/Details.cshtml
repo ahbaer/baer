@@ -1,18 +1,10 @@
 ﻿@{
     ViewBag.Title = "Form";
-    Layout = "~/Views/Shared/_Form.cshtml";
+    Layout = "~/Views/Shared/_Details.cshtml";
 }
 
-<style>
-    input[type=text]{
-        border-top:none;
-        border-left:none;
-        border-right:none;
-    }
-</style>
 <script>
     var keyValue = $.request("keyValue");
-    var _creatorUserId = "", _astModifyUserId = "";
 
     $(function () {
         initControl();
@@ -28,28 +20,6 @@
                 $("#iptCoordinate").val("(" + data.Longitude + "," + data.Latitude + ")");
                 $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
                 $("#form1").find('div.ckbox label').attr('for', '');
-
-                _creatorUserId = data.F_CreatorUserId;
-                _lastModifyUserId = data.F_LastModifyUserId;
-            }
-        });
-
-        //获取新增/修改人姓名
-        $.ajax({
-            url: "/SystemManage/SelData/GetSelectJson",
-            data: { table: "Sys_User", itemCode: "F_Id", itemName: "F_RealName", condition: " and F_Id in ('" + _creatorUserId + "','" + _lastModifyUserId + "')" },
-            dataType: "json",
-            async: false,
-            success: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].id == _creatorUserId) {
-                        $("#F_CreatorUserId").val(data[i].text);
-                    }
-
-                    if (data[i].id == _lastModifyUserId) {
-                        $("#F_LastModifyUserId").val(data[i].text);
-                    }
-                }
             }
         });
     })
@@ -117,36 +87,10 @@
                             <input id="Description" name="Ware_Description" type="text" class="form-control" />
                         </td>
                     </tr>
-                    <tr>
-                        <th class="formTitle">创建人员</th>
-                        <td class="formValue">
-                            <input id="F_CreatorUserId" name="F_CreatorUserId" type="text" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="formTitle">创建时间</th>
-                        <td class="formValue">
-                            <input id="F_CreatorTime" name="F_CreatorTime" type="text" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="formTitle">修改人员</th>
-                        <td class="formValue">
-                            <input id="F_LastModifyUserId" name="F_LastModifyUserId" type="text" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="formTitle">修改时间</th>
-                        <td class="formValue">
-                            <input id="F_LastModifyTime" name="F_LastModifyTime" type="text" class="form-control" />
-                        </td>
-                    </tr>
                 </table>
             </div>
         </div>
         <div class="form-button" id="wizard-actions" style="display:none">
-            <a id="btn_last" disabled class="btn btn-default btn-prev">上一步</a>
-            <a id="btn_next" class="btn btn-default btn-next">下一步</a>
         </div>
     </div>
 </form>

@@ -12,12 +12,35 @@
     <script src="~/Content/js/charts/Chart.js"></script>
     <script>
         $(function () {
-            GetLineChart();
-            GetDoughnutChart();
-            GetChangeInfo();
+            getFile();
+            getLineChart();
+            getDoughnutChart();
+            getChangeInfo();
         });
 
-        function GetLineChart() {
+        //预览图获取
+        function getFile() {
+            $.ajax({
+                url: "/SystemManage/File/GetListJson",
+                data: { related_Id: "baner" },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    count = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        if (i == 0) {
+                            $("#olcarousel").append("<li data-target='#myCarousel' data-slide-to='" + i + "' class='active'></li>");
+                            $("#divcarousel").append("<div class='item active'><img src='/" + data[i].FilePath + "' style='width:1100px;'></div>");
+                        } else {
+                            $("#olcarousel").append("<li data-target='#myCarousel' data-slide-to='" + i + "' style='margin-left:5px;'></li>");
+                            $("#divcarousel").append("<div class='item'><img src='/" + data[i].FilePath + "' style='width:1100px;'></div>");
+                        }
+                    }
+                }
+            });
+        }
+
+        function getLineChart() {
             $.ajax({
                 url: "/Home/GetInventoryGroupJson",
                 type: "get",
@@ -28,11 +51,20 @@
                         responsive: false,
                         bezierCurve: false
                     });
+
+                    //标签
+                    for (var i = 0; i < data.datasets.length; i++) {
+                        if(i == 0){
+                            $("#divLinechart").append("<span style='font-weight: 500;'><i class='fa fa-square' style='color: " + data.datasets[i].strokeColor + "; font-size: 20px; padding-right: 5px; vertical-align: middle; margin-top: -3px;'></i>" + data.datasets[i].value + "</span>");
+                        } else{
+                            $("#divLinechart").append("<span style='font-weight: 500; margin-left: 10px;'><i class='fa fa-square' style='color: " + data.datasets[i].strokeColor + "; font-size: 20px; padding-right: 5px; vertical-align: middle; margin-top: -3px;'></i>" + data.datasets[i].value + "</span>");
+                        }
+                    }
                 }
             });
         }
 
-        function GetDoughnutChart() {
+        function getDoughnutChart() {
             $.ajax({
                 url: "/Home/GetInventoryJson",
                 type: "get",
@@ -49,7 +81,7 @@
             });
         }
 
-        function GetChangeInfo() {
+        function getChangeInfo() {
             $.ajax({
                 url: "/Home/GetChangeInfoJson",
                 type: "get",
@@ -65,60 +97,12 @@
 </head>
 <body>
     <div id="areascontent">
-        @*<div class="rows" style="margin-bottom: 1%; border: 1px solid #e6e6e6; overflow: hidden; padding-left: 1px;">*@
         <div class="rows" style="overflow: hidden; padding-left: 1px;">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-line-chart fa-lg" style="padding-right: 5px;"></i>关键数据实时指标
-                <div style="float: right; position: relative; top: -4px; right: 0px;">
-                    <iframe name="weather_inc" src="http://i.tianqi.com/index.php?c=code&id=1" width="330" height="35" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
-                </div>
-                </div>
-                <div class="panel-body" style="display:none">
-                    <div class="dashboard-stats">
-                        <div class="dashboard-stats-item" style="background-color: #fc8675;">
-                            <h2 class="m-top-none">8</h2>
-                            <h5>对私待处理任务</h5>
-                            <div class="stat-icon">
-                                <i class="fa fa-user fa-3x"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-stats">
-                        <div class="dashboard-stats-item" style="background-color: #6bafbd;">
-                            <h2 class="m-top-none">12</h2>
-                            <h5>对私待签收任务</h5>
-                            <div class="stat-icon">
-                                <i class="fa fa-hdd-o fa-3x"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-stats">
-                        <div class="dashboard-stats-item" style="background-color: #f3ce85;">
-                            <h2 class="m-top-none">2</h2>
-                            <h5>对公待处理任务</h5>
-                            <div class="stat-icon">
-                                <i class="fa fa-shopping-cart fa-3x"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-stats">
-                        <div class="dashboard-stats-item" style="background-color: #949FB1;">
-                            <h2 class="m-top-none">6</h2>
-                            <h5>对公待签收任务</h5>
-                            <div class="stat-icon">
-                                <i class="fa fa-gavel fa-3x"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-stats">
-                        <div class="dashboard-stats-item" style="background-color: #65cea7; margin-right: 0px;">
-                            <h2 class="m-top-none">268</h2>
-                            <h5>本月交易订单数量</h5>
-                            <div class="stat-icon">
-                                <i class="fa fa-truck fa-3x"></i>
-                            </div>
-                        </div>
+                    <div style="float: right; position: relative; top: -4px; right: 0px;">
+                        <iframe name="weather_inc" src="http://i.tianqi.com/index.php?c=code&id=1" width="330" height="35" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
                     </div>
                 </div>
             </div>
@@ -129,22 +113,10 @@
                     <div class="panel panel-default">
                         <div id="myCarousel" class="carousel slide" style="height:350px;">
                             <!-- 轮播（Carousel）指标 -->
-                            <ol class="carousel-indicators">
-                                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                                <li data-target="#myCarousel" data-slide-to="1"></li>
-                                <li data-target="#myCarousel" data-slide-to="2"></li>
+                            <ol id="olcarousel" class="carousel-indicators">
                             </ol>
                             <!-- 轮播（Carousel）项目 -->
-                            <div class="carousel-inner" style="height:350px;">
-                                <div class="item active">
-                                    <img src="~/Content/img/slide/slide1.jpeg" alt="First slide">
-                                </div>
-                                <div class="item">
-                                    <img src="~/Content/img/slide/slide2.jpg" alt="Second slide">
-                                </div>
-                                <div class="item">
-                                    <img src="~/Content/img/slide/slide3.jpg" alt="Third slide">
-                                </div>
+                            <div id="divcarousel" class="carousel-inner" style="height:350px;">
                             </div>
                             <!-- 轮播（Carousel）导航 -->
                             <a class="left carousel-control" style="height:350px;" href="#myCarousel" role="button" data-slide="prev">
@@ -155,14 +127,16 @@
                                 <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
                                 <span class="sr-only">Next</span>
                             </a>
-                        </div> 
+                        </div>
                     </div>
                 </div>
             </div>
             <div style="float: right; width: 30%;">
                 <div style="height: 350px; border: 1px solid #e6e6e6; background-color: #fff;">
                     <div class="panel panel-default">
-                        <div class="panel-heading"><i class="fa fa-pie-chart fa-lg" style="padding-right: 5px;"></i>实时库存</div>
+                        <div class="panel-heading">
+                            <i class="fa fa-pie-chart fa-lg" style="padding-right: 5px;"></i>实时库存
+                        </div>
                         <div class="panel-body" style="padding-top: 20px;">
                             <canvas id="inventory" style="height: 160px; width: 100%;"></canvas>
                             <div style="text-align: center; padding-top: 20px;" id="divInventoryList1">
@@ -191,8 +165,6 @@
                         <div class="panel-heading">
                             <i class="fa fa-area-chart fa-lg" style="padding-right: 5px;"></i>出入库统计
                             <div style="float: right" id="divLinechart">
-                                <span style="font-weight: 500;"><i class="fa fa-square" style="color: #dcdcdc; font-size: 20px; padding-right: 5px; vertical-align: middle; margin-top: -3px;"></i>入库</span>
-                                <span style="margin-left: 10px; font-weight: 500;"><i class="fa fa-square" style="color: #97bbcd; font-size: 20px; padding-right: 5px; vertical-align: middle; margin-top: -3px;"></i>出库</span>
                             </div>
                         </div>
                         <div class="panel-body" style="padding-bottom: 0px;">
@@ -200,7 +172,6 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
         </div>
     </div>
@@ -295,7 +266,8 @@
                 .panel-default > .panel-body ul {
                     overflow: hidden;
                     padding: 0;
-                    margin:0px;margin-top: -5px;
+                    margin: 0px;
+                    margin-top: -5px;
                 }
 
                     .panel-default > .panel-body ul li {

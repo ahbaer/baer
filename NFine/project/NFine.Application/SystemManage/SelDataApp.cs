@@ -17,9 +17,9 @@ namespace NFine.Application.SystemManage
     {
         private ISelDataRepository service = new SelDataRepository();
 
-        public List<SelDataEntity> GetItemList(string table, string itemCode, string itemName, string condition)
+        public List<SelDataEntity> GetItemList(string table, string itemCode, string itemName, string condition, string sort, bool asc)
         {
-            return service.GetItemList(table, itemCode, itemName, condition);
+            return service.GetItemList(table, itemCode, itemName, condition, sort, asc);
         }
     }
 }

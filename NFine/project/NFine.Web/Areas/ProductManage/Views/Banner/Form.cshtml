@@ -1,0 +1,175 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<style>
+    .itemli {
+        list-style-type: none;
+        margin: 15px;
+    }
+</style>
+<link rel="stylesheet" href="~/Content/css/upload.css" />
+<script src="~/Content/layui/layui.js" charset="utf-8"></script>
+<script>
+    var count = 0;
+    var guid = "baner";
+    var filePath = "";
+
+    $(function () {
+        //获取图片
+        getFile();
+        //展示图片
+        showFile();
+    })
+
+    //预览图获取
+    function getFile() {
+        $.ajax({
+            url: "/SystemManage/File/GetListJson",
+            data: { related_Id: guid },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                count = 0;
+                for (var i = 0; i < data.length; i++) {
+                    $("#pic_" + i).attr("src", "/" + data[i].FilePath);
+                    $("#picRel_" + i).attr("src", "/" + data[i].FilePath);
+                    if (i == 0) {
+                        filePath = data[i].FilePath;
+                    }
+                    count++;
+                }
+                for (var i = data.length; i < 4; i++) {
+                    $("#pic_" + i).attr("src", "/Content/img/background.jpg");
+                    $("#picRel_" + i).attr("src", "/Content/img/background.jpg");
+                }
+            }
+        });
+    }
+
+    //预览图展示
+    function showFile() {
+        $("#gallery_output img").not(":first").hide();
+        $("#gallery a").click(function () {
+            $("#gallery a").removeClass('on');
+            $(this).addClass("on");
+            if ($("#" + this.rel).is(":hidden")) {
+                $("#gallery_output img").slideUp();
+                $("#" + this.rel).slideDown();
+                filePath = $("#" + this.rel).attr("src");
+
+                if (filePath != "/Content/img/background.jpg") {
+                    $("#gallery_delete").show();
+                } else {
+                    $("#gallery_delete").hide();
+                }
+            }
+        });
+    }
+
+    function deleteFile() {
+        //删除附件
+        $.ajax({
+            url: "/SystemManage/File/DeleteFile",
+            data: { related_Id: guid, path: filePath },
+            type: "post",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                getFile();
+                $("#gallery_delete").hide();
+            }
+        });
+    }
+
+    layui.use('upload', function () {
+        var $ = layui.jquery, upload = layui.upload;
+
+        //多图片上传
+        upload.render({
+            elem: '#btnUpload',
+            url: '/SystemManage/File/UploadFile',//接口
+            multiple: true,
+            size: 1024,//单位kb
+            data: { related_Id: guid },
+            param: '',
+            before: function (obj) {
+                if (count > 3) {
+                    alert("最多上传四张图片！");
+                    return;
+                }
+
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#pic_' + count).attr('src', result);//图片链接（base64）
+                    $('#picRel_' + count).attr('src', result);
+                    $('#pic_' + count).click();
+                    count++;
+                });
+            },
+            done: function (res) {
+                getFile();
+            }
+        });
+    });
+</script>
+<form id="form1">
+    <div class="widget-body">
+        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+            <ul class="steps">
+                <li data-target="#step-1" class="active"><span class="step">1</span>轮播图<span class="chevron"></span></li>
+            </ul>
+        </div>
+        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+            <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="width: 98%;">
+                        <table class="form">
+                            <tr>
+                                <td class="formValue">
+                                    <div class="layui-upload">
+                                        <button type="button" class="btn btn-default" id="btnUpload" style="margin-left:80px;">
+                                            图片上传
+                                        </button>
+                                        <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                                            <div id="gallery" style="height:280px; margin-left:55px;">
+                                                <div id="gallery_nav">
+                                                    <a class="on" rel="picRel_0" href="javascript:;">
+                                                        <img id="pic_0" style="width:135px;" />
+                                                    </a>
+                                                    <a rel="picRel_1" href="javascript:;">
+                                                        <img id="pic_1" style="width:135px;" />
+                                                    </a>
+                                                    <a rel="picRel_2" href="javascript:;">
+                                                        <img id="pic_2" style="width:135px;" />
+                                                    </a>
+                                                    <a rel="picRel_3" href="javascript:;">
+                                                        <img id="pic_3" style="width:135px;" />
+                                                    </a>
+                                                </div>
+                                                <div id="gallery_output" style="margin-left:10px;">
+                                                    <img id="picRel_0" style="width:542px;" />
+                                                    <img id="picRel_1" style="width:542px;" />
+                                                    <img id="picRel_2" style="width:542px;" />
+                                                    <img id="picRel_3" style="width:542px;" />
+                                                </div>
+                                                <div id="gallery_delete" style="display:none">
+                                                    <a href="#" style="position:relative; top:230px; border:0px;" onclick="deleteFile();">
+                                                        <img src="~/Content/img/delete.gif" style="height:25px;" title="删除" />
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </blockquote>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-button" id="wizard-actions">
+        </div>
+    </div>
+</form>

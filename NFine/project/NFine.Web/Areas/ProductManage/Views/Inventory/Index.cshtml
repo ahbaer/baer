@@ -3,133 +3,263 @@
     Layout = "~/Views/Shared/_Index.cshtml";
 }
 
-<script>
-    var wareId = $.request("wareId");
+<style>
+    .section-search {
+        width: 120px !important;
+        margin-left: 10px !important;
+    }
 
+    .topPanel {
+        height: 100px !important;
+    }
+</style>
+<script>
     $(function () {
+        initSearch();
+        getAllWeight('{}');
         gridList();
+
+        var $cb = $("#cb_gridList");
+        if ($cb != null) {
+            $cb.parent().removeClass("ckbox");
+        }
     })
+
+    function initSearch() {
+        //品类
+        $("#stProductType").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "Product", itemCode: "ProductCode", itemName: "ProductName", condition: "", sort: "Sort", asc: true },
+        });
+        //等级
+        $("#stGrade").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0202" },
+        });
+        //长度
+        $("#stLength").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0208" },
+        });
+        //码值
+        $("#stHorseValue").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0203" },
+        });
+        //仓库
+        $("#stWareId").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "WareHouse", itemCode: "F_Id", itemName: "WareName" },
+        });
+        //产品状态
+        $("#stStatus").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0207" },
+        });
+        //报价方式
+        $("#stQuoteType").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0206" },
+        });
+    }
 
     function gridList() {
         var $gridList = $("#gridList");
         $gridList.dataGrid({
             url: "/ProductManage/Inventory/GetGridJson",
-            postData: { wareId: wareId },
-            height: $(window).height() - 96,
+            height: $(window).height() - 180,
             colModel: [
                 { label: "主键", name: "F_Id", hidden: true, key: true },
-                { label: '商品名称', name: 'ProductName', width: 150, align: 'left' },
-                { label: '商品代码', name: 'ProductCode', width: 150, align: 'center' },
+                { label: '产品分类', name: 'ProductType', width: 70, align: 'left' },
+                { label: '年度', name: 'Year', width: 40, align: 'left' },
                 {
-                    label: '商品类型', name: 'ProductType', width: 100, align: 'center',
-                    formatter: function (cellvalue, options, rowObject) {
-                        return top.clients.dataItems["0201"][cellvalue] == null ? "" : top.clients.dataItems["0201"][cellvalue];
-                    }
-                },
-                {
-                    label: '产地', name: 'OriginCode', width: 80, align: 'center',
+                    label: '等级', name: 'Grade', width: 40, align: 'left',
                     formatter: function (cellvalue, options, rowObject) {
                         return top.clients.dataItems["0202"][cellvalue] == null ? "" : top.clients.dataItems["0202"][cellvalue];
                     }
                 },
-                { label: '单价', name: 'Price', width: 80, align: 'right' },
-                { label: '入库重量', name: 'InitWeight', width: 80, align: 'right' },
-                { label: '库存重量', name: 'Weight', width: 80, align: 'right' },
                 {
-                    label: '出库', name: '', width: 80, align: 'center',
-                    formatter: function (val, obj, row, act) {
-                        return '<button id="NF-inventoryForm" type="button" style="border:none;background:none;" onclick="btn_out(\'' + row.F_Id + '\')"><i class="fa fa-pencil-square-o"></i></button>';
+                    label: '长度', name: 'Length', width: 40, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0208"][cellvalue] == null ? "" : top.clients.dataItems["0208"][cellvalue];
+                    }
+                },
+                { label: '强力', name: 'Strength', width: 40, align: 'left' },
+                {
+                    label: '码值', name: 'HorseValue', width: 40, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0203"][cellvalue] == null ? "" : top.clients.dataItems["0203"][cellvalue];
+                    }
+                },
+                { label: '仓库', name: 'WareName', width: 100, align: 'left' },
+                { label: '库存(吨)', name: 'Weight', width: 70, align: 'left' },
+                { label: '提单号', name: 'OrderNo', width: 70, align: 'left' },
+                {
+                    label: '产品状态', name: 'Status', width: 70, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0207"][cellvalue] == null ? "" : top.clients.dataItems["0207"][cellvalue];
+                    }
+                },
+                { label: '船期', name: 'SailingSchedule', width: 70, align: 'left' },
+                {
+                    label: '报价方式', name: 'QuoteType', width: 70, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0206"][cellvalue] == null ? "" : top.clients.dataItems["0206"][cellvalue];
                     }
                 },
                 {
-                    label: '出库纪录', name: '', width: 80, align: 'center',
+                    label: '报价', name: 'Price', width: 40, align: 'left',
                     formatter: function (val, obj, row, act) {
-                        return '<button id="NF-inventoryIndex" type="button" style="border:none;background:none;" onclick="btn_outIndex(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></button>';
+                        return row.QuoteType == "One" ? row.Price : "";
+                    }
+                },
+                {
+                    label: '合约', name: 'Contract', width: 40, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return row.QuoteType == "One" ? "" : row.Contract;
+                    }
+                },
+                {
+                    label: '基差', name: 'Basis', width: 40, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return row.QuoteType == "One" ? "" : row.Basis;
+                    }
+                },
+                {
+                    label: '推荐', name: 'IsRecommend', width: 30, align: 'center',
+                    formatter: function (cellvalue) {
+                        return cellvalue == true ? "<i class=\"fa fa-check\"></i>" : "<i class=\"fa fa-close\"></i>";
+                    }
+                },
+                {
+                    label: '修改', name: '', width: 30, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.F_Id + '\')"><i class="fa fa-pencil-square-o"></i></a>';
+                    }
+                },
+                {
+                    label: '查看', name: '', width: 30, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                    }
+                },
+                {
+                    label: '出库', name: '', width: 30, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnOut" authorize="yes" class="btn" onclick="btnOut(\'' + row.F_Id + '\')"><i class="fa fa-sign-out"></i></a>';
+                    }
+                },
+                {
+                    label: '纪录', name: '', width: 30, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnOutHistory(\'' + row.F_Id + '\')"><i class="fa fa-history"></i></a>';
                     }
                 }
-            ]
+            ],
+            pager: "#gridPager",
+            sortname: 'F_CreatorTime desc',
+            viewrecords: true,
+            multiselect: true
         });
 
-        $("#btn_search").click(function () {
+        $("#btnSearch").click(function () {
+            var queryJson = {
+                productType: $("#stProductType").val(),
+                grade: $("#stGrade").val(),
+                length: $("#stLength").val(),
+                strengthMin: $("#txtStrengthMin").val(),
+                strengthMax: $("#txtStrengthMax").val(),
+                horseValue: $("#stHorseValue").val(),
+                wareId: $("#stWareId").val(),
+                orderNo: $("#txtOrderNo").val(),
+                status: $("#stStatus").val(),
+                quoteType: $("#stQuoteType").val(),
+                isRecommend: $("#stIsRecommend").val()
+            }
             $gridList.jqGrid('setGridParam', {
-                postData: { ware_Id: wareHouseId, keyword: $("#txt_keyword").val() },
+                postData: { queryJson: JSON.stringify(queryJson) },
             }).trigger('reloadGrid');
+
+            getAllWeight(JSON.stringify(queryJson));
+        });
+
+        $("#btnClear").click(function () {
+            $("#stProductType").get(0).selectedIndex = 0;
+            $("#stGrade").get(0).selectedIndex = 0;
+            $("#stLength").get(0).selectedIndex = 0;
+            $("#txtStrengthMin").val('');
+            $("#txtStrengthMax").val('');
+            $("#stWareId").get(0).selectedIndex = 0;
+            $("#stStatus").get(0).selectedIndex = 0;
+            $("#stQuoteType").get(0).selectedIndex = 0;
+            $("#stIsRecommend").get(0).selectedIndex = 0;
         });
     }
 
-    function btn_add() {
+    function getAllWeight(queryJson) {
+        $.ajax({
+            url: "/ProductManage/Inventory/GetAllWeight",
+            data: { queryJson: queryJson },
+            type: "get",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#spanWeight").html(data);
+            }
+        });
+    }
+
+    function btnOperate(f_Id) {
+        var title = !!f_Id ? "修改产品" : "新增产品";
         $.modalOpen({
             id: "Form",
-            title: "商品入库",
-            url: "/ProductManage/Inventory/Form?wareId=" + wareId,
+            title: title,
+            url: "/ProductManage/Inventory/Form?keyValue=" + f_Id,
             width: "750px",
             height: "570px",
             btn: null
         });
     }
 
-    function btn_edit() {
-        var keyValue = $("#gridList").jqGridRowValue().F_Id;
-        if (keyValue == "" || keyValue == undefined) {
-            this.alert("请选中商品更新！");
-            return;
-        }
-
+    function btnDetails(f_Id) {
         $.modalOpen({
-            id: "Form",
-            title: "库存更新",
-            url: "/ProductManage/Inventory/Form?keyValue=" + keyValue,
+            id: "Details",
+            title: "库存详情",
+            url: "/ProductManage/Inventory/Details?keyValue=" + f_Id,
             width: "750px",
-            height: "570px",
-            btn: null
+            height: "540px",
+            btn: null,
         });
     }
 
-    function btn_delete() {
-        var keyValue = $("#gridList").jqGridRowValue().F_Id;
-        if (keyValue == "" || keyValue == undefined) {
-            this.alert("请选中商品下架！");
+    function btnDelete() {
+        var f_Ids = $("#gridList").jqGrid('getGridParam', 'selarrrow');
+        if (f_Ids.length == 0) {
+            this.alert("请选中项删除！");
             return;
         }
 
         $.deleteForm({
             url: "/ProductManage/Inventory/DeleteForm",
-            param: { keyValue: keyValue },
+            param: { f_Ids: f_Ids.toString() },
             success: function () {
-                top.frames["InventoryIndex"].$("#gridList").trigger("reloadGrid");
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
             }
         })
     }
 
-    function btn_details() {
-        var keyValue = $("#gridList").jqGridRowValue().F_Id;
-        if (keyValue == "" || keyValue == undefined) {
-            this.alert("请选中商品查看！");
-            return;
-        }
-
-        $.modalOpen({
-            id: "Details",
-            title: "库存详情",
-            url: "/ProductManage/Inventory/Details?keyValue=" + keyValue,
-            width: "750px",
-            height: "620px",
-            btn: null,
-        });
-    }
-
-    function btn_out(f_Id) {
+    function btnOut(f_Id) {
         $.modalOpen({
             id: "OutForm",
             title: "出库",
             url: "/ProductManage/OutInventory/Form?inventoryId=" + f_Id,
             width: "500px",
-            height: "560px",
+            height: "300px",
             btn: null,
         });
     }
 
-    function btn_outIndex(f_Id) {
+    function btnOutHistory(f_Id) {
         $.modalOpen({
             id: "OutIndex",
             title: "出库纪录",
@@ -142,33 +272,124 @@
 </script>
 
 <div class="topPanel">
-    <div class="toolbar">
+    <div class="toolbar" style="margin-top:25px;">
         <div class="btn-group">
-            <a class="btn btn-primary" onclick="$.reload()"><span class="glyphicon glyphicon-refresh"></span></a>
+            <a class="btn btn-primary" onclick="$.reload()">
+                <span class="glyphicon glyphicon-refresh"></span>
+            </a>
         </div>
         <div class="btn-group">
-            <a id="NF-add" authorize="yes" class="btn btn-primary dropdown-text" onclick="btn_add()"><i class="fa fa-plus"></i>商品入库</a>
+            <a id="btnDelete" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnDelete()">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
         </div>
-        <div class="operate">
-            <ul class="nav nav-pills">
-                <li class="first">已选中<span>1</span>项</li>
-                <li><a id="NF-edit" authorize="yes" onclick="btn_edit()"><i class="fa fa-pencil-square-o"></i>库存更新</a></li>
-                <li><a id="NF-delete" authorize="yes" onclick="btn_delete()"><i class="fa fa-trash-o"></i>商品下架</a></li>
-                <li><a id="NF-Details" authorize="yes" onclick="btn_details()"><i class="fa fa-search-plus"></i>库存详情</a></li>
-            </ul>
-            <a href="javascript:;" class="close"></a>
+        <div class="btn-group">
+            <a id="btnAdd" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnOperate('')">
+                <i class="fa fa-plus"></i>新增
+            </a>
         </div>
         <script>$('.toolbar').authorizeButton()</script>
     </div>
     <div class="search">
         <table>
             <tr>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stProductType" class="form-control section-search">
+                            <option value="">产品分类</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stGrade" class="form-control section-search">
+                            <option value="">等级</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stLength" class="form-control section-search">
+                            <option value="">长度</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group" style="float:left;">
+                        <input id="txtStrengthMin" type="text" class="form-control" style="width:51px;margin-left:10px;" placeholder="强力(小)">
+                    </div>
+                    <div class="input-group" style="float:left;width:10px;">~</div>
+                    <div class="input-group">
+                        <input id="txtStrengthMax" type="text" class="form-control" style="width:51px;" placeholder="强力(大)">
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stHorseValue" class="form-control section-search">
+                            <option value="">码值</option>
+                        </select>
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button id="btnSearch" type="button" class="btn  btn-primary" style="margin-left:8px !important; border-radius: 5px;">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button id="btnClear" type="button" class="btn  btn-primary" style="margin-left:8px !important; border-radius: 5px;">
+                                <i class="fa fa-mail-reply-all"></i>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div style="margin-left:8px !important;">
+                        <span style="font-size:12px">总库存：</span>
+                        <span id="spanWeight" style="font-size:18px; color:red;"></span>
+                        <span style="font-size:12px">吨</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stWareId" class="form-control section-search">
+                            <option value="">仓库</option>
+                        </select>
+                    </div>
+                </td>
                 <td>
                     <div class="input-group">
-                        <input id="txt_keyword" type="text" class="form-control" placeholder="商品名称" style="width: 200px;">
-                        <span class="input-group-btn">
-                            <button id="btn_search" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
-                        </span>
+                        <input id="txtOrderNo" type="text" class="form-control section-search" placeholder="提单号">
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stStatus" class="form-control section-search">
+                            <option value="">产品状态</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stQuoteType" class="form-control section-search">
+                            <option value="">报价方式</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stIsRecommend" class="form-control section-search">
+                            <option value="">首页推荐</option>
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
                     </div>
                 </td>
             </tr>
@@ -177,4 +398,5 @@
 </div>
 <div class="gridPanel">
     <table id="gridList"></table>
+    <div id="gridPager"></div>
 </div>

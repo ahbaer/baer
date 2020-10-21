@@ -1,10 +1,4 @@
-﻿/*******************************************************************************
- * Copyright © 2016 NFine.Framework 版权所有
- * Author: NFine
- * Description: NFine快速开发平台
- * Website：http://www.nfine.cn
-*********************************************************************************/
-using NFine.Application.SystemManage;
+﻿using NFine.Application.SystemManage;
 using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
 using System.Collections.Generic;
@@ -34,6 +28,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             }
             return Content(treeList.TreeSelectJson());
         }
+
         [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetTreeJson()
@@ -55,6 +50,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             }
             return Content(treeList.TreeViewJson());
         }
+
         [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetTreeGridJson(string keyword)
@@ -78,6 +74,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             }
             return Content(treeList.TreeGridJson());
         }
+
         [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetFormJson(string keyValue)
@@ -85,6 +82,7 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             var data = organizeApp.GetForm(keyValue);
             return Content(data.ToJson());
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         [ValidateAntiForgeryToken]
@@ -93,13 +91,14 @@ namespace NFine.Web.Areas.SystemManage.Controllers
             organizeApp.SubmitForm(organizeEntity, keyValue);
             return Success("操作成功。");
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
         [HandlerAuthorize]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteForm(string keyValue)
+        public ActionResult DeleteForm(string f_Id)
         {
-            organizeApp.DeleteForm(keyValue);
+            organizeApp.DeleteForm(f_Id);
             return Success("删除成功。");
         }
     }

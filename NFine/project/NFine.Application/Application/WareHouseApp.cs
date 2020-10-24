@@ -1,4 +1,5 @@
 ﻿using NFine.Application.SystemManage;
+using NFine.Application.SystemSecurity;
 using NFine.Code;
 using NFine.Domain.Entity.Application;
 using NFine.Domain.IRepository.Application;
@@ -28,14 +29,16 @@ namespace NFine.Application.Application
             return service.FindList(expression, pagination);
         }
 
-        public WareHouseEntity GetForm(string keyValue)
+        public WareHouseEntity GetForm(string f_Id)
         {
-            return service.FindEntity(keyValue);
+            return service.FindEntity(f_Id);
         }
 
-        public void DeleteForm(string keyValue)
+        public void DeleteForm(string f_id)
         {
-            service.Delete(t => t.F_Id == keyValue);
+            new LogApp().WriteDbLog("删除仓库：" + GetForm(f_id).WareName, DbLogType.Delete);
+
+            service.Delete(t => t.F_Id == f_id);
         }
 
         public void SubmitForm(WareHouseEntity wareHouseEntity, string keyValue)
@@ -44,11 +47,15 @@ namespace NFine.Application.Application
             {
                 wareHouseEntity.Modify(keyValue);
                 service.Update(wareHouseEntity);
+
+                new LogApp().WriteDbLog("修改仓库：" + wareHouseEntity.WareName, DbLogType.Update);
             }
             else
             {
                 wareHouseEntity.Create();
                 service.Insert(wareHouseEntity);
+
+                new LogApp().WriteDbLog("新增仓库：" + wareHouseEntity.WareName, DbLogType.Create);
             }
         }
     }

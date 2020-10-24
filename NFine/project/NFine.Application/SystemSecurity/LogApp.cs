@@ -55,6 +55,7 @@ namespace NFine.Application.SystemSecurity
             }
             return service.FindList(expression, pagination);
         }
+
         public void RemoveLog(string keepTime)
         {
             DateTime operateTime = DateTime.Now;
@@ -74,7 +75,8 @@ namespace NFine.Application.SystemSecurity
             expression = expression.And(t => t.F_Date <= operateTime);
             service.Delete(expression);
         }
-        public void WriteDbLog(bool result, string resultLog)
+
+        public void WriteDbLog(string resultLog, DbLogType type, bool result = true)
         {
             LogEntity logEntity = new LogEntity();
             logEntity.F_Id = Common.GuId();
@@ -84,15 +86,17 @@ namespace NFine.Application.SystemSecurity
             logEntity.F_IPAddress = Net.Ip;
             logEntity.F_IPAddressName = Net.GetLocation(logEntity.F_IPAddress);
             logEntity.F_Result = result;
+            logEntity.F_Type = type.ToString();
             logEntity.F_Description = resultLog;
             logEntity.Create();
             service.Insert(logEntity);
         }
+
         public void WriteDbLog(LogEntity logEntity)
         {
             logEntity.F_Id = Common.GuId();
             logEntity.F_Date = DateTime.Now;
-            logEntity.F_IPAddress = "117.81.192.182";
+            logEntity.F_IPAddress = Net.Ip;
             logEntity.F_IPAddressName = Net.GetLocation(logEntity.F_IPAddress);
             logEntity.Create();
             service.Insert(logEntity);

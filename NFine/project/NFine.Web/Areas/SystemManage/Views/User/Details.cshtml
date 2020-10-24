@@ -6,6 +6,7 @@
     var keyValue = $.request("keyValue");
     $(function () {
         initControl();
+
         $.ajax({
             url: "/SystemManage/User/GetFormJson",
             data: { keyValue: keyValue },
@@ -20,6 +21,7 @@
             }
         });
     });
+
     function initControl() {
         $("#F_Gender").bindSelect()
         $("#F_IsAdministrator").bindSelect()
@@ -36,7 +38,7 @@
             text: "F_FullName"
         });
         $("#F_DutyId").bindSelect({
-            url: "/SystemManage/Duty/GetGridJson",
+            url: "/SystemManage/Duty/GetDutyJson",
             id: "F_Id",
             text: "F_FullName"
         });

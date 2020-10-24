@@ -19,11 +19,7 @@
                 $("#form1").formSerialize(data);
                 $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
                 $("#form1").find('div.ckbox label').attr('for', '');
-
-                guid = data.F_Id;
-
-                //获取缩略图
-                getFile();
+                $("#imgUpload").attr("src", data.ImgContent);
             }
         });
     });
@@ -41,21 +37,6 @@
                 }
             } else {
                 $next.removeAttr('disabled');
-            }
-        });
-    }
-
-    //预览图获取
-    function getFile() {
-        $.ajax({
-            url: "/SystemManage/File/GetListJson",
-            data: { related_Id: guid },
-            dataType: "json",
-            async: false,
-            success: function (data) {
-                for (var i = 0; i < data.length; i++) {
-                    $("#imgUpload").attr("src", "/" + data[i].FilePath);
-                }
             }
         });
     }
@@ -108,8 +89,8 @@
                             <tr>
                                 <td class="formValue">
                                     <div class="layui-upload">
-                                        <div class="layui-upload-list" style="width:100px; margin:auto; margin-top:20px;">
-                                            <img class="layui-upload-img" id="imgUpload" style="height:100px; width:100px;">
+                                        <div style="width:100px; margin:auto; margin-top:20px;">
+                                            <img id="imgUpload" style="height:100px; width:100px;">
                                         </div>
                                     </div>
                                 </td>

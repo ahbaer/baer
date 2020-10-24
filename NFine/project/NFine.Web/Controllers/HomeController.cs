@@ -1,19 +1,9 @@
-﻿/*******************************************************************************
- * Copyright © 2016 NFine.Framework 版权所有
- * Author: NFine
- * Description: NFine快速开发平台
- * Website：http://www.nfine.cn
-*********************************************************************************/
-using NFine.Application.SystemManage;
-using NFine.Code;
+﻿using NFine.Code;
 using NFine.Data.Extensions;
 using NFine.Domain.Entity;
-using NFine.Domain.Entity.Application;
-using NFine.Domain.Entity.SystemManage;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Web.Mvc;
 
 namespace NFine.Web.Controllers
@@ -34,24 +24,18 @@ namespace NFine.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult About()
-        {
-            return View();
-        }
-
-        [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetChangeInfoJson()
         {
-            DataView dvChange = DbHelper.ExecuteToDataView("select top 11 * from ChangeInfo order by F_Id desc");
+            DataView dvChange = DbHelper.ExecuteToDataView("select top 11 F_Description,(case when F_Type='Create' then '新增' when F_Type='Update' then '修改' else '删除' end) F_Type,F_Date from Sys_Log where F_Type in ('Create','Update','Delete') order by F_Date desc");
             List<ShowChange> changes = new List<ShowChange>();
             foreach (DataRowView drv in dvChange)
             {
                 ShowChange change = new ShowChange()
                 {
-                    ChangeInfo = Convert.ToString(drv["ChangeInfo"]),
-                    Type = Convert.ToString(drv["Type"]),
-                    F_CreatorTime = Convert.ToDateTime(drv["F_CreatorTime"]).ToString("yyy-MM-dd")
+                    ChangeInfo = Convert.ToString(drv["F_Description"]),
+                    Type = Convert.ToString(drv["F_Type"]),
+                    F_CreatorTime = Convert.ToDateTime(drv["F_Date"]).ToString("yyy-MM-dd")
                 };
 
                 changes.Add(change);

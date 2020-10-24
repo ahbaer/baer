@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NFine.Application;
+using NFine.Application.SystemSecurity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,8 +10,12 @@ namespace NFine.Web.Areas.ProductManage.Controllers
 {
     public class BannerController : ControllerBase
     {
-        public ActionResult Index()
+        [HttpPost]
+        [HandlerAjaxOnly]
+        [ValidateAntiForgeryToken]
+        public ActionResult Log()
         {
+            new LogApp().WriteDbLog("上传首页轮播图", DbLogType.Create);
             return View();
         }
     }

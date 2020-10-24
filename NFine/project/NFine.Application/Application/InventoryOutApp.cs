@@ -1,4 +1,5 @@
 ﻿using NFine.Application.SystemManage;
+using NFine.Application.SystemSecurity;
 using NFine.Code;
 using NFine.Domain.Entity.Application;
 using NFine.Domain.IRepository.Application;
@@ -36,6 +37,11 @@ namespace NFine.Application.Application
             {
                 inventoryOutEntity.Create();
                 service.Insert(inventoryOutEntity);
+
+                new LogApp().WriteDbLog(
+                    new ProductApp().GetNameByCode(
+                        new InventoryApp().GetForm(inventoryOutEntity.InventoryId).ProductType) + "出库：" + inventoryOutEntity.Weight + "吨", 
+                    DbLogType.Create);
             }
         }
     }

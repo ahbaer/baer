@@ -12,6 +12,10 @@
     .topPanel {
         height: 100px !important;
     }
+
+    .formValue{
+        padding-bottom: 0px !important;
+    }
 </style>
 <script>
     $(function () {
@@ -126,31 +130,31 @@
                     }
                 },
                 {
-                    label: '推荐', name: 'IsRecommend', width: 30, align: 'center',
+                    label: '推荐', name: 'IsRecommend', width: 40, align: 'center',
                     formatter: function (cellvalue) {
-                        return cellvalue == true ? "<i class=\"fa fa-check\"></i>" : "<i class=\"fa fa-close\"></i>";
+                        return cellvalue == true ? "<i class='fa fa-thumbs-up'></i>" : "";
                     }
                 },
                 {
-                    label: '修改', name: '', width: 30, align: 'center',
+                    label: '修改', name: '', width: 40, align: 'center',
                     formatter: function (val, obj, row, act) {
-                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.F_Id + '\')"><i class="fa fa-pencil-square-o"></i></a>';
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.F_Id + '\')"><i class="fa fa-pencil"></i></a>';
                     }
                 },
                 {
-                    label: '查看', name: '', width: 30, align: 'center',
+                    label: '查看', name: '', width: 40, align: 'center',
                     formatter: function (val, obj, row, act) {
                         return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></a>';
                     }
                 },
                 {
-                    label: '出库', name: '', width: 30, align: 'center',
+                    label: '出库', name: '', width: 40, align: 'center',
                     formatter: function (val, obj, row, act) {
                         return '<a id="btnOut" authorize="yes" class="btn" onclick="btnOut(\'' + row.F_Id + '\')"><i class="fa fa-sign-out"></i></a>';
                     }
                 },
                 {
-                    label: '纪录', name: '', width: 30, align: 'left',
+                    label: '纪录', name: '', width: 40, align: 'left',
                     formatter: function (val, obj, row, act) {
                         return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnOutHistory(\'' + row.F_Id + '\')"><i class="fa fa-history"></i></a>';
                     }
@@ -253,8 +257,8 @@
             id: "OutForm",
             title: "出库",
             url: "/ProductManage/OutInventory/Form?inventoryId=" + f_Id,
-            width: "500px",
-            height: "300px",
+            width: "450px",
+            height: "260px",
             btn: null,
         });
     }
@@ -275,7 +279,7 @@
     <div class="toolbar" style="margin-top:25px;">
         <div class="btn-group">
             <a class="btn btn-primary" onclick="$.reload()">
-                <span class="glyphicon glyphicon-refresh"></span>
+                <i class="fa fa-refresh fa-spin"></i>刷新
             </a>
         </div>
         <div class="btn-group">

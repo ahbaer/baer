@@ -1,10 +1,4 @@
-﻿/*******************************************************************************
- * Copyright © 2016 NFine.Framework 版权所有
- * Author: NFine
- * Description: NFine快速开发平台
- * Website：http://www.nfine.cn
-*********************************************************************************/
-using NFine.Code;
+﻿using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
 using NFine.Domain.IRepository.SystemManage;
 using NFine.Repository.SystemManage;
@@ -31,18 +25,32 @@ namespace NFine.Application.SystemManage
             }
             return service.IQueryable(expression).OrderBy(t => t.F_SortCode).ToList();
         }
+
         public List<ItemsDetailEntity> GetItemList(string enCode)
         {
             return service.GetItemList(enCode);
         }
+
         public ItemsDetailEntity GetForm(string keyValue)
         {
             return service.FindEntity(keyValue);
         }
+
+        public string GetNameByCode(string enCode, string f_ItemCode)
+        {
+            return GetItemList(enCode).Find(t => t.F_ItemCode.Equals(f_ItemCode)).F_ItemName;
+        }
+
+        public string GetCodeByName(string enCode, string f_ItemName)
+        {
+            return GetItemList(enCode).Find(t => t.F_ItemName.Equals(f_ItemName)).F_ItemCode;
+        }
+
         public void DeleteForm(string keyValue)
         {
             service.Delete(t => t.F_Id == keyValue);
         }
+
         public void SubmitForm(ItemsDetailEntity itemsDetailEntity, string keyValue)
         {
             if (!string.IsNullOrEmpty(keyValue))

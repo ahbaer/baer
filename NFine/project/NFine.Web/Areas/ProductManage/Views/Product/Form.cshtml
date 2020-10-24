@@ -7,7 +7,6 @@
 <script src="~/Content/layui/layui.js" charset="utf-8"></script>
 <script>
     var keyValue = $.request("keyValue");
-    var guid = "", filePath = "";
     $(function () {
         initControl();
 
@@ -19,15 +18,14 @@
                 async: false,
                 success: function (data) {
                     $("#form1").formSerialize(data);
-                    guid = data.F_Id;
-
-                    //获取缩略图
-                    getFile();
+                    if (!!data.ImgContent) {
+                        $("#imgUpload").attr("src", data.ImgContent);
+                        $("#btnUpload").attr("disabled", "disabled");
+                        $("#btnDelete").show();
+                    }
                 }
             });
         }
-
-        
     })
 
     function initControl() {
@@ -54,31 +52,12 @@
         });
     }
 
-    //预览图获取
-    function getFile() {
-        $.ajax({
-            url: "/SystemManage/File/GetListJson",
-            data: { related_Id: guid },
-            dataType: "json",
-            async: false,
-            success: function (data) {
-                if (data.length > 0) {
-                    filePath = data[0].FilePath;
-                    $("#imgUpload").attr("src", "/" + filePath);
-                    $("#btnUpload").hide();
-                    $("#btnDelete").show();
-                }
-            }
-        });
-    }
-
     function submitForm() {
         var postData = $("#form1").formSerialize();
         $.submitForm({
             url: "/ProductManage/Product/SubmitForm?keyValue=" + keyValue,
             param: postData,
             success: function (data) {
-                guid = data.data;
                 $.currentWindow().$("#gridList").trigger("reloadGrid");
 
                 layui.use('upload', function () {
@@ -87,26 +66,17 @@
                     //普通图片上传
                     var uploadInst = upload.render({
                         elem: '#btnUpload',
-                        url: '/SystemManage/File/UploadFile',
+                        url: '/ProductManage/Product/UploadImg',
                         size: 1024,//单位kb
-                        data: { related_Id: guid },
+                        data: { f_Id: keyValue },
                         before: function (obj) {
                             obj.preview(function (index, file, result) {
                                 $('#imgUpload').attr('src', result); //图片链接（base64）
+                                $("#btnUpload").attr("disabled", "disabled");
+                                $("#btnDelete").show();
                             });
                         },
                         done: function (res) {
-                            $.ajax({
-                                url: "/ProductManage/Product/SaveImgPath",
-                                data: { f_Id: guid },
-                                type: "post",
-                                dataType: "json",
-                                async: true,
-                                success: function (data) {
-                                }
-                            });
-                            $("#btnUpload").hide();
-                            $("#btnDelete").show();
                             $.currentWindow().$("#gridList").trigger("reloadGrid");
                         },
                         error: function (res) {
@@ -122,13 +92,16 @@
     function deleteFile() {
         //删除附件
         $.ajax({
-            url: "/SystemManage/File/DeleteFile",
-            data: { related_Id: guid, path: filePath },
+            url: "/ProductManage/Product/DeleteImg",
+            data: { f_Id: keyValue },
             type: "post",
             dataType: "json",
             async: false,
             success: function (data) {
-                getFile();
+                $("#imgUpload").attr("src", null);
+                $("#btnUpload").attr("disabled", false);
+                $("#btnDelete").hide();
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
             }
         });
     }
@@ -181,11 +154,13 @@
                             <tr>
                                 <td class="formValue">
                                     <div class="layui-upload">
-                                        <div style="margin-left:150px;">
-                                            <button id="btnUpload" type="button" class="btn btn-default">图片上传</button>
+                                        <div style="margin-left:155px;">
+                                            <button type="button" class="btn btn-primary" id="btnUpload">
+                                                <i class="fa fa-upload" style="margin-right:5px;"></i>上传
+                                            </button>
                                         </div>
-                                        <div class="layui-upload-list" style="width:100px; margin:auto; margin-top:15px;">
-                                            <img class="layui-upload-img" id="imgUpload" style="height:100px; width:100px;">
+                                        <div style="width:100px; margin:auto; margin-top:15px;">
+                                            <img id="imgUpload" style="height:100px; width:100px;">
                                         </div>
                                         <div id="btnDelete" style="display:none;">
                                             <a href="#" style="position:relative; top:-25px; left:250px; border:0px;" onclick="deleteFile();">

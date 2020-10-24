@@ -17,7 +17,7 @@ namespace NFine.Domain.Entity.Application
         public string ProductName { get; set; }//产品名称
         public string ProductCode { get; set; }//产品代码
         public int Sort { get; set; }//排序
-        public string ImgPath { get; set; }//图片地址
+        public string ImgContent { get; set; }//图片地址
         public string Description { get; set; }//备注
     }
 }

@@ -1,10 +1,4 @@
-﻿/*******************************************************************************
- * Copyright © 2016 NFine.Framework 版权所有
- * Author: NFine
- * Description: NFine快速开发平台
- * Website：http://www.nfine.cn
-*********************************************************************************/
-using NFine.Code;
+﻿using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
 using NFine.Domain.IRepository.SystemManage;
 using NFine.Repository.SystemManage;
@@ -30,14 +24,17 @@ namespace NFine.Application.SystemManage
             expression = expression.And(t => t.F_Account != "admin");
             return service.FindList(expression, pagination);
         }
+
         public UserEntity GetForm(string keyValue)
         {
             return service.FindEntity(keyValue);
         }
+
         public void DeleteForm(string keyValue)
         {
             service.DeleteForm(keyValue);
         }
+
         public void SubmitForm(UserEntity userEntity, UserLogOnEntity userLogOnEntity, string keyValue)
         {
             if (!string.IsNullOrEmpty(keyValue))
@@ -50,10 +47,12 @@ namespace NFine.Application.SystemManage
             }
             service.SubmitForm(userEntity, userLogOnEntity, keyValue);
         }
+
         public void UpdateForm(UserEntity userEntity)
         {
             service.Update(userEntity);
         }
+
         public UserEntity CheckLogin(string username, string password)
         {
             UserEntity userEntity = service.FindEntity(t => t.F_Account == username);

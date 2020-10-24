@@ -1,4 +1,5 @@
-﻿using NFine.Code;
+﻿using NFine.Application.SystemSecurity;
+using NFine.Code;
 using NFine.Domain.Entity.Application;
 using NFine.Domain.IRepository.Application;
 using NFine.Repository.Application;
@@ -16,14 +17,20 @@ namespace NFine.Application.Application
             return service.IQueryable().OrderBy(t => t.Sort).ToList();
         }
 
-        public ProductEntity GetForm(string keyValue)
+        public ProductEntity GetForm(string f_Id)
         {
-            return service.FindEntity(keyValue);
+            return service.FindEntity(f_Id);
         }
 
-        public void DeleteForm(string keyValue)
+        public string GetNameByCode(string projectCode)
         {
-            service.Delete(t => t.F_Id == keyValue);
+            return service.FindEntity(t => t.ProductCode == projectCode).ProductName;
+        }
+
+        public void DeleteForm(string f_Id)
+        {
+            new LogApp().WriteDbLog("删除产品分类：" + GetForm(f_Id).ProductName, DbLogType.Delete);
+            service.Delete(t => t.F_Id == f_Id);
         }
 
         public string SubmitForm(ProductEntity productEntity, string keyValue)
@@ -35,11 +42,14 @@ namespace NFine.Application.Application
                 service.Update(productEntity);
 
                 f_Id = keyValue;
+
+                new LogApp().WriteDbLog("修改产品分类：" + productEntity.ProductName, DbLogType.Update);
             }
             else
             {
                 f_Id = productEntity.Create();
                 service.Insert(productEntity);
+                new LogApp().WriteDbLog("新增产品分类：" + productEntity.ProductName, DbLogType.Create);
             }
 
             return f_Id;

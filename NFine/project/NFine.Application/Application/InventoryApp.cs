@@ -1,4 +1,6 @@
-﻿using NFine.Code;
+﻿using NFine.Application.SystemManage;
+using NFine.Application.SystemSecurity;
+using NFine.Code;
 using NFine.Data.Extensions;
 using NFine.Domain.Entity.Application;
 using NFine.Domain.IRepository.Application;
@@ -89,9 +91,9 @@ namespace NFine.Application.Application
             return data;
         }
 
-        public InventoryEntity GetForm(string keyValue)
+        public InventoryEntity GetForm(string f_Id)
         {
-            return service.FindEntity(keyValue);
+            return service.FindEntity(f_Id);
         }
 
         public string GetAllWeight(string queryJson)
@@ -158,9 +160,11 @@ namespace NFine.Application.Application
             return DbHelper.ExecuteToString(strSql);
         }
 
-        public void DeleteForm(string keyValue)
+        public void DeleteForm(string f_Id)
         {
-            service.Delete(t => t.F_Id == keyValue);
+            new LogApp().WriteDbLog("删除产品：" + new ProductApp().GetNameByCode(GetForm(f_Id).ProductType), DbLogType.Delete);
+
+            service.Delete(t => t.F_Id == f_Id);
         }
 
         public string SubmitForm(InventoryEntity inventoryEntity, string keyValue)
@@ -172,11 +176,15 @@ namespace NFine.Application.Application
                 service.Update(inventoryEntity);
 
                 f_Id = keyValue;
+
+                new LogApp().WriteDbLog("修改产品：" + new ProductApp().GetNameByCode(inventoryEntity.ProductType), DbLogType.Update);
             }
             else
             {
                 f_Id = inventoryEntity.Create();
                 service.Insert(inventoryEntity);
+
+                new LogApp().WriteDbLog("新增产品：" + new ProductApp().GetNameByCode(inventoryEntity.ProductType), DbLogType.Create);
             }
 
             return f_Id;

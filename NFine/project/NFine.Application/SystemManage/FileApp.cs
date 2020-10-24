@@ -39,10 +39,16 @@ namespace NFine.Application.SystemManage
             }
         }
 
-        public void SaveFile(FileEntity fileEntity)
+        public string SaveFile(FileEntity fileEntity)
         {
-            fileEntity.Create();
+            string f_Id = fileEntity.Create();
             service.Insert(fileEntity);
+            return f_Id;
+        }
+
+        public void DeleteFile(string f_Id)
+        {
+            service.Delete(t => t.F_Id == f_Id);
         }
     }
 }

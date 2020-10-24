@@ -140,7 +140,7 @@
             success: function (data) {
                 guid = data.data;
                 $.currentWindow().$("#gridList").trigger("reloadGrid");
-
+                getFile();
                 layui.use('upload', function () {
                     var $ = layui.jquery, upload = layui.upload;
 
@@ -167,11 +167,11 @@
                                 $('#pic_' + count).attr('src', result);//图片链接（base64）
                                 $('#picRel_' + count).attr('src', result);
                                 $('#pic_' + count).click();
-                                count++;
                             });
                         },
                         done: function (res) {
-                            getFile();
+                            $("#gallery_nav a img")[count].id = res.data;
+                            count++;
                         }
                     });
                 });
@@ -189,20 +189,21 @@
             async: false,
             success: function (data) {
                 count = 0;
+                $("#gallery_nav").empty();
+                $("#gallery_output").empty();
                 for (var i = 0; i < data.length; i++) {
-                    $("#pic_" + i).attr("src", "/" + data[i].FilePath);
-                    $("#picRel_" + i).attr("src", "/" + data[i].FilePath);
-                    if (i == 0) {
-                        filePath = data[i].FilePath;
-                    }
+                    $("#gallery_nav").append("<a rel='picRel_" + i + "' href='javascript:;'><img id='" + data[i].F_Id + "' src='" + data[i].FileContent + "' style='width:104px;' /></a>");
+                    $("#gallery_output").append("<img id='picRel_" + i + "' src='" + data[i].FileContent + "' style='width:420px;' />");
                     count++;
                 }
                 for (var i = data.length; i < 4; i++) {
-                    $("#pic_" + i).attr("src", "/Content/img/background_small.jpg");
-                    $("#picRel_" + i).attr("src", "/Content/img/background_small.jpg");
+                    $("#gallery_nav").append("<a rel='picRel_" + i + "' href='javascript:;'><img id='pic_" + i + "' style='width:104px;' /></a>");
+                    $("#gallery_output").append("<img id='picRel_" + i + "' style='width:420px;' />");
                 }
             }
         });
+
+        showFile();//展示图片
     }
 
     //预览图展示
@@ -214,29 +215,23 @@
             if ($("#" + this.rel).is(":hidden")) {
                 $("#gallery_output img").slideUp();
                 $("#" + this.rel).slideDown();
-                filePath = $("#" + this.rel).attr("src");
-
-                if (filePath != "/Content/img/background_small.jpg") {
-                    $("#divdelete").show();
-                } else {
-                    $("#divdelete").hide();
-                }
             }
+            $("#gallery_delete").show();
         });
     }
 
-    //删除预览图
     function deleteFile() {
+        var f_Id = $("#gallery_nav a.on img")[0].id;
         //删除附件
         $.ajax({
             url: "/SystemManage/File/DeleteFile",
-            data: { related_Id: guid, path: filePath },
+            data: { f_Id: f_Id },
             type: "post",
             dataType: "json",
             async: false,
             success: function (data) {
                 getFile();
-                $("#divdelete").hide();
+                $('#pic_' + count).click();
             }
         });
     }
@@ -379,26 +374,10 @@
                                     <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
                                         <div id="gallery" style="height:280px; margin-left:55px;">
                                             <div id="gallery_nav">
-                                                <a class="on" rel="picRel_0" href="javascript:;">
-                                                    <img id="pic_0" style="width:104px;"/>
-                                                </a>
-                                                <a rel="picRel_1" href="javascript:;">
-                                                    <img id="pic_1" style="width:104px;" />
-                                                </a>
-                                                <a rel="picRel_2" href="javascript:;">
-                                                    <img id="pic_2" style="width:104px;"/>
-                                                </a>
-                                                <a rel="picRel_3" href="javascript:;">
-                                                    <img id="pic_3" style="width:104px;"/>
-                                                </a>
                                             </div>
                                             <div id="gallery_output" style="margin-left:10px;">
-                                                <img id="picRel_0" style="width:420px;"/>
-                                                <img id="picRel_1" style="width:420px;"/>
-                                                <img id="picRel_2" style="width:420px;"/>
-                                                <img id="picRel_3" style="width:420px;"/>
                                             </div>
-                                            <div id="divdelete" style="display:none">
+                                            <div id="gallery_delete" style="display:none">
                                                 <a href="#" style="position:relative; top:230px; border:0px;" onclick="deleteFile();">
                                                     <img src="~/Content/img/delete.gif" style="height:25px;" title="删除" />
                                                 </a>

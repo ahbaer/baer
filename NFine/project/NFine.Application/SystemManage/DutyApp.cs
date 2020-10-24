@@ -1,10 +1,4 @@
-﻿/*******************************************************************************
- * Copyright © 2016 NFine.Framework 版权所有
- * Author: NFine
- * Description: NFine快速开发平台
- * Website：http://www.nfine.cn
-*********************************************************************************/
-using NFine.Code;
+﻿using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
 using NFine.Domain.IRepository.SystemManage;
 using NFine.Repository.SystemManage;
@@ -45,10 +39,12 @@ namespace NFine.Application.SystemManage
         {
             return service.FindEntity(keyValue);
         }
+
         public void DeleteForm(string keyValue)
         {
             service.Delete(t => t.F_Id == keyValue);
         }
+
         public void SubmitForm(RoleEntity roleEntity, string keyValue)
         {
             if (!string.IsNullOrEmpty(keyValue))

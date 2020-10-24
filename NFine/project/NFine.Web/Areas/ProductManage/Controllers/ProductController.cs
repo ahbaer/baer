@@ -1,7 +1,11 @@
 ﻿using NFine.Application.Application;
+using NFine.Application.SystemSecurity;
 using NFine.Code;
 using NFine.Data.Extensions;
 using NFine.Domain.Entity.Application;
+using System;
+using System.IO;
+using System.Web;
 using System.Web.Mvc;
 
 namespace NFine.Web.Areas.ProductManage.Controllers
@@ -36,14 +40,6 @@ namespace NFine.Web.Areas.ProductManage.Controllers
         }
 
         [HttpPost]
-        public ActionResult SaveImgPath(string f_Id)
-        {
-            string updateSql = "update Product set ImgPath=b.FilePath from Product a inner join Frame_File b on a.F_Id=b.Related_Id where a.F_Id='" + f_Id + "'";
-            DbHelper.ExecuteNonQuery(updateSql);
-            return Success("上传成功。");
-        }
-
-        [HttpPost]
         [HandlerAjaxOnly]
         [HandlerAuthorize]
         [ValidateAntiForgeryToken]
@@ -55,6 +51,30 @@ namespace NFine.Web.Areas.ProductManage.Controllers
             }
             
             return Success("删除成功。");
+        }
+
+        [HttpPost]
+        [HandlerAjaxOnly]
+        public ActionResult UploadImg(HttpPostedFileBase file, string f_Id)
+        {
+            Stream stream = file.InputStream;
+            byte[] bytes = new byte[stream.Length];
+            stream.Read(bytes, 0, bytes.Length);
+            // 设置当前流的位置为流的开始
+            stream.Seek(0, SeekOrigin.Begin);
+            string base64 = Convert.ToBase64String(bytes);
+            string base64Url = "data:" + file.ContentType + ";base64," + base64;
+
+            DbHelper.ExecuteNonQuery("update Product set ImgContent='" + base64Url + "' where F_Id='" + f_Id + "'");
+            return View();
+        }
+
+        [HttpPost]
+        [HandlerAjaxOnly]
+        public ActionResult DeleteImg(string f_Id)
+        {
+            DbHelper.ExecuteNonQuery("update Product set ImgContent='' where F_Id='" + f_Id + "'");
+            return View();
         }
     }
 }

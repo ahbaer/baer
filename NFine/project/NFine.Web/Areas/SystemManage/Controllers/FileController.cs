@@ -15,7 +15,7 @@ using System.Web.Mvc;
 
 namespace NFine.Web.Areas.SystemManage.Controllers
 {
-    public class FileController : Controller
+    public class FileController : ControllerBase
     {
         private FileApp fileApp = new FileApp();
 
@@ -31,38 +31,37 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         [HandlerAjaxOnly]
         public ActionResult UploadFile(HttpPostedFileBase file, string related_Id)
         {
-            var filePath = Server.MapPath(string.Format("~/{0}{1}", "UploadFile\\", related_Id));
-            if(!Directory.Exists(filePath))
+            var data = fileApp.GetList(related_Id);
+            if(data.Count > 3)
             {
-                Directory.CreateDirectory(filePath);//创建该文件夹
+                return Error("最多上传四张图片！");
             }
-            file.SaveAs(Path.Combine(filePath, file.FileName));
+
+            Stream stream = file.InputStream;
+            byte[] bytes = new byte[stream.Length];
+            stream.Read(bytes, 0, bytes.Length);
+            // 设置当前流的位置为流的开始
+            stream.Seek(0, SeekOrigin.Begin);
+            string base64 = Convert.ToBase64String(bytes);
+            string base64Url = "data:" + file.ContentType + ";base64," + base64;
 
             FileEntity fileEntity = new FileEntity()
             {
                 Related_Id = related_Id,
-                FilePath = "UploadFile/" + related_Id + "/" + file.FileName,
                 FileName = file.FileName,
                 FileSize = file.ContentLength,
-                FileType = file.ContentType
+                FileType = file.ContentType,
+                FileContent = base64Url
             };
-
-            fileApp.SaveFile(fileEntity);
-            return View();
+            string f_Id = fileApp.SaveFile(fileEntity);
+            return Success("操作成功。", f_Id);
         }
 
         [HttpPost]
-        public ActionResult DeleteFile(string related_Id, string path)
+        public ActionResult DeleteFile(string f_Id)
         {
-            string filePath = Server.MapPath("~") + path.Trim('/').Replace("/", "\\");
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-
-            string strSql = "delete Frame_File where Related_Id='" + related_Id + "' and FilePath='" + path.Trim('/') + "'";
-            DbHelper.ExecuteNonQuery(strSql);
-            return View();
+            fileApp.DeleteFile(f_Id);
+            return Success("删除成功。");
         }
     }
 }

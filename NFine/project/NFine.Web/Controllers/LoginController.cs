@@ -5,6 +5,7 @@ using NFine.Code;
 using NFine.Domain.Entity.SystemManage;
 using NFine.Domain.Entity.SystemSecurity;
 using System;
+using System.Configuration;
 using System.Web.Mvc;
 
 namespace NFine.Web.Controllers
@@ -14,7 +15,12 @@ namespace NFine.Web.Controllers
         [HttpGet]
         public virtual ActionResult Index()
         {
-            var test = string.Format("{0:E2}", 1);
+            return View();
+        }
+
+        [HttpGet]
+        public virtual ActionResult Auth()
+        {
             return View();
         }
 
@@ -46,6 +52,12 @@ namespace NFine.Web.Controllers
         [HandlerAjaxOnly]
         public ActionResult CheckLogin(string username, string password, string code)
         {
+            string tip;
+            if(!Licence.IsLicence(ConfigurationManager.AppSettings["LicenceKey"], out tip))
+            {
+                throw new Exception("授权错误");
+            }
+
             LogEntity logEntity = new LogEntity();
             logEntity.F_ModuleName = "系统登录";
             logEntity.F_Type = DbLogType.Login.ToString();
@@ -102,6 +114,43 @@ namespace NFine.Web.Controllers
                 new LogApp().WriteDbLog(logEntity);
                 return Content(new AjaxResult { state = ResultType.error.ToString(), message = ex.Message }.ToJson());
             }
+        }
+
+        [HttpPost]
+        [HandlerAjaxOnly]
+        public ActionResult SetAuthorizationCode(string authCode)
+        {
+            try
+            {
+                string tip;
+                if (!Licence.IsLicence(authCode, out tip))
+                {
+                    return Content(new AjaxResult { state = ResultType.error.ToString(), message = tip }.ToJson());
+                }
+                try
+                {
+                    Configs.SetValue("LicenceKey", authCode);
+                }
+                catch (Exception ex)
+                {
+                    LogFactory.GetLogger().Error("授权错误1：" + ex.ToString());
+                    return Content(new AjaxResult { state = ResultType.error.ToString(), message = "授权码无法写入，请检查文件权限" }.ToJson());
+                }
+                return Content(new AjaxResult { state = ResultType.success.ToString(), message = "输入授权成功" }.ToJson());
+            }
+            catch (Exception ex)
+            {
+                LogFactory.GetLogger().Error("授权错误2：" + ex.ToString());
+                return Content(new AjaxResult { state = ResultType.error.ToString(), message = "授权码错误" }.ToJson());
+            }
+        }
+
+        [HttpGet]
+        public ActionResult GetMachineCode()
+        {
+            string machineCode = MachineCode.GetMachineCode(false, false);
+            machineCode = DESEncrypt.Encrypt(machineCode);
+            return Content(new AjaxResult { state = ResultType.success.ToString(), message = machineCode }.ToJson());
         }
     }
 }

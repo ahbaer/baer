@@ -96,6 +96,12 @@
                                     $("#switchCode").trigger("click");
                                     $code.val('');
                                     $.login.formMessage(data.message);
+
+                                    if (data.message == "授权错误") {
+                                        window.setTimeout(function () {
+                                            window.location.href = "/Login/Auth";
+                                        }, 500);
+                                    }
                                 }
                             }
                         });

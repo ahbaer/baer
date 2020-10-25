@@ -1,20 +1,49 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
 using System.Web;
 
 namespace NFine.Code
 {
     public sealed class Licence
     {
-        public static bool IsLicence(string key)
+        public static bool IsLicence(string key, out string tip)
         {
-            string host = HttpContext.Current.Request.Url.Host.ToLower();
-            if (host.Equals("localhost"))
-                return true;
-            string licence = ConfigurationManager.AppSettings["LicenceKey"];
-            if (licence != null && licence == Md5.md5(key, 32))
-                return true;
+            try
+            {
+                string licence = key;
+                string machineCode = DESEncrypt.Decrypt(licence);//先解密
 
-            return false;
+                long longUnixTime = new long();
+                if (machineCode.Split('1').Length > 1)
+                {
+                    long.TryParse(machineCode.Split('|')[1], out longUnixTime);//获取授权时间戳
+                }
+
+                DateTime initTime = new DateTime(1970, 1, 1);
+                TimeSpan ts = DateTime.Now - initTime;//获取当前时间戳
+
+                if (ts.Ticks > longUnixTime)
+                {
+                    tip = "授权码过期";
+                    return false;
+                }
+                else
+                {
+                    if (machineCode.Split('|')[0] == MachineCode.GetMachineCode(false, false))
+                    {
+                        tip = "授权通过";
+                        return true;
+                    }
+                }
+
+                tip = "授权码错误";
+                return false;
+            }
+            catch (Exception)
+            {
+                tip = "授权码错误";
+                return false;
+            }
         }
 
         public static string GetLicence()

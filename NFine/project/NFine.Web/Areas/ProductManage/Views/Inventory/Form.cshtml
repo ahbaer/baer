@@ -368,8 +368,11 @@
                         <tr>
                             <td class="formValue">
                                 <div class="layui-upload">
-                                    <button type="button" class="btn btn-default" id="btnUpload" style="margin-left:80px;">
-                                        图片上传
+                                    <button type="button" class="btn btn-primary" id="btnRefresh" style="margin-left:85px;" onclick="$.reload()">
+                                        <i class="fa fa-refresh fa-spin" style="margin-right:5px;"></i>刷新
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="btnUpload">
+                                        <i class="fa fa-upload" style="margin-right:5px;"></i>上传
                                     </button>
                                     <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
                                         <div id="gallery" style="height:280px; margin-left:55px;">

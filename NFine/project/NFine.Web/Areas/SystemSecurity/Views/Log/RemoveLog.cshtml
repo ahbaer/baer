@@ -7,10 +7,10 @@
         if (!$('#form1').formValid()) {
             return false;
         }
+
         $.submitForm({
             loading: "正在备份数据...",
-            url: "/SystemSecurity/Log/SubmitRemoveLog",
-            param: $("#form1").formSerialize(),
+            url: "/SystemSecurity/Log/SubmitRemoveLog?keepTime=" + $("#keepTime").val(),
             success: function () {
                 $.currentWindow().$("#gridList").trigger("reloadGrid");
             }

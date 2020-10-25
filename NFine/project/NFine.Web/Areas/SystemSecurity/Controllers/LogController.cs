@@ -23,6 +23,7 @@ namespace NFine.Web.Areas.SystemSecurity.Controllers
         {
             return View();
         }
+
         [HttpGet]
         [HandlerAjaxOnly]
         public ActionResult GetGridJson(Pagination pagination, string queryJson)
@@ -36,10 +37,9 @@ namespace NFine.Web.Areas.SystemSecurity.Controllers
             };
             return Content(data.ToJson());
         }
+
         [HttpPost]
         [HandlerAjaxOnly]
-        [HandlerAuthorize]
-        [ValidateAntiForgeryToken]
         public ActionResult SubmitRemoveLog(string keepTime)
         {
             logApp.RemoveLog(keepTime);

@@ -10,22 +10,23 @@ namespace NFine.Domain.Entity.Application
     public class InventoryReq
     {
         public Pagination pagination { get; set; }
-        public InventoryQry inventoryQry { get; set; }
+        public InventoryQry[] inventoryQry { get; set; }
     }
 
     public class InventoryQry
     {
-        public string strengthMin { get; set; }
-        public string strengthMax { get; set; }
-        public string orderNo { get; set; }
-        public string isRecommend { get; set; }
-
-        public List<string> productType { get; set; }
-        public List<string> grade { get; set; }
-        public List<string> length { get; set; }
-        public List<string> horseValue { get; set; }
-        public List<string> wareId { get; set; }
-        public List<string> status { get; set; }
-        public List<string> quoteType { get; set; }
+        public string name { get; set; }
+        public string code { get; set; }
+        public string selectedName { get; set; }
+        public bool isActive { get; set; }
+        public SelectedList[] selectedList { get; set; }
     }
+
+    public class SelectedList
+    {
+        public string name { get; set; }
+        public string code { get; set; }
+        public bool selected { get; set; }
+    }
+
 }

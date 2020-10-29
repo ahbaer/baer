@@ -62,7 +62,7 @@ namespace NFine.Web.Controllers
                 List<ItemsDetailEntity> itemDetails = itemsDetailApp.GetList(itemType.F_Id, "");
                 foreach (var itemDetail in itemDetails)
                 {
-                    retDetails.Add(new { itemCode = itemDetail.F_ItemCode, itemName = itemDetail.F_ItemName});
+                    retDetails.Add(new { itemCode = itemDetail.F_ItemCode, itemName = itemDetail.F_ItemName });
                 }
                 itemAndDetails.Add(new { typeName = itemType.F_FullName, typeEntitys = retDetails });
             }
@@ -72,11 +72,12 @@ namespace NFine.Web.Controllers
 
         #region ==========商品==========
         [HttpPost]
-        public ActionResult GetGridJson(InventoryReq inventoryReq)
+        public ActionResult GetInventoryListJson(InventoryReq inventoryReq)
         {
             Pagination pagination = inventoryReq.pagination;
-            InventoryQry qry = inventoryReq.inventoryQry;
+            InventoryQry[] inventoryQrys = inventoryReq.inventoryQry;
 
+            //sql
             string strSql = @"
 select 
 	WareName,
@@ -97,39 +98,74 @@ select
 	IsRecommend
 from Inventory a
 where 1=1 ";
+
+            //where
             string strQry = "";
-            string strOrder = " order by " + pagination.sidx + " " + pagination.sord + " offset " + (pagination.page - 1) * pagination.rows + " rows fetch next " + pagination.rows + " rows only";
+            foreach (InventoryQry inventoryQry in inventoryQrys)
+            {
+                if (inventoryQry.code.ToLower() == "strength")//强力是范围，其他都是选项
+                {
+                    foreach (SelectedList selected in inventoryQry.selectedList)
+                    {
+                        if (selected.name.ToLower() == "min")
+                        {
+                            strQry += " and cast(Strength as float)>=" + selected.code + " ";
+                        }
+                        else if (selected.name.ToLower() == "max")
+                        {
+                            strQry += " and cast(Strength as float)<=" + selected.code + " ";
+                        }
+                    }
+                }
+                else
+                {
+                    string condition = "";
+                    foreach (SelectedList selected in inventoryQry.selectedList)
+                    {
+                        if (selected.selected)
+                        {
+                            condition += "'" + selected.code + "',";
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(condition))
+                    {
+                        strQry += " and " + inventoryQry.code + " in (" + condition.Trim(',') + ") ";
+                    }
+                }
+            }
 
-            DataView dvInventory = DbHelper.ExecuteToDataView(strSql + strQry + strOrder);
+            //order
+            string strOrder = " order by IsRecommend desc,F_CreatorTime desc ";
+            //paging
+            string strPaging = " offset " + (pagination.page - 1) * pagination.rows + " rows fetch next " + pagination.rows + " rows only";
 
+            DataView dvInventory = DbHelper.ExecuteToDataView(strSql + strQry + strOrder + strPaging);
             List<object> inventorys = new List<object>();
             foreach (DataRowView drv in dvInventory)
             {
-                inventorys.Add(new {
-                    WareName = Convert.ToString(drv["WareName"]),
-                    OrderNo = Convert.ToString(drv["OrderNo"]),
-                    ProductType = Convert.ToString(drv["ProductType"]),
-                    Grade = Convert.ToString(drv["Grade"]),
-                    Strength = Convert.ToString(drv["Strength"]),
-                    Length = Convert.ToString(drv["Length"]),
-                    HorseValue = Convert.ToString(drv["HorseValue"]),
-                    Status = Convert.ToString(drv["Status"]),
-                    QuoteType = Convert.ToString(drv["QuoteType"]),
-                    Price = Convert.ToString(drv["Price"]),
-                    Contract = Convert.ToString(drv["Contract"]),
-                    Basis = Convert.ToString(drv["Basis"]),
-                    Year = Convert.ToString(drv["Year"]),
-                    SailingSchedule = Convert.ToString(drv["SailingSchedule"]),
-                    Weight = Convert.ToString(drv["Weight"]),
-                    IsRecommend = Convert.ToString(drv["IsRecommend"])
+                inventorys.Add(new
+                {
+                    wareName = Convert.ToString(drv["WareName"]),
+                    orderNo = Convert.ToString(drv["OrderNo"]),
+                    productType = Convert.ToString(drv["ProductType"]),
+                    grade = Convert.ToString(drv["Grade"]),
+                    strength = Convert.ToString(drv["Strength"]),
+                    length = Convert.ToString(drv["Length"]),
+                    horseValue = Convert.ToString(drv["HorseValue"]),
+                    status = Convert.ToString(drv["Status"]),
+                    quoteType = Convert.ToString(drv["QuoteType"]),
+                    price = Convert.ToString(drv["Price"]),
+                    contract = Convert.ToString(drv["Contract"]),
+                    basis = Convert.ToString(drv["Basis"]),
+                    year = Convert.ToString(drv["Year"]),
+                    sailingSchedule = Convert.ToString(drv["SailingSchedule"]),
+                    weight = Convert.ToString(drv["Weight"]),
+                    isRecommend = Convert.ToString(drv["IsRecommend"])
                 });
-            }    
+            }
+
             return Content(inventorys.ToJson());
         }
-        #endregion
-
-        #region ==========分类==========
-
         #endregion
 
         #region ==========仓库==========

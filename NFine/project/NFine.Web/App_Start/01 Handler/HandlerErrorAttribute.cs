@@ -20,8 +20,8 @@ namespace NFine.Web
         {
             if (context == null)
                 return;
-            var log = LogFactory.GetLogger(context.Controller.ToString());
-            log.Error(context.Exception);
+            //var log = LogFactory.GetLogger(context.Controller.ToString());
+            //log.Error(context.Exception);
         }
     }
 }

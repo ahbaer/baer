@@ -21,7 +21,7 @@
         <div class="container">
             <form>
                 <div class="row">
-                    <input id="txtMachineCode" type="text" readonly="readonly" style="width:100%;">
+                    <input id="txtMachineCode" type="text" readonly="readonly" style="width:100%;" value="@ViewBag.MachineCode">
                 </div>
                 <div class="row">
                     <input id="txtAuthCode" type="text" placeholder="授权码：（请输入授权码）" style="width:100%;">
@@ -60,12 +60,13 @@
                         return false;
                     } else {
                         $.ajax({
-                            url: "/Login/SetAuthorizationCode",
+                            url: "/Auth/SetAuthorizationCode",
                             data: { authCode: $.trim($machineCode.val()) },
                             type: "post",
                             dataType: "json",
                             success: function (data) {
                                 if (data.state == "success") {
+                                    $.login.formMessage(data.message);
                                     window.setTimeout(function () {
                                         window.location.href = "/Login/Index";
                                     }, 500);
@@ -100,17 +101,6 @@
 
             $(function () {
                 $.login.init();
-
-                $.ajax({
-                    url: "/Login/GetMachineCode",
-                    type: "get",
-                    dataType: "json",
-                    success: function (data) {
-                        if (data.state == "success") {
-                            $("#txtMachineCode").val("机器码：" + data.message);
-                        }
-                    }
-                });
             });
         })(jQuery);
     </script>

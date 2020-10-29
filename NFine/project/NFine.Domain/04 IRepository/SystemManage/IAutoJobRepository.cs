@@ -3,7 +3,7 @@ using NFine.Domain.Entity.SystemManage;
 
 namespace NFine.Domain.IRepository.SystemManage
 {
-    public interface IAreaRepository : IRepositoryBase<AreaEntity>
+    public interface IAutoJobRepository : IRepositoryBase<AutoJobEntity>
     {
     }
 }

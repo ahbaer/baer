@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NFine.Domain</RootNamespace>
     <AssemblyName>NFine.Domain</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +45,7 @@
     <Compile Include="01 Infrastructure\IDeleteAudited.cs" />
     <Compile Include="01 Infrastructure\IEntity.cs" />
     <Compile Include="01 Infrastructure\IModificationAudited.cs" />
+    <Compile Include="03 Entity\Application\ApiEntity.cs" />
     <Compile Include="03 Entity\Application\ProductEntity.cs" />
     <Compile Include="03 Entity\Application\InventoryOutEntity.cs" />
     <Compile Include="03 Entity\Application\InventoryEntity.cs" />
@@ -51,6 +53,8 @@
     <Compile Include="03 Entity\Application\WareHouseEntity.cs" />
     <Compile Include="03 Entity\Application\ChartDataEntity.cs" />
     <Compile Include="03 Entity\SystemManage\AreaEntity.cs" />
+    <Compile Include="03 Entity\SystemManage\AutoJobEntity.cs" />
+    <Compile Include="03 Entity\SystemManage\AutoJobLogEntity.cs" />
     <Compile Include="03 Entity\SystemManage\FileEntity.cs" />
     <Compile Include="03 Entity\SystemManage\ConfigEntity.cs" />
     <Compile Include="03 Entity\SystemManage\ItemsEntity.cs" />
@@ -68,6 +72,8 @@
     <Compile Include="04 IRepository\Application\IInventoryOutRepository.cs" />
     <Compile Include="04 IRepository\Application\IInventoryRepository.cs" />
     <Compile Include="04 IRepository\Application\IWareHouseRepository.cs" />
+    <Compile Include="04 IRepository\SystemManage\IAutoJobLogRepository.cs" />
+    <Compile Include="04 IRepository\SystemManage\IAutoJobRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IFileRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IConfigRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IConfigCategroyRepository.cs" />

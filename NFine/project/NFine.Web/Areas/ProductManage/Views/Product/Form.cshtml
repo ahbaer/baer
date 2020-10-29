@@ -58,6 +58,7 @@
             url: "/ProductManage/Product/SubmitForm?keyValue=" + keyValue,
             param: postData,
             success: function (data) {
+                keyValue = data.data;
                 $.currentWindow().$("#gridList").trigger("reloadGrid");
 
                 layui.use('upload', function () {

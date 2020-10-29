@@ -1,10 +1,7 @@
 ﻿using JWT;
 using JWT.Algorithms;
-using JWT.Builder;
 using JWT.Exceptions;
 using JWT.Serializers;
-using NFine.Code;
-using System.Text;
 using System.Web;
 using System.Web.Mvc;
 

@@ -1,4 +1,6 @@
-﻿using System.Web.Mvc;
+﻿using NFine.AutoJob;
+using NFine.Code;
+using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace NFine.Web
@@ -13,6 +15,11 @@ namespace NFine.Web
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            
+
+            // 定时任务
+            new JobCenter().Start(); 
         }
     }
 }

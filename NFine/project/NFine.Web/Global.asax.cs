@@ -16,8 +16,6 @@ namespace NFine.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
-            
-
             // 定时任务
             new JobCenter().Start(); 
         }

@@ -51,6 +51,9 @@
     <Compile Include="Application\InventoryApp.cs" />
     <Compile Include="Application\WareHouseApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SystemManage\TableFieldApp.cs" />
+    <Compile Include="SystemManage\TableApp.cs" />
+    <Compile Include="SystemManage\AutoJobLogApp.cs" />
     <Compile Include="SystemManage\AutoJobApp.cs" />
     <Compile Include="SystemManage\FileApp.cs" />
     <Compile Include="SystemManage\ConfigCategoryApp.cs" />

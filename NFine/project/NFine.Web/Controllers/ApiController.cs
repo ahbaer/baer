@@ -168,8 +168,35 @@ where 1=1 ";
         }
         #endregion
 
-        #region ==========仓库==========
+        #region ==========期货==========
+        [HttpGet]
+        public ActionResult GetComrms()
+        {
+            List<object> comrms = new List<object>();
 
+            DataView dv = DbHelper.ExecuteToDataView("select * from Contract order by M asc,NV desc,FS asc");
+            double nv = 0;
+            if(dv.Count > 1)
+            {
+                nv = Convert.ToDouble(dv[1]["NV"]);
+            }
+            foreach (DataRowView drv in dv)
+            {
+                comrms.Add(new {
+                    contractName = Convert.ToString(drv["ContractCode"]) == "USDCNH" ? "美金汇率" : Convert.ToString(drv["ContractName"]),
+                    contractCode = Convert.ToString(drv["ContractName"]),
+                    price = Convert.ToString(drv["Price"]),
+                    isTop = Convert.ToDouble(drv["NV"]) == nv,
+                    m = Convert.ToString(drv["M"]),
+                    s = Convert.ToString(drv["S"]),
+                    c = Convert.ToString(drv["C"]),
+                    fs = Convert.ToString(drv["FS"]),
+                    time = Convert.ToDateTime(drv["Time"]).ToString("yyyy年MM月dd日HH:mm:ss"),
+                    zf = Convert.ToString(drv["ZF"])
+                });
+            }
+            return Content(comrms.ToJson());
+        }
         #endregion
     }
 }

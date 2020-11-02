@@ -11,7 +11,7 @@
 
         if (!!f_Id) {
             $.ajax({
-                url: "/ProductManage/OutInventory/GetFormJson",
+                url: "/ProductManage/Inventory/GetOutFormJson",
                 data: { f_Id: f_Id },
                 dataType: "json",
                 async: false,
@@ -45,7 +45,7 @@
     function submitForm() {
         var postData = $("#form1").formSerialize();
         $.submitForm({
-            url: "/ProductManage/OutInventory/SubmitForm?f_Id=" + f_Id,
+            url: "/ProductManage/Inventory/SubmitOutForm?f_Id=" + f_Id,
             param: postData,
             success: function () {
                 $.currentWindow().$("#gridList").trigger("reloadGrid");

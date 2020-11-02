@@ -51,7 +51,7 @@
     <Compile Include="JobCenter.cs" />
     <Compile Include="JobExecute.cs" />
     <Compile Include="JobScheduler.cs" />
-    <Compile Include="Job\GetContractJob.cs" />
+    <Compile Include="Job\GetComrmsJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

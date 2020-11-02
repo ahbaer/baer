@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\ColRow.cs" />
     <Compile Include="Fuctions\Fuctions.cs" />
     <Compile Include="DBContext\NFineDbContext.cs" />
     <Compile Include="Extensions\DbHelper.cs" />

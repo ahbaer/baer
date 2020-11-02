@@ -13,7 +13,7 @@
     function gridList() {
         var $gridList = $("#gridList");
         $gridList.dataGrid({
-            url: "/ProductManage/OutInventory/GetGridJson?inventoryId=" + inventoryId,
+            url: "/ProductManage/Inventory/GetOutGridJson?inventoryId=" + inventoryId,
             height: $(window).height() - 96,
             colModel: [
                 { label: "主键", name: "F_Id", hidden: true, key: true },

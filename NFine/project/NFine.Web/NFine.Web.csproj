@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -23,6 +24,7 @@
     <UseGlobalApplicationHostFile />
     <Use64BitIISExpress />
     <TargetFrameworkProfile />
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -154,13 +156,16 @@
     <Compile Include="Areas\ExampleManage\ExampleManageAreaRegistration.cs" />
     <Compile Include="Areas\ProductManage\Controllers\BannerController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\InventoryController.cs" />
-    <Compile Include="Areas\ProductManage\Controllers\OutInventoryController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\ProductController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\WareHouseController.cs" />
     <Compile Include="Areas\ProductManage\ProductManageAreaRegistration.cs" />
     <Compile Include="Areas\ReportManage\Controllers\EchartsController.cs" />
     <Compile Include="Areas\ReportManage\Controllers\HighchartsController.cs" />
     <Compile Include="Areas\ReportManage\ReportManageAreaRegistration.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\TableFieldController.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\TableController.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\AutoJobLogController.cs" />
+    <Compile Include="Areas\SystemManage\Controllers\AutoJobController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\AreaController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\DutyController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\FileController.cs" />
@@ -337,7 +342,8 @@
     <Content Include="Content\js\jquery-ui\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\js\jquery-ui\jquery-ui.min.css" />
     <Content Include="Content\js\jquery-ui\jquery-ui.min.js" />
-    <Content Include="Content\js\jquery\jquery-2.1.1.min.js" />
+    <Content Include="Content\js\jquery\jquery.js" />
+    <Content Include="Content\js\jquery\jquery.min.js" />
     <Content Include="Content\js\layout\jquery.layout.js" />
     <Content Include="Content\js\loading\pace.min.js" />
     <Content Include="Content\js\md5\jquery.md5.js" />
@@ -785,8 +791,8 @@
     <Content Include="Content\layui\font\iconfont.ttf" />
     <Content Include="Content\layui\font\iconfont.woff" />
     <Content Include="Content\layui\font\iconfont.woff2" />
-    <Content Include="Areas\ProductManage\Views\OutInventory\Index.cshtml" />
-    <Content Include="Areas\ProductManage\Views\OutInventory\Form.cshtml" />
+    <Content Include="Areas\ProductManage\Views\Inventory\OutIndex.cshtml" />
+    <Content Include="Areas\ProductManage\Views\Inventory\OutForm.cshtml" />
     <Content Include="Areas\SystemManage\Views\ConfigCategory\Details.cshtml" />
     <Content Include="Areas\SystemManage\Views\ConfigCategory\Form.cshtml" />
     <Content Include="Areas\SystemManage\Views\ConfigCategory\Index.cshtml" />
@@ -798,15 +804,30 @@
     <Content Include="Areas\ProductManage\Views\Product\Index.cshtml" />
     <Content Include="Areas\ProductManage\Views\Product\Details.cshtml" />
     <Content Include="packages.config" />
+    <Content Include="Areas\SystemManage\Views\AutoJob\Details.cshtml" />
+    <Content Include="Areas\SystemManage\Views\AutoJob\Form.cshtml" />
+    <Content Include="Areas\SystemManage\Views\AutoJob\Index.cshtml" />
+    <Content Include="Areas\SystemManage\Views\AutoJobLog\Index.cshtml" />
+    <Content Include="Areas\SystemManage\Views\AutoJobLog\RemoveLog.cshtml" />
+    <Content Include="Areas\SystemManage\Views\Table\Form.cshtml" />
+    <Content Include="Areas\SystemManage\Views\Table\Index.cshtml" />
+    <Content Include="Areas\SystemManage\Views\Table\Details.cshtml" />
+    <Content Include="Areas\SystemManage\Views\TableField\Details.cshtml" />
+    <Content Include="Areas\SystemManage\Views\TableField\Form.cshtml" />
+    <Content Include="Areas\SystemManage\Views\TableField\Index.cshtml" />
     <None Include="Properties\PublishProfiles\ZMB.Release.pubxml" />
     <Content Include="Views\Shared\_Details.cshtml" />
     <Content Include="Views\Auth\Auth.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">

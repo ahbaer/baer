@@ -46,6 +46,7 @@
     <Compile Include="01 Infrastructure\IEntity.cs" />
     <Compile Include="01 Infrastructure\IModificationAudited.cs" />
     <Compile Include="03 Entity\Application\ApiEntity.cs" />
+    <Compile Include="03 Entity\Application\Comrms.cs" />
     <Compile Include="03 Entity\Application\ProductEntity.cs" />
     <Compile Include="03 Entity\Application\InventoryOutEntity.cs" />
     <Compile Include="03 Entity\Application\InventoryEntity.cs" />
@@ -55,6 +56,8 @@
     <Compile Include="03 Entity\SystemManage\AreaEntity.cs" />
     <Compile Include="03 Entity\SystemManage\AutoJobEntity.cs" />
     <Compile Include="03 Entity\SystemManage\AutoJobLogEntity.cs" />
+    <Compile Include="03 Entity\SystemManage\TableFieldEntity.cs" />
+    <Compile Include="03 Entity\SystemManage\TableEntity.cs" />
     <Compile Include="03 Entity\SystemManage\FileEntity.cs" />
     <Compile Include="03 Entity\SystemManage\ConfigEntity.cs" />
     <Compile Include="03 Entity\SystemManage\ItemsEntity.cs" />
@@ -72,6 +75,8 @@
     <Compile Include="04 IRepository\Application\IInventoryOutRepository.cs" />
     <Compile Include="04 IRepository\Application\IInventoryRepository.cs" />
     <Compile Include="04 IRepository\Application\IWareHouseRepository.cs" />
+    <Compile Include="04 IRepository\SystemManage\ITableFieldRepository.cs" />
+    <Compile Include="04 IRepository\SystemManage\ITableRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IAutoJobLogRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IAutoJobRepository.cs" />
     <Compile Include="04 IRepository\SystemManage\IFileRepository.cs" />

@@ -10,7 +10,7 @@
 
         $.submitForm({
             loading: "正在备份数据...",
-            url: "/SystemSecurity/Log/SubmitRemoveLog?keepTime=" + $("#keepTime").val(),
+            url: "/SystemSecurity/Log/RemoveLog?keepTime=" + $("#keepTime").val(),
             success: function () {
                 $.currentWindow().$("#gridList").trigger("reloadGrid");
             }

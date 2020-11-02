@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    $(function () {
+        $(function () {
+            var $cb = $("#cb_gridList");
+            if ($cb != null) {
+                $cb.parent().removeClass("ckbox");
+            }
+        })
+
+        gridList();
+    })
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/SystemManage/Table/GetGridJson",
+            height: $(window).height() - 128,
+            colModel: [
+                { label: "主键", name: "F_Id", hidden: true, key: true },
+                { label: '表名', name: 'SqlTableName', width: 200, align: 'left' },
+                { label: '中文表名', name: 'TableName', width: 200, align: 'left' },
+                { label: '备注', name: 'F_Description', width: 500, align: 'left' },
+                {
+                    label: '修改', name: '', width: 60, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.F_Id + '\')"><i class="fa fa-pencil"></i></a>';
+                    }
+                },
+                {
+                    label: '查看', name: '', width: 60, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                    }
+                },
+                {
+                    label: '字段', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnOpedateField" authorize="yes" class="btn" onclick="btnOpedateField(\'' + row.F_Id + '\')"><i class="fa fa-list-alt"></i></a>';
+                    }
+                }
+            ],
+            pager: "#gridPager",
+            sortname: 'SqlTableName',
+            sortorder: "asc",
+            viewrecords: true,
+            multiselect: true
+        });
+
+        $("#btnSearch").click(function () {
+            $gridList.jqGrid('setGridParam', {
+                postData: { keyword: $("#txtKeyword").val() },
+            }).trigger('reloadGrid');
+        });
+    }
+
+    function btnOperate(f_Id) {
+        var title = !!f_Id ? "修改数据表" : "新增数据表";
+        $.modalOpen({
+            id: "Form",
+            title: title,
+            url: "/SystemManage/Table/Form?f_Id=" + f_Id,
+            width: "450px",
+            height: "360px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].submitForm();
+            }
+        });
+    }
+
+    function btnDetails(f_Id) {
+        $.modalOpen({
+            id: "Details",
+            title: "查看数据表",
+            url: "/SystemManage/Table/Details?f_Id=" + f_Id,
+            width: "450px",
+            height: "300px",
+            btn: null,
+        });
+    }
+
+    function btnDelete() {
+        var f_Ids = $("#gridList").jqGrid('getGridParam', 'selarrrow');
+        if (f_Ids.length == 0) {
+            this.alert("请选中项删除！");
+            return;
+        }
+
+        $.deleteForm({
+            url: "/SystemManage/Table/DeleteForm",
+            param: { f_Ids: f_Ids.toString() },
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+
+    function btnOpedateField(f_Id) {
+        $.modalOpen({
+            id: "FieldIndex",
+            title: "字段列表",
+            url: "/SystemManage/TableField/Index?tableId=" + f_Id,
+            width: "770px",
+            height: "950px",
+            btn: null,
+        });
+    }
+</script>
+
+<div class="topPanel">
+    <div class="search">
+        <table>
+            <tr>
+                <td>
+                    <div class="input-group">
+                        <input id="txtKeyword" type="text" class="form-control" placeholder="请输入要查询关键字" style="width: 200px;">
+                        <span class="input-group-btn">
+                            <button id="btnSearch" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="toolbar">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <i class="fa fa-refresh fa-spin"></i>刷新
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnDelete" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnDelete()">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnAdd" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnOperate()">
+                <i class="fa fa-plus"></i>新建
+            </a>
+        </div>
+        <script>$('.toolbar').authorizeButton()</script>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+    <div id="gridPager"></div>
+</div>

@@ -54,6 +54,8 @@
     <Compile Include="Application\InventoryMap.cs" />
     <Compile Include="Application\WareHouseMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SystemManage\TableFieldMap.cs" />
+    <Compile Include="SystemManage\TableMap.cs" />
     <Compile Include="SystemManage\AutoJobLogMap.cs" />
     <Compile Include="SystemManage\AutoJobMap.cs" />
     <Compile Include="SystemManage\FileMap.cs" />

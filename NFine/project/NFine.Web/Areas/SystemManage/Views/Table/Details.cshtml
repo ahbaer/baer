@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Details.cshtml";
+}
+<script>
+    var f_Id = $.request("f_Id");
+    $(function () {
+        $.ajax({
+            url: "/SystemManage/Table/GetFormJson",
+            data: { f_Id: f_Id },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#form1").formSerialize(data);
+                $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
+                $("#form1").find('div.ckbox label').attr('for', '');
+            }
+        });
+    })
+</script>
+<form id="form1">
+    <div style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+        <div style="padding-top: 20px;">
+            <div class="panel panel-default">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <th class="formTitle">表名</th>
+                            <td class="formValue">
+                                <input id="SqlTableName" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">表名(中文)</th>
+                            <td class="formValue">
+                                <input id="TableName" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle" style="height: 35px;">选项</th>
+                            <td class="formValue" style="padding-top: 1px;">
+                                <div class="ckbox">
+                                    <input id="AllowCreate" type="checkbox" checked="checked">
+                                    <label for="AllowCreate">允许新增</label>
+                                </div>
+                                <div class="ckbox">
+                                    <input id="AllowEdit" type="checkbox" checked="checked">
+                                    <label for="AllowEdit">允许编辑</label>
+                                </div>
+                                <div class="ckbox">
+                                    <input id="AllowDelete" type="checkbox" checked="checked">
+                                    <label for="AllowDelete">允许删除</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">备注</th>
+                            <td class="formValue">
+                                <input id="F_Description" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

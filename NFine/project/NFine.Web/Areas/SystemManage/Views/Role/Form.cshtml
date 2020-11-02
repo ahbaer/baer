@@ -6,6 +6,7 @@
     var keyValue = $.request("keyValue");
     $(function () {
         initControl();
+
         if (!!keyValue) {
             $.ajax({
                 url: "/SystemManage/Role/GetFormJson",
@@ -18,6 +19,7 @@
             });
         }
     })
+
     function initControl() {
         $("#F_OrganizeId").bindSelect({
             url: "/SystemManage/Organize/GetTreeSelectJson",
@@ -53,6 +55,7 @@
             param: { roleId: keyValue }
         });
     }
+
     function submitForm() {
         var postData = $("#form1").formSerialize();
         postData["permissionIds"] = String($("#permissionTree").getCheckedNodes());

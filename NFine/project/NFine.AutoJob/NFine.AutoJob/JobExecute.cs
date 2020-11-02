@@ -12,13 +12,14 @@ namespace NFine.AutoJob
     public class JobExecute : IJob
     {
         private AutoJobApp autoJobApp = new AutoJobApp();
-        //private AutoJobLogApp autoJobLogService = new AutoJobLogService();
+        private AutoJobLogApp autoJobLogApp = new AutoJobLogApp();
 
         public Task Execute(IJobExecutionContext context)
         {
             return Task.Run(async () =>
             {
-                string f_Id = "";
+                string f_Id = "", msg = "成功";
+                int logStatus = 1;
                 JobDataMap jobData = null;
                 AutoJobEntity autoJobEntity = null;
                 try
@@ -44,8 +45,12 @@ namespace NFine.AutoJob
                                 #region 执行任务
                                 switch (context.JobDetail.Key.Name)
                                 {
-                                    case "test":
-                                        new GetContractJob().Start();
+                                    case "Comrms"://期货
+                                        if(!new GetComrmsJob().Start())
+                                        {
+                                            logStatus = 0;
+                                            msg = "失败";
+                                        }
                                         break;
                                     default:
                                         //todo
@@ -58,7 +63,8 @@ namespace NFine.AutoJob
                 }
                 catch (Exception ex)
                 {
-                    LogFactory.GetLogger().Error(ex);
+                    msg = ex.ToString();
+                    logStatus = 0;
                 }
 
                 try
@@ -67,25 +73,16 @@ namespace NFine.AutoJob
                     {
                         if (autoJobEntity.JobStatus == 1)
                         {
-                            #region 更新下次运行时间
-                            autoJobApp.SubmitForm(
-                                new AutoJobEntity
-                                {
-                                    NextStartTime = context.NextFireTimeUtc.Value.DateTime.AddHours(8)
-                                }, 
-                                autoJobEntity.F_Id);
-                            #endregion
+                            //更新下次运行时间
+                            DbHelper.ExecuteNonQuery("update Sys_AutoJob set NextStartTime='" + context.NextFireTimeUtc.Value.DateTime.AddHours(8) + "' where F_Id='" + autoJobEntity.F_Id + "'");
 
-                            #region 记录执行状态
-                            //todo
-                            //await autoJobLogService.SaveForm(new AutoJobLogEntity
-                            //{
-                            //    JobGroupName = context.JobDetail.Key.Group,
-                            //    JobName = context.JobDetail.Key.Name,
-                            //    LogStatus = obj.Tag,
-                            //    Remark = obj.Message
-                            //});
-                            #endregion
+                            //记录执行状态
+                            FRow fRow = new FRow("Sys_AutoJobLog");
+                            fRow["F_CreatorTime"] = context.JobDetail.Key.Group;
+                            fRow["JobGroupName"] = context.JobDetail.Key.Name;
+                            fRow["LogStatus"] = logStatus;
+                            fRow["F_Description"] = msg;
+                            fRow.Insert();
                         }
                     }
                 }

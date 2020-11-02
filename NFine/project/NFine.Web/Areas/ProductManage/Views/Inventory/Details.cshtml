@@ -4,8 +4,12 @@
 }
 
 <link rel="stylesheet" href="~/Content/css/upload.css" />
-
 <script src="~/Content/layui/layui.js" charset="utf-8"></script>
+<style>
+    .selection{
+        
+    }
+</style>
 <script>
     var keyValue = $.request("keyValue");
     var count = 0;
@@ -20,7 +24,7 @@
             async: false,
             success: function (data) {
                 $("#form1").formSerialize(data);
-                $("#form1").find('.form-control,input').attr('readonly', 'readonly');
+                $("#form1").find('.form-control,input,select').attr('readonly', 'readonly');
                 $("#form1").find('select').attr('disabled', 'disabled');
                 $("#form1").find('div.ckbox label').attr('for', '');
 
@@ -73,10 +77,10 @@
             url: "/SystemManage/ItemsData/GetSelectJson",
             param: { enCode: "0203" },
         });
-        //合约
+        合约
         $("#Contract").bindSelect({
             url: "/SystemManage/SelData/GetSelectJson",
-            param: { table: "Contract", itemCode: "ContractCode", itemName: "ContractName" },
+            param: { table: "Contract", itemCode: "ContractCode", itemName: "ContractName", condition: "", sort: "FS" },
         });
 
         $('#wizard').wizard().on('change', function (e, data) {

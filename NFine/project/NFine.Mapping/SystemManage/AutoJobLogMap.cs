@@ -7,7 +7,7 @@ namespace NFine.Mapping.SystemManage
     {
         public AutoJobLogMap()
         {
-            this.ToTable("Sys_AutoLogJob");
+            this.ToTable("Sys_AutoJobLog");
             this.HasKey(t => t.F_Id);
         }
     }

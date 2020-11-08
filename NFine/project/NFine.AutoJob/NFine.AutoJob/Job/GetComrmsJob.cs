@@ -69,7 +69,7 @@ namespace NFine.AutoJob
             StreamReader reader = new StreamReader(st, Encoding.GetEncoding("utf-8"));
             string contract = reader.ReadToEnd();
             Comrms comrms = contract.ToObject<Comrms>();
-            if (comrms.Code == 0)
+           if (comrms.Code == 0)
             {
                 foreach (Obj obj in comrms.Obj)
                 {
@@ -78,6 +78,7 @@ namespace NFine.AutoJob
                     {
                         cRow["Price"] = obj.P;
                         cRow["NV"] = obj.NV;
+                        cRow["V"] = obj.V;
                         cRow["Time"] = new DateTime(1970, 1, 1, 0, 0, 0).AddHours(8).AddSeconds(obj.Tick);
                         cRow["ZF"] = obj.ZF;
                         cRow.Update();
@@ -86,9 +87,17 @@ namespace NFine.AutoJob
                     {
                         cRow["F_Id"] = Guid.NewGuid().ToString();
                         cRow["ContractName"] = obj.N;
-                        cRow["ContractCode"] = obj.S;
+                        if (string.IsNullOrEmpty(obj.C))
+                        {
+                            cRow["ContractCode"] = obj.FS;
+                        }
+                        else
+                        {
+                            cRow["ContractCode"] = obj.S + obj.C;
+                        }
                         cRow["Price"] = obj.P;
                         cRow["NV"] = obj.NV;
+                        cRow["V"] = obj.V;
                         cRow["M"] = obj.M;
                         cRow["S"] = obj.S;
                         cRow["C"] = obj.C;

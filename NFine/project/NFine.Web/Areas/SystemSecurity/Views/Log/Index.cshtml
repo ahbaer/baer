@@ -14,13 +14,13 @@
             colModel: [
                 { label: '主键', name: 'F_Id', hidden: true },
                 {
-                    label: '日期', name: 'F_Date', width: 120, align: 'left',
+                    label: '日期', name: 'F_Date', width: 140, align: 'left',
                     formatter: "date", formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }
                 },
-                { label: '账户', name: 'F_Account', width: 80, align: 'left' },
-                { label: '姓名', name: 'F_NickName', width: 80, align: 'left' },
+                { label: '账户', name: 'F_Account', width: 100, align: 'left' },
+                { label: '姓名', name: 'F_NickName', width: 100, align: 'left' },
                 {
-                    label: '操作类型', name: 'F_Type', width: 80, align: 'left',
+                    label: '操作类型', name: 'F_Type', width: 100, align: 'left',
                     formatter: function (cellvalue) {
                         return top.clients.dataItems["DbLogType"][cellvalue] == undefined ? "" : top.clients.dataItems["DbLogType"][cellvalue]
                     }

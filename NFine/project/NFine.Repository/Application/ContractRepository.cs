@@ -4,7 +4,7 @@ using NFine.Domain.IRepository.Application;
 
 namespace NFine.Repository.Application
 {
-    public class InventoryRepository : RepositoryBase<InventoryEntity>, IInventoryRepository
+    public class ContractRepository : RepositoryBase<ContractEntity>, IContractRepository
     {
     }
 }

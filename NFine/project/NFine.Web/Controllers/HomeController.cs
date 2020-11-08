@@ -62,7 +62,7 @@ namespace NFine.Web.Controllers
                         value = Convert.ToString(dvInventory[i]["Weight"]),
                         color = color[i],
                         highlight = highlight[i],
-                        label = Convert.ToString(dvInventory[i]["WareName"])
+                        label = Convert.ToString(dvInventory[i]["WareName"]).Replace("张家港保税区", "")
                     };
                     doughnutDatas.Add(doughnutDataEntity);
                 }

@@ -21,32 +21,32 @@
             height: $(window).height() - 128,
             colModel: [
                 { label: '主键', name: 'F_Id', hidden: true, key: true },
-                { label: '任务组', name: 'JobGroupName', width: 120, align: 'left' },
-                { label: '任务名称', name: 'JobName', width: 120, align: 'left' },
-                { label: 'Cron表达式', name: 'CronExpression', width: 80, align: 'left' },
+                { label: '任务组', name: 'JobGroupName', width: 100, align: 'left' },
+                { label: '任务名称', name: 'JobName', width: 100, align: 'left' },
+                { label: 'Cron表达式', name: 'CronExpression', width: 100, align: 'left' },
                 {
-                    label: '状态', name: 'JobStatus', width: 60, align: 'center',
+                    label: '开始时间', name: 'StartTime', width: 140, align: 'left'
+                },
+                {
+                    label: '结束时间', name: 'EndTime', width: 140, align: 'left'
+                },
+                {
+                    label: '下次运行时间', name: 'NextStartTime', width: 140, align: 'left'
+                },
+                {
+                    label: '状态', name: 'JobStatus', width: 60, align: 'left',
                     formatter: function (cellvalue) {
                         return cellvalue == 1 ? "<i class='fa fa-toggle-on'></i>" : "<i class='fa fa-toggle-off'></i>";
                     }
                 },
                 {
-                    label: '开始时间', name: 'StartTime', width: 130, align: 'center'
-                },
-                {
-                    label: '结束时间', name: 'EndTime', width: 130, align: 'center'
-                },
-                {
-                    label: '下次运行时间', name: 'NextStartTime', width: 130, align: 'center'
-                },
-                {
-                    label: '修改', name: '', width: 60, align: 'center',
+                    label: '修改', name: '', width: 60, align: 'left',
                     formatter: function (val, obj, row, act) {
                         return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.F_Id + '\')"><i class="fa fa-pencil"></i></a>';
                     }
                 },
                 {
-                    label: '查看', name: '', width: 60, align: 'center',
+                    label: '查看', name: '', width: 60, align: 'left',
                     formatter: function (val, obj, row, act) {
                         return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></a>';
                     }

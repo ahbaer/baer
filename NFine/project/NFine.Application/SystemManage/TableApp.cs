@@ -18,7 +18,7 @@ namespace NFine.Application.SystemManage
             if (!string.IsNullOrEmpty(keyword))
             {
                 expression = expression.And(t => t.TableName.Contains(keyword));
-                expression = expression.Or(t => t.SqlTableName.Contains(keyword));
+                expression = expression.Or(t => t.TableChineseName.Contains(keyword));
             }
             return service.FindList(expression, pagination);
         }
@@ -30,7 +30,7 @@ namespace NFine.Application.SystemManage
 
         public void DeleteForm(string f_Id)
         {
-            DbHelper.ExecuteNonQuery("drop table " + GetForm(f_Id).SqlTableName);
+            DbHelper.ExecuteNonQuery("drop table " + GetForm(f_Id).TableName);
             service.Delete(t => t.F_Id == f_Id);
         }
 
@@ -46,7 +46,7 @@ namespace NFine.Application.SystemManage
                 entity.Create();
                 service.Insert(entity);
 
-                string strSql = "create table " + entity.SqlTableName + " (";
+                string strSql = "create table " + entity.TableName + " (";
                 strSql += "[RowId] bigint primary key identity(1,1),";//自增序列
                 strSql += "[F_Id] varchar(50),";//唯一标识
                 strSql += "[F_CreatorTime] datetime,"; //允许新增（默认）
@@ -65,6 +65,16 @@ namespace NFine.Application.SystemManage
                 strSql = (strSql.Trim(',') + ")");
                 DbHelper.ExecuteNonQuery(strSql);
             }
+        }
+
+        public void CodeGeneratorUpdate(TableEntity entity)
+        {
+            FRow fRow = new FRow("Sys_TableInfo", entity.F_Id);
+            fRow["ClassPrefix"] = entity.ClassPrefix;
+            fRow["OutputModel"] = entity.OutputModel;
+            fRow["SelectListField"] = entity.SelectListField;
+            fRow["SelectFormField"] = entity.SelectFormField;
+            fRow.Update();
         }
     }
 }

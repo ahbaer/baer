@@ -24,12 +24,12 @@
             colModel: [
                 { label: "主键", name: "F_Id", hidden: true, key: true },
                 { label: '字段名', name: 'FieldName', width: 120, align: 'left' },
-                { label: '字段中文名', name: 'FieldChineseName', width: 120, align: 'left' },
-                { label: '字段类型', name: 'FieldType', width: 60, align: 'center' },
-                { label: '字段长度', name: 'FieldLength', width: 60, align: 'center' },
-                { label: '字段精度', name: 'FieldAccuracy', width: 60, align: 'center' },
+                { label: '中文名', name: 'FieldChineseName', width: 120, align: 'left' },
+                { label: '类型', name: 'FieldType', width: 80, align: 'left' },
+                { label: '长度', name: 'FieldLength', width: 60, align: 'left' },
+                { label: '精度', name: 'FieldAccuracy', width: 60, align: 'left' },
                 {
-                    label: '修改', name: '', width: 60, align: 'center',
+                    label: '修改', name: '', width: 60, align: 'left',
                     formatter: function (val, obj, row, act) {
                         return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.F_Id + '\')"><i class="fa fa-pencil"></i></a>';
                     }
@@ -42,7 +42,7 @@
                 },
             ],
             pager: "#gridPager",
-            sortname: 'F_Id',
+            sortname: 'FieldName',
             sortorder: "asc",
             viewrecords: true,
             multiselect: true

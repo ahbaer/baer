@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<script>
+    $(function () {
+        gridList();
+
+        var $cb = $("#cb_gridList");
+        if ($cb != null) {
+            $cb.parent().removeClass("ckbox");
+        }
+    })
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/ProductManage/Contract/GetGridJson",
+            height: $(window).height() - 96,
+            colModel: [
+                { label: "主键", name: "F_Id", hidden: true, key: true },
+                { label: '名称', name: 'ContractName', width: 95, align: 'left' },
+                { label: '代码', name: 'ContractCode', width: 95, align: 'left' },
+                { label: '价格', name: 'Price', width: 95, align: 'left' },
+                { label: '交易量', name: 'V', width: 95, align: 'left' },
+                { label: '成交量', name: 'NV', width: 95, align: 'left' },
+                { label: '市场代码', name: 'M', width: 95, align: 'left' },
+                { label: '品种代码', name: 'S', width: 95, align: 'left' },
+                { label: '合约编码', name: 'C', width: 95, align: 'left' },
+                { label: '完整编码', name: 'FS', width: 95, align: 'left' },
+                { label: '更新时间', name: 'Time', width: 140, align: 'left' },
+                { label: '涨幅', name: 'ZF', width: 95, align: 'left' }
+            ],
+            multiselect: true
+        });
+
+        $("#btnSearch").click(function () {
+            $gridList.jqGrid('setGridParam', {
+                postData: { keyword: $("#txtKeyword").val() },
+            }).trigger('reloadGrid');
+        });
+    }
+
+    function btnDelete() {
+        var f_Ids = $("#gridList").jqGrid('getGridParam', 'selarrrow');
+        if (f_Ids.length == 0) {
+            this.alert("请选中项删除！");
+            return;
+        }
+
+        $.deleteForm({
+            url: "/ProductManage/Contract/DeleteForm",
+            param: { f_Ids: f_Ids.toString() },
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+</script>
+
+<div class="topPanel">
+    <div class="toolbar">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <i class="fa fa-refresh fa-spin"></i>刷新
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnDelete" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnDelete();">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
+        </div>
+        <script>$('.toolbar').authorizeButton()</script>
+    </div>
+    <div class="search">
+        <table>
+            <tr>
+                <td>
+                    <div class="input-group">
+                        <input id="txtKeyword" type="text" class="form-control" placeholder="请输入名称/代码" style="width: 200px;">
+                        <span class="input-group-btn">
+                            <button id="btnSearch" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+</div>

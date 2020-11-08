@@ -45,7 +45,6 @@ namespace NFine.Web.Areas.SystemManage.Controllers
         }
         [HttpPost]
         [HandlerAjaxOnly]
-        [ValidateAntiForgeryToken]
         public ActionResult SubmitForm(ItemsDetailEntity itemsDetailEntity, string keyValue)
         {
             itemsDetailApp.SubmitForm(itemsDetailEntity, keyValue);

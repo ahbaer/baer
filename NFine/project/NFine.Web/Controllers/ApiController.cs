@@ -74,80 +74,98 @@ namespace NFine.Web.Controllers
         [HttpPost]
         public ActionResult GetInventoryListJson(InventoryReq inventoryReq)
         {
-            Pagination pagination = inventoryReq.pagination;
-            InventoryQry[] inventoryQrys = inventoryReq.inventoryQry;
-
             //sql
             string strSql = @"
-select 
+select
+    a.F_Id,
 	WareName,
 	OrderNo,
-	(select ProductName from Product where ProductCode=a.ProductType) as ProductType,
+	c.ProductName as ProductType,
+	c.ImgContent as ProductImg,
 	(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0202' and F_ItemCode=a.Grade) as Grade,
 	Strength,
-	(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0208' and F_ItemCode=a.Grade) as Length,
+	(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0208' and F_ItemCode=a.Length) as Length,
 	(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0203' and F_ItemCode=a.HorseValue) as HorseValue,
 	(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0207' and F_ItemCode=a.Status) as Status,
 	(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0206' and F_ItemCode=a.QuoteType) as QuoteType,
-	Price,
-	(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0206' and F_ItemCode=a.Contract) as Contract,
-	Basis,
+	(case when a.QuoteType<>'Futures' then a.Price else null end) as Price,
+	(case when a.QuoteType<>'Futures' then null else a.Contract end) as Contract,
+	(case when a.QuoteType<>'Futures' then null else cast(b.Price as decimal(18,2)) end) as ContractPrice,
+	(case when a.QuoteType<>'Futures' then null else cast(a.Basis+b.Price as decimal(18,2)) end) as TotalPrice,
+	(case when a.QuoteType<>'Futures' then null else Basis end) as Basis,
 	Year,
 	SailingSchedule,
-	Weight,
-	IsRecommend
+	(Weight-isnull((select sum(Weight) from InventoryOut where InventoryId=a.F_Id),0)) as Weight,
+	IsRecommend,
+	b.FS,b.M,b.S,b.C,b.V
 from Inventory a
+	left join Contract b on a.Contract=b.ContractCode
+    left join Product c on c.ProductCode=a.ProductType
 where 1=1 ";
 
             //where
             string strQry = "";
-            foreach (InventoryQry inventoryQry in inventoryQrys)
+            if (inventoryReq.inventoryQry != null)
             {
-                if (inventoryQry.code.ToLower() == "strength")//强力是范围，其他都是选项
+                InventoryQry[] inventoryQrys = inventoryReq.inventoryQry;
+                foreach (InventoryQry inventoryQry in inventoryQrys)
                 {
-                    foreach (SelectedList selected in inventoryQry.selectedList)
+                    if (inventoryQry.code.ToLower() == "strength")//强力是范围，其他都是选项
                     {
-                        if (selected.name.ToLower() == "min")
+                        foreach (List selected in inventoryQry.list)
                         {
-                            strQry += " and cast(Strength as float)>=" + selected.code + " ";
-                        }
-                        else if (selected.name.ToLower() == "max")
-                        {
-                            strQry += " and cast(Strength as float)<=" + selected.code + " ";
+                            if (selected.name.ToLower() == "min")
+                            {
+                                strQry += " and cast(Strength as float)>=" + selected.code + " ";
+                            }
+                            else if (selected.name.ToLower() == "max")
+                            {
+                                strQry += " and cast(Strength as float)<=" + selected.code + " ";
+                            }
                         }
                     }
-                }
-                else
-                {
-                    string condition = "";
-                    foreach (SelectedList selected in inventoryQry.selectedList)
+                    else
                     {
-                        if (selected.selected)
+                        string condition = "";
+                        foreach (List selected in inventoryQry.list)
                         {
-                            condition += "'" + selected.code + "',";
+                            if (selected.selected)
+                            {
+                                condition += "'" + selected.code + "',";
+                            }
                         }
-                    }
-                    if (!string.IsNullOrEmpty(condition))
-                    {
-                        strQry += " and " + inventoryQry.code + " in (" + condition.Trim(',') + ") ";
+                        if (!string.IsNullOrEmpty(condition))
+                        {
+                            strQry += " and " + inventoryQry.code + " in (" + condition.Trim(',') + ") ";
+                        }
                     }
                 }
             }
 
             //order
-            string strOrder = " order by IsRecommend desc,F_CreatorTime desc ";
+            string strOrder = " order by IsRecommend desc,a.F_CreatorTime desc ";
+
             //paging
+            Pagination pagination = inventoryReq.pagination;
             string strPaging = " offset " + (pagination.page - 1) * pagination.rows + " rows fetch next " + pagination.rows + " rows only";
 
             DataView dvInventory = DbHelper.ExecuteToDataView(strSql + strQry + strOrder + strPaging);
             List<object> inventorys = new List<object>();
             foreach (DataRowView drv in dvInventory)
             {
+                DataView dvImg = DbHelper.ExecuteToDataView("select FileContent from Frame_File where Related_Id='" + Convert.ToString(drv["F_Id"]) + "'");
+                List<object> img = new List<object>();
+                foreach (DataRowView drvImg in dvImg)
+                {
+                    img.Add(new { base64 = Convert.ToString(drvImg["FileContent"]) });
+                }
                 inventorys.Add(new
                 {
+                    f_Id = Convert.ToString(drv["F_Id"]),
                     wareName = Convert.ToString(drv["WareName"]),
                     orderNo = Convert.ToString(drv["OrderNo"]),
                     productType = Convert.ToString(drv["ProductType"]),
+                    productImg = Convert.ToString(drv["ProductImg"]),
                     grade = Convert.ToString(drv["Grade"]),
                     strength = Convert.ToString(drv["Strength"]),
                     length = Convert.ToString(drv["Length"]),
@@ -156,15 +174,70 @@ where 1=1 ";
                     quoteType = Convert.ToString(drv["QuoteType"]),
                     price = Convert.ToString(drv["Price"]),
                     contract = Convert.ToString(drv["Contract"]),
+                    contractPrice = Convert.ToString(drv["ContractPrice"]),
                     basis = Convert.ToString(drv["Basis"]),
+                    totalPrice = Convert.ToString(drv["TotalPrice"]),
                     year = Convert.ToString(drv["Year"]),
                     sailingSchedule = Convert.ToString(drv["SailingSchedule"]),
                     weight = Convert.ToString(drv["Weight"]),
-                    isRecommend = Convert.ToString(drv["IsRecommend"])
+                    isRecommend = Convert.ToString(drv["IsRecommend"]),
+                    fs = Convert.ToString(drv["FS"]),
+                    m = Convert.ToString(drv["M"]),
+                    s = Convert.ToString(drv["S"]),
+                    c = Convert.ToString(drv["C"]),
+                    v = Convert.ToString(drv["V"]),
+                    imgList = img
                 });
             }
 
             return Content(inventorys.ToJson());
+        }
+        #endregion
+
+        #region ==========详情==========
+        [HttpGet]
+        public ActionResult GetInventory(string f_Id, string longitude, string latitude)
+        {
+            string strSql = @"select a.F_Id,a.WareId,a.WareName,d.Address,d.Longitude,d.Latitude,Distince=6378137.0*acos(sin(cast('" + latitude + "' as decimal(18,6))/180*pi())*sin(Latitude/180*pi())+cos(cast('" + latitude + "' as decimal(18,6))/180*pi())*cos(Latitude/180*pi())*cos((cast('" + longitude + "' as decimal(18,6))-Longitude)/180*pi())),a.OrderNo,c.ProductName as ProductType,(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0202' and F_ItemCode=a.Grade) as Grade,a.Strength,(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0208' and F_ItemCode=a.Length) as Length,(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0203' and F_ItemCode=a.HorseValue) as HorseValue,(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0207' and F_ItemCode=a.Status) as Status,(select F_ItemName from View_ItemType_ItemDetail where F_EnCode='0206' and F_ItemCode=a.QuoteType) as QuoteType,(case when a.QuoteType<>'Futures' then a.Price else null end) as Price,(case when a.QuoteType<>'Futures' then null else a.Contract end) as Contract,(case when a.QuoteType<>'Futures' then null else cast(b.Price as decimal(18,2)) end) as ContractPrice,(case when a.QuoteType<>'Futures' then null else cast(a.Basis+b.Price as decimal(18,2)) end) as TotalPrice,(case when a.QuoteType<>'Futures' then null else Basis end) as Basis,a.Year,a.SailingSchedule,(a.Weight-isnull((select sum(Weight) from InventoryOut where InventoryId=a.F_Id),0)) as Weight,a.Description from Inventory a left join Contract b on a.Contract=b.ContractCode left join Product c on c.ProductCode=a.ProductType inner join WareHouse d on a.WareId=d.F_Id where a.F_Id='" + f_Id + "'";
+            DataView dv = DbHelper.ExecuteToDataView(strSql);
+            DataView dvImg = DbHelper.ExecuteToDataView("select FileContent from Frame_File where Related_Id='" + Convert.ToString(dv[0]["F_Id"]) + "'");
+            List<object> img = new List<object>();
+            foreach (DataRowView drvImg in dvImg)
+            {
+                img.Add(new { base64 = Convert.ToString(drvImg["FileContent"]) });
+            }
+
+            object obj = new object();
+            obj = new
+            {
+                f_Id = Convert.ToString(dv[0]["F_Id"]),
+                wareId = Convert.ToString(dv[0]["WareId"]),
+                wareName = Convert.ToString(dv[0]["WareName"]),
+                address = Convert.ToString(dv[0]["Address"]),
+                distance = (Convert.ToDouble(dv[0]["Distince"]) / 1000).ToString("#0.00"),
+                longitude = Convert.ToDouble(dv[0]["Longitude"]),
+                latitude = Convert.ToDouble(dv[0]["Latitude"]),
+                orderNo = Convert.ToString(dv[0]["OrderNo"]),
+                productType = Convert.ToString(dv[0]["ProductType"]),
+                grade = Convert.ToString(dv[0]["Grade"]),
+                strength = Convert.ToString(dv[0]["Strength"]),
+                length = Convert.ToString(dv[0]["Length"]),
+                horseValue = Convert.ToString(dv[0]["HorseValue"]),
+                status = Convert.ToString(dv[0]["Status"]),
+                quoteType = Convert.ToString(dv[0]["QuoteType"]),
+                price = Convert.ToString(dv[0]["Price"]),
+                contract = Convert.ToString(dv[0]["Contract"]),
+                contractPrice = Convert.ToString(dv[0]["ContractPrice"]),
+                totalPrice = Convert.ToString(dv[0]["TotalPrice"]),
+                basis = Convert.ToString(dv[0]["Basis"]),
+                year = Convert.ToString(dv[0]["Year"]),
+                sailingSchedule = Convert.ToString(dv[0]["SailingSchedule"]),
+                weight = Convert.ToString(dv[0]["Weight"]),
+                description = Convert.ToString(dv[0]["Description"]),
+                imgList = img
+            };
+
+            return Content(obj.ToJson());
         }
         #endregion
 
@@ -174,19 +247,25 @@ where 1=1 ";
         {
             List<object> comrms = new List<object>();
 
-            DataView dv = DbHelper.ExecuteToDataView("select * from Contract order by M asc,NV desc,FS asc");
-            double nv = 0;
-            if(dv.Count > 1)
+            DataView dv = DbHelper.ExecuteToDataView("select * from Contract where FS not in ('USDCNH','CZCECF','ICECT') order by V desc");
+            double v = 0;
+            int nvCount = 0;
+            if (dv.Count > 0)
             {
-                nv = Convert.ToDouble(dv[1]["NV"]);
+                v = Convert.ToDouble(dv[0]["V"]);
             }
             foreach (DataRowView drv in dv)
             {
-                comrms.Add(new {
-                    contractName = Convert.ToString(drv["ContractCode"]) == "USDCNH" ? "美金汇率" : Convert.ToString(drv["ContractName"]),
-                    contractCode = Convert.ToString(drv["ContractName"]),
+                if (Convert.ToDouble(drv["V"]) == v)
+                {
+                    nvCount++;
+                }
+                comrms.Add(new
+                {
+                    contractName = Convert.ToString(drv["ContractName"]),
+                    contractCode = Convert.ToString(drv["ContractCode"]),
                     price = Convert.ToString(drv["Price"]),
-                    isTop = Convert.ToDouble(drv["NV"]) == nv,
+                    isTop = Convert.ToDouble(drv["V"]) == v,
                     m = Convert.ToString(drv["M"]),
                     s = Convert.ToString(drv["S"]),
                     c = Convert.ToString(drv["C"]),
@@ -195,6 +274,32 @@ where 1=1 ";
                     zf = Convert.ToString(drv["ZF"])
                 });
             }
+
+            //插入美国主棉
+            DataView dvNoSort = DbHelper.ExecuteToDataView("select * from Contract where FS in ('USDCNH','CZCECF','ICECT') order by Sort desc");
+            for (int i = 0; i < dvNoSort.Count; i++)
+            {
+                int insertIndex = nvCount;
+                if (i == dvNoSort.Count - 1)
+                {
+                    insertIndex = 0;
+                }
+                comrms.Insert(insertIndex, new
+                {
+                    contractName = Convert.ToString(dvNoSort[i]["ContractName"]),
+                    contractCode = Convert.ToString(dvNoSort[i]["ContractCode"]),
+                    price = Convert.ToString(dvNoSort[i]["Price"]),
+                    isTop = false,
+                    m = Convert.ToString(dvNoSort[i]["M"]),
+                    s = Convert.ToString(dvNoSort[i]["S"]),
+                    c = Convert.ToString(dvNoSort[i]["C"]),
+                    fs = Convert.ToString(dvNoSort[i]["FS"]),
+                    time = Convert.ToDateTime(dvNoSort[i]["Time"]).ToString("yyyy年MM月dd日HH:mm:ss"),
+                    zf = Convert.ToString(dvNoSort[i]["ZF"])
+                });
+            }
+
+
             return Content(comrms.ToJson());
         }
         #endregion

@@ -1,7 +1,5 @@
 ﻿using NFine.Application.Application;
 using NFine.Code;
-using NFine.Data;
-using NFine.Data.Extensions;
 using NFine.Domain.Entity.Application;
 using System.Web.Mvc;
 

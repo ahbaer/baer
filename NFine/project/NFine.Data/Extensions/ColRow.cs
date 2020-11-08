@@ -30,6 +30,10 @@ namespace NFine.Data.Extensions
             {
                 this._field.Add(new Field(name, value));
             }
+            get
+            {
+                return _field.Find(t => t.fieldName.Equals(name));
+            }
         }
 
         /// <summary>
@@ -136,7 +140,7 @@ namespace NFine.Data.Extensions
             }
             strSql = strSql.Trim(',');
 
-            strSql += " where " + _fieldName + " = '" + _fieldName + "'";
+            strSql += " where " + _fieldName + " = '" + _fieldValue + "'";
             return strSql;
         }
 

@@ -6,8 +6,6 @@
 <script>
     var keyValue = $.request("keyValue");
     $(function () {
-        initControl();
-
         if (!!keyValue) {
             $.ajax({
                 url: "/ProductManage/WareHouse/GetFormJson",
@@ -21,29 +19,6 @@
         }
     })
 
-    function initControl() {
-        $('#wizard').wizard().on('change', function (e, data) {
-            var $finish = $("#btn_finish");
-            var $next = $("#btn_next");
-            if (data.direction == "next") {
-                switch (data.step) {
-                    case 1:
-                        if (!$('#form1').formValid()) {
-                            return false;
-                        }
-                        $finish.show();
-                        $next.hide();
-                        break;
-                    default:
-                        break;
-                }
-            } else {
-                $finish.hide();
-                $next.show();
-            }
-        });
-    }
-
     function submitForm() {
         var postData = $("#form1").formSerialize();
         $.submitForm({
@@ -56,67 +31,57 @@
     }
 </script>
 <form id="form1">
-    <div class="widget-body">
-        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
-            <ul class="steps">
-                <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
-            </ul>
-        </div>
-        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
-            <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
-                <div class="panel panel-default">
-                    <div class="panel-body" style="width: 98%;">
-                        <table class="form">
-                            <tr>
-                                <th class="formTitle">仓库</th>
-                                <td class="formValue">
-                                    <input id="WareName" type="text" class="form-control required" placeholder="请输入仓库名称" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="formTitle">地址</th>
-                                <td class="formValue">
-                                    <input id="Address" type="text" class="form-control required" placeholder="请输入仓库地址" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="formTitle">主管</th>
-                                <td class="formValue">
-                                    <input id="Director" type="text" class="form-control" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="formTitle">电话</th>
-                                <td class="formValue">
-                                    <input id="Mobile" type="text" class="form-control" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="formTitle">坐标</th>
-                                <td class="formValue">
-                                    <div style="width:48%;float:left;">
-                                        <input id="Longitude" type="text" class="form-control required" placeholder="请输入经度" />
-                                    </div>
-                                    <div style="width:48%;float:right;">
-                                        <input id="Latitude" type="text" class="form-control required" placeholder="请输入纬度" />
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="formTitle" valign="top" style="padding-top: 5px;">备注</th>
-                                <td class="formValue">
-                                    <textarea id="Description" class="form-control" style="height: 60px;"></textarea>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
+    <div style="margin: 10px;">
+        <div class="panel panel-default">
+            <div class="panel-body" style="width: 98%;">
+                <table class="form">
+                    <tr>
+                        <th class="formTitle">仓库</th>
+                        <td class="formValue">
+                            <input id="WareName" type="text" class="form-control required" placeholder="请输入仓库名称" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">地址</th>
+                        <td class="formValue">
+                            <input id="Address" type="text" class="form-control required" placeholder="请输入仓库地址" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">主管</th>
+                        <td class="formValue">
+                            <input id="Director" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">电话</th>
+                        <td class="formValue">
+                            <input id="Mobile" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">经度</th>
+                        <td class="formValue">
+                            <input id="Longitude" type="text" class="form-control required" placeholder="请输入经度" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">纬度</th>
+                        <td class="formValue">
+                            <input id="Latitude" type="text" class="form-control required" placeholder="请输入纬度" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle" valign="top" style="padding-top: 5px;">备注</th>
+                        <td class="formValue">
+                            <textarea id="Description" class="form-control" style="height: 60px;"></textarea>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
-        <div class="form-button" id="wizard-actions">
-            <a id="btn_last" disabled class="btn btn-default btn-prev" style="display: none;">上一步</a>
-            <a id="btn_next" class="btn btn-default btn-next" style="display: none;">下一步</a>
-            <a id="btn_finish" class="btn btn-default" onclick="submitForm()">完成</a>
-        </div>
+    </div>
+    <div class="form-button">
+        <a id="btn_finish" class="btn btn-default" onclick="submitForm()">保存</a>
     </div>
 </form>

@@ -3,11 +3,11 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace NFine.Mapping.Application
 {
-    public class ProductMap : EntityTypeConfiguration<ProductEntity>
+    public class ContractMap : EntityTypeConfiguration<ContractEntity>
     {
-        public ProductMap()
+        public ContractMap()
         {
-            this.ToTable("Product");
+            this.ToTable("Contract");
             this.HasKey(t => t.F_Id);
         }
     }

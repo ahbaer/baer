@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    var cols = $.request("cols");
+    $(function () {
+        var colModel = [];
+        var arrCols = cols.split(',');
+        for (var i = 0; i < arrCols.length ; i++) {
+            colModel.push({ name: arrCols[i], width: 80 });
+        }
+        gridList(colModel);
+
+        var $cb = $("#cb_gridList");
+        if ($cb != null) {
+            $cb.parent().removeClass("ckbox");
+        }
+
+        $(".ui-jqgrid-bdiv").height(180);
+    })
+
+    function gridList(colModel) {
+        col = colModel;
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "",
+            colModel: colModel,
+            pager: "#gridPager",
+            viewrecords: true,
+        });
+    }
+</script>
+
+<div class="topPanel">
+    <div class="toolbar">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <i class="fa fa-refresh fa-spin"></i>刷新
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnDelete" class="btn btn-primary dropdown-text">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnAdd" class="btn btn-primary dropdown-text">
+                <i class="fa fa-plus"></i>新建
+            </a>
+        </div>
+    </div>
+    <div class="search">
+        <table>
+            <tr>
+                <td>
+                    <div class="input-group">
+                        <input id="txtKeyword" type="text" class="form-control" placeholder="关键词" style="width: 200px;">
+                        <span class="input-group-btn">
+                            <button id="btnSearch" type="button" class="btn  btn-primary">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+    <div id="gridPager"></div>
+</div>

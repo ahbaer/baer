@@ -34,15 +34,24 @@ namespace NFine.Application.Application
                 string length = queryParam["length"].ToString();
                 expression = expression.And(t => t.Length.Equals(length));
             }
-            if (!queryParam["strengthMin"].IsEmpty())
+            if (!queryParam["strength"].IsEmpty())
             {
-                double strengthMin = queryParam["strengthMin"].ToDouble();
-                expression = expression.And(t => t.Strength >= strengthMin);
-            }
-            if (!queryParam["strengthMax"].IsEmpty())
-            {
-                double strengthMax = queryParam["strengthMax"].ToDouble();
-                expression = expression.And(t => t.Strength <= strengthMax);
+                string strength = queryParam["strength"].ToString();
+                int curr = strength.IndexOf('~');
+                if (curr > -1)//存在~
+                {
+                    if (curr > 0)//有最小值
+                    {
+                        double strengthMin = strength.Split('~')[0].ToDouble();
+                        expression = expression.And(t => t.Strength >= strengthMin);
+                    }
+
+                    if (curr < strength.Length -1)//有最大值
+                    {
+                        double strengthMax = strength.Split('~')[1].ToDouble();
+                        expression = expression.And(t => t.Strength <= strengthMax);
+                    }
+                }
             }
             if (!queryParam["horseValue"].IsEmpty())
             {

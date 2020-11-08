@@ -13,7 +13,7 @@
                 async: false,
                 success: function (data) {
                     $("#form1").formSerialize(data);
-                    $("#SqlTableName").attr("disabled", "disabled");
+                    $("#TableName").attr("disabled", "disabled");
                     $("#AllowEdit").attr("disabled", "disabled");
                     $("#AllowDelete").attr("disabled", "disabled");
                 }
@@ -45,13 +45,13 @@
                         <tr>
                             <th class="formTitle">表名</th>
                             <td class="formValue">
-                                <input id="SqlTableName" type="text" class="form-control required" placeholder="请输入表名" />
+                                <input id="TableName" type="text" class="form-control required" placeholder="请输入表名" />
                             </td>
                         </tr>
                         <tr>
                             <th class="formTitle">表名(中文)</th>
                             <td class="formValue">
-                                <input id="TableName" type="text" class="form-control" placeholder="请输入表名（中文）" />
+                                <input id="TableChineseName" type="text" class="form-control" placeholder="请输入表名（中文）" />
                             </td>
                         </tr>
                         <tr>

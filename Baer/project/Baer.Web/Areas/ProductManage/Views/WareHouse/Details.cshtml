@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Details.cshtml";
+}
+
+<script>
+    var id = $.request("id");
+    $(function () {
+        $.ajax({
+            url: "/ProductManage/WareHouse/GetFormJson",
+            data: { keyValue: id },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#form1").formSerialize(data);
+                $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
+                $("#form1").find('div.ckbox label').attr('for', '');
+            }
+        });
+    })
+</script>
+<form id="form1">
+    <div style="margin: 10px;">
+        <div class="panel panel-default">
+            <div class="panel-body" style="width: 98%;">
+                <table class="form">
+                    <tr>
+                        <th class="formTitle">仓库</th>
+                        <td class="formValue">
+                            <input id="WareName" name="WareName" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">地址</th>
+                        <td class="formValue">
+                            <input id="Address" name="Address" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">主管</th>
+                        <td class="formValue">
+                            <input id="Director" name="Director" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">电话</th>
+                        <td class="formValue">
+                            <input id="Mobile" name="Mobile" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">经度</th>
+                        <td class="formValue">
+                            <input id="Longitude" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">纬度</th>
+                        <td class="formValue">
+                            <input id="Latitude" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">备注</th>
+                        <td class="formValue">
+                            <input id="Description" name="Ware_Description" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>

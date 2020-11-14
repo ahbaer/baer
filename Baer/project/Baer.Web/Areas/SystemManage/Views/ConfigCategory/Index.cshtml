@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    $(function () {
+        gridList();
+    })
+
+    function gridList() {
+        $("#gridList").dataGrid({
+            treeGrid: true,
+            treeGridModel: "adjacency",
+            ExpandColumn: "CateGoryName",
+            url: "/SystemManage/ConfigCategory/GetTreeGridJson",
+            height: $(window).height() - 90,
+            colModel: [
+                { label: "主键", name: "Id", hidden: true, key: true },
+                { label: '分类名称', name: 'CategoryName', width: 200, align: 'left' },
+                { label: '排序', name: 'F_SortCode', width: 80, align: 'center' },
+                {
+                    label: '修改', name: '', width: 60, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>';
+                    }
+                },
+                {
+                    label: '查看', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                    }
+                }
+            ]
+        });
+    }
+
+    function btnOperate(f_Id) {
+        var title = !!f_Id ? "修改分类" : "新增分类";
+      
+        $.modalOpen({
+            id: "Form",
+            title: "修改分类",
+            url: "/SystemManage/ConfigCategory/Form?keyValue=" + f_Id,
+            width: "450px",
+            height: "340px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].submitForm();
+            }
+        });
+    }
+
+    function btnDetails(f_Id) {
+        $.modalOpen({
+            id: "Details",
+            title: "查看分类",
+            url: "/SystemManage/ConfigCategory/Details?keyValue=" + f_Id,
+            width: "450px",
+            height: "280px",
+            btn: null,
+        });
+    }
+
+    function btnDelete() {
+        var keyValue = $("#gridList").jqGridRowValue().Id;
+        if (keyValue == null || keyValue == "") {
+            alert("请选中项操作！");
+            return;
+        }
+
+        $.deleteForm({
+            url: "/SystemManage/ConfigCategory/DeleteForm",
+            param: { keyValue: keyValue },
+            success: function () {
+                $("#gridList").resetSelection();
+                $("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+</script>
+<div class="topPanel" style="border: 0px;">
+    <div class="search">
+        <table>
+            <tr>
+                <td>
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="请输入要查询关键字" style="width: 200px;">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="toolbar">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <i class="fa fa-refresh fa-spin"></i>刷新
+            </a>
+        </div>
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="btnDelete()"><i class="fa fa-trash-o"></i>删除</a>
+        </div>
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="btnOperate()"><i class="fa fa-plus"></i>新增</a>
+        </div>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+</div>

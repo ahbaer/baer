@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    $(function () {
+        gridList();
+    })
+    function gridList() {
+        var $gridList = $("#gridList");
+        var queryJson = {
+            jobName: $.request("jobName"),
+            logStatus: '0',//失败
+            timeType: '2'//默认七天
+        }
+        $gridList.dataGrid({
+            url: "/SystemManage/AutoJobLog/GetGridJson",
+            postData: { queryJson: JSON.stringify(queryJson) },
+            height: $(window).height() - 128,
+            colModel: [
+                { label: '主键', name: 'Id', hidden: true },
+                { label: '任务名称', name: 'JobName', width: 120, align: 'center' },
+                {
+                    label: '执行状态', name: 'LogStatus', width: 60, align: 'center',
+                    formatter: function (cellvalue) {
+                        return cellvalue == 1 ? "<div style='color:blue;'><i class='fa fa-smile-o'></i> 成功</div>" : "<div style='color:red;'><i class='fa fa-frown-o'></i> 失败</div>";
+                    }
+                },
+                {
+                    label: '执行时间', name: 'CreatorTime', width: 140, align: 'center',
+                    formatter: "date", formatoptions: { srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s' }
+                },
+                { label: '任务信息', name: 'Description', width: 500, align: 'left' }
+            ],
+            pager: "#gridPager",
+            sortname: 'CreatorTime',
+            sortorder: "desc",
+            viewrecords: true
+        });
+
+        $("#logStatus a.btn-default").click(function () {
+            $("#logStatus a.btn-default").removeClass("active");
+            $(this).addClass("active");
+            $('#btn_search').trigger("click");
+        });
+
+        $("#time_horizon a.btn-default").click(function () {
+            $("#time_horizon a.btn-default").removeClass("active");
+            $(this).addClass("active");
+            $('#btn_search').trigger("click");
+        });
+
+        $("#btn_search").click(function () {
+            var queryJson = {
+                jobName: $.request("jobName"),
+                logStatus: $("#logStatus a.active").attr('data-value'),
+                timeType: $("#time_horizon a.active").attr('data-value')
+            }
+            $gridList.jqGrid('setGridParam', {
+                postData: { queryJson: JSON.stringify(queryJson) },
+            }).trigger('reloadGrid');
+        });
+    }
+
+    function btnRemoveLog() {
+        $.modalOpen({
+            id: "removelog",
+            title: "清空日志",
+            url: "/SystemManage/AutoJobLog/RemoveLog",
+            width: "400px",
+            height: "180px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].submitForm();
+            }
+        });
+    }
+</script>
+
+<div class="topPanel">
+    <div class="toolbar">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <i class="fa fa-refresh fa-spin"></i>刷新
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnRemoveLog" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnRemoveLog()">
+                <i class="fa fa-eraser"></i>清空
+            </a>
+        </div>
+        <script>$('.toolbar').authorizeButton()</script>
+    </div>
+    <div class="search">
+        <table>
+            <tr>
+                <td style="display:none;">
+                    <div class="input-group">
+                        <input id="txt_keyword" type="text" class="form-control" placeholder="请输入要查询关键字" style="width: 200px;">
+                        <span class="input-group-btn">
+                            <button id="btn_search" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </td>
+                <td style="padding-left: 10px;">
+                    <div id="logStatus" class="btn-group">
+                        <a class="btn btn-default" data-value="">全部</a>
+                        <a class="btn btn-default active" data-value="0">失败</a>
+                        <a class="btn btn-default" data-value="1">成功</a>
+                    </div>
+                </td>
+                <td style="padding-left: 10px;">
+                    <div id="time_horizon" class="btn-group">
+                        <a class="btn btn-default" data-value="1">今天</a>
+                        <a class="btn btn-default active" data-value="2">近7天</a>
+                        <a class="btn btn-default" data-value="3">近1个月</a>
+                        <a class="btn btn-default" data-value="4">近3个月</a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+    <div id="gridPager"></div>
+</div>

@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    var id = $.request("id");
+    $(function () {
+        if (!!id) {
+            $.ajax({
+                url: "/SystemManage/Table/GetFormJson",
+                data: { id: id },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                    $("#TableName").attr("disabled", "disabled");
+                    $("#AllowEdit").attr("disabled", "disabled");
+                    $("#AllowDelete").attr("disabled", "disabled");
+                }
+            });
+        }
+    });
+
+    function submitForm() {
+        if (!$('#form1').formValid()) {
+            return false;
+        }
+
+        $.submitForm({
+            url: "/SystemManage/Table/SubmitForm?id=" + id,
+            param: $("#form1").formSerialize(),
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+</script>
+
+<form id="form1">
+    <div style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+        <div style="padding-top: 20px;">
+            <div class="panel panel-default">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <th class="formTitle">表名</th>
+                            <td class="formValue">
+                                <input id="TableName" type="text" class="form-control required" placeholder="请输入表名" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">表名(中文)</th>
+                            <td class="formValue">
+                                <input id="TableChineseName" type="text" class="form-control" placeholder="请输入表名（中文）" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle" valign="top" style="padding-top: 5px;">
+                                备注
+                            </th>
+                            <td class="formValue">
+                                <textarea id="Description" name="Description" class="form-control" style="height: 60px;"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

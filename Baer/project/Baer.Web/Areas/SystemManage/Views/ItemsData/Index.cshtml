@@ -1,0 +1,219 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<script>
+    $(function () {
+        $(function () {
+            var $cb = $("#cb_gridList");
+            if ($cb != null) {
+                $cb.parent().removeClass("ckbox");
+            }
+        });
+
+        $('#layout').layout();
+        treeView();
+        gridList();
+    });
+
+    function treeView() {
+        $("#itemTree").treeview({
+            url: "/SystemManage/ItemsType/GetTreeJson",
+            onnodeclick: function (item) {
+                $("#txt_keyword").val('');
+                $('#btn_search').trigger("click");
+            }
+        });
+    }
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            height: $(window).height() - 100,
+            colModel: [
+                { label: "主键", name: "Id", hidden: true, key: true },
+                { label: '名称', name: 'F_ItemName', width: 150, align: 'left' },
+                { label: '编号', name: 'F_ItemCode', width: 150, align: 'left' },
+                { label: '排序', name: 'F_SortCode', width: 80, align: 'center' },
+                {
+                    label: "默认", name: "F_IsDefault", width: 60, align: "center",
+                    formatter: function (cellvalue) {
+                        return cellvalue == true ? "<i class=\"fa fa-toggle-on\"></i>" : "<i class=\"fa fa-toggle-off\"></i>";
+                    }
+                },
+                {
+                    label: '创建时间', name: 'CreatorTime', width: 80, align: 'left',
+                    formatter: "date", formatoptions: { srcformat: 'Y-m-d', newformat: 'Y-m-d' }
+                },
+                {
+                    label: "有效", name: "F_EnabledMark", width: 60, align: "center",
+                    formatter: function (cellvalue) {
+                        return cellvalue == true ? "<i class=\"fa fa-toggle-on\"></i>" : "<i class=\"fa fa-toggle-off\"></i>";
+                    }
+                },
+                {
+                    label: '修改', name: '', width: 60, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnEdit(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>';
+                    }
+                },
+                {
+                    label: '查看', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                    }
+                }
+            ],
+            multiselect: true
+        });
+
+        $("#btn_search").click(function () {
+            $gridList.jqGrid('setGridParam', {
+                url: "/SystemManage/ItemsData/GetGridJson",
+                postData: { itemId: $("#itemTree").getCurrentNode().id, keyword: $("#txt_keyword").val() },
+            }).trigger('reloadGrid');
+        });
+    }
+
+    function btnAdd() {
+        var itemId = "", itemName = "";
+        try {
+            itemId = $("#itemTree").getCurrentNode().id;
+            itemName = $("#itemTree").getCurrentNode().text;
+        } catch (e) {
+            this.alert("请选中左侧字典新增！");
+            return;
+        }
+
+        if (!itemId) {
+            return false;
+        }
+        $.modalOpen({
+            id: "Form",
+            title: itemName + " <i class='fa fa-hand-o-right'></i> 新增字典",
+            url: "/SystemManage/ItemsData/Form?itemId=" + itemId,
+            width: "450px",
+            height: "380px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].submitForm();
+            }
+        });
+    }
+
+    function btnEdit(f_Id) {
+        var itemName = "";
+        try {
+            itemName = $("#itemTree").getCurrentNode().text;
+        } catch (e) {
+            this.alert("请选中左侧字典修改！");
+            return;
+        }
+
+        $.modalOpen({
+            id: "Form",
+            title: itemName + " <i class='fa fa-hand-o-right'></i> 修改字典",
+            url: "/SystemManage/ItemsData/Form?keyValue=" + f_Id,
+            width: "450px",
+            height: "380px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].submitForm();
+            }
+        });
+    }
+
+    function btnDetails(f_Id) {
+        var itemName = "";
+        try {
+            itemName = $("#itemTree").getCurrentNode().text;
+        } catch (e) {
+            this.alert("请选中左侧字典查看！");
+            return;
+        }
+
+        $.modalOpen({
+            id: "Details",
+            title: itemName + " <i class='fa fa-hand-o-right'></i> 查看字典",
+            url: "/SystemManage/ItemsData/Details?keyValue=" + f_Id,
+            width: "450px",
+            height: "300px",
+            btn: null,
+        });
+    }
+
+    function btnDelete() {
+        var f_Ids = $("#gridList").jqGrid('getGridParam', 'selarrrow');
+        if (f_Ids.length == 0) {
+            this.alert("请选中项删除！");
+            return;
+        }
+
+        $.deleteForm({
+            url: "/SystemManage/ItemsData/DeleteForm",
+            param: { f_Ids: f_Ids.toString() },
+            success: function () {
+                $("#gridList").resetSelection();
+                $("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+    
+    function btnItemsType() {
+        $.modalOpen({
+            id: "ItemsType",
+            title: "字典分类",
+            url: "/SystemManage/ItemsType/Index",
+            width: "800px",
+            height: "550px",
+            btn: null,
+        });
+    }
+</script>
+<div class="ui-layout" id="layout" style="height: 100%; width: 100%;">
+    <div class="ui-layout-west">
+        <div id="itemTree"></div>
+    </div>
+    <div class="ui-layout-center">
+        <div class="topPanel">
+            <div class="toolbar">
+                <div class="btn-group">
+                    <a class="btn btn-primary" onclick="$.reload()">
+                        <i class="fa fa-refresh fa-spin"></i>刷新
+                    </a>
+                </div>
+                <div class="btn-group">
+                    <a id="btnDelete" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnDelete()">
+                        <i class="fa fa-trash-o"></i>删除
+                    </a>
+                </div>
+                <div class="btn-group">
+                    <a id="btnAdd" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnAdd()">
+                        <i class="fa fa-plus"></i>新建
+                    </a>
+                </div>
+                <div class="btn-group">
+                    <a id="btnItemsType" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnItemsType()">
+                        <i class="fa fa-cog"></i>分类
+                    </a>
+                </div>
+                <script>$('.toolbar').authorizeButton()</script>
+            </div>
+            <div class="search">
+                <table>
+                    <tr>
+                        <td>
+                            <div class="input-group">
+                                <input id="txt_keyword" type="text" class="form-control" placeholder="名称/编号" style="width: 200px;">
+                                <span class="input-group-btn">
+                                    <button id="btn_search" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="gridPanel">
+            <table id="gridList"></table>
+        </div>
+    </div>
+</div>

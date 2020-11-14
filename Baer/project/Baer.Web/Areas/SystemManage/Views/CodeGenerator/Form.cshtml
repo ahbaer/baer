@@ -1,0 +1,435 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<script src="~/Content/js/jquery.fireworks.js"></script>
+<script>
+    var id = $.request("id"), tableName = $.request("tableName");
+    var iframeSrc = "/SystemManage/CodeGenerator/ListIndex?cols=";
+    var colModel = "Id";
+
+    $(function () {
+        initControl();
+        classPrefixChange();
+        $("#FileConfigForm input").each(function (i, ele) {
+            var suffix = $(ele).attr("data-suffix");
+            if (!!suffix) {
+                if (ele.id == "InterfaceName") {
+                    $(ele).val("I" + $(ele).attr("data-suffix"));
+                } else {
+                    $(ele).val($(ele).attr("data-suffix"));
+                }
+            }
+        });
+
+        modelSuffixChange();
+        $("#OutputConfigForm input").each(function (i, ele) {
+            var prefix = $(ele).attr("data-prefix");
+            if (!!prefix) {
+                $(ele).val($(ele).attr("data-prefix"));
+            }
+        });
+
+        $(".widget-body").height($(window).height() - 40);
+
+        //码值
+        $("#OutputModel").bindSelect({
+            url: "/SystemManage/CodeGenerator/GetModelDirectory",
+        });
+    })
+
+    //初始化
+    function initControl() {
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $finish = $("#btnFinish");
+            var $next = $("#btnNext");
+            if (data.direction == "next") {
+                switch (data.step) {
+                    case 1:
+                        if (!$('#FileConfigForm').formValid()) {
+                            return false;
+                        }
+                        if (!$('#OutputConfigForm').formValid()) {
+                            return false;
+                        }
+                        initTreeView1()
+                        $("#frameList").attr("src", iframeSrc + colModel);
+                        break;
+                    case 2:
+                        initTreeView2()
+                        break;
+                    case 3:
+                        var postData = {};
+                        postData["id"] = id;
+                        postData["classPrefix"] = $("#ClassPrefix").val();
+                        postData["description"] = $("#Description").val();
+                        postData["outputModel"] = $("#OutputModel").find("option:selected").val();
+                        postData["selectListField"] = String($("#tableFieldTree1").getCheckedNodes());
+                        postData["selectFormField"] = String($("#tableFieldTree2").getCheckedNodes());
+                        $.submitForm({
+                            url: "/SystemManage/CodeGenerator/SubmitForm",
+                            param: postData,
+                            success: function (data) {
+                                $("#framePreview").attr("height", $(".widget-body").height() - 50);
+                                $("#framePreview").attr("src", "/SystemManage/CodeGenerator/Preview?id=" + id)
+                            },
+                            close: false
+                        });
+                        break;
+                    case 4:
+                        createCode();
+                        $finish.show();
+                        $next.hide();
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $finish.hide();
+                $next.show();
+            }
+        });
+    }
+
+    //类名前缀
+    function classPrefixChange() {
+        $("#ClassPrefix").keyup(function () {
+            var classPrefix = $(this).val();
+            $("#FileConfigForm input").each(function (i, ele) {
+                var suffix = $(ele).attr("data-suffix");
+                if (!!suffix) {
+                    if (ele.id == "InterfaceName") {
+                        $(ele).val("I" + classPrefix + $(ele).attr("data-suffix"));
+                    } else {
+                        $(ele).val(classPrefix + $(ele).attr("data-suffix"));
+                    }
+                }
+            });
+        });
+    }
+
+    //菜单后缀
+    function modelSuffixChange() {
+        $("#OutputModel").change(function () {
+            var classPrefix = $("#ClassPrefix").val();
+            if (classPrefix == null || classPrefix == "") {
+                alert("请先输入类名前缀！");
+                return;
+            }
+
+            var modelsuffix = $(this).find("option:selected").val()
+            $("#OutputConfigForm input").each(function (i, ele) {
+                var prefix = $(ele).attr("data-prefix");
+                if (!!prefix) {
+                    switch (ele.id) {
+                        case "EntityPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/03 Entity/" + modelsuffix + "/" + classPrefix + "Entity.cs");
+                            break;
+                        case "IRepositoryPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/04 IRepository/" + modelsuffix + "/I" + classPrefix + "Repository.cs");
+                            break;
+                        case "RepositoryPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/" + modelsuffix + "/" + classPrefix + "Repository.cs");
+                            break;
+                        case "MapPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/" + modelsuffix + "/" + classPrefix + "Map.cs");
+                            break;
+                        case "ApplicationPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/" + modelsuffix + "/" + classPrefix + "App.cs");
+                            break;
+                        case "ControllorPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/Areas/" + modelsuffix + "/Controllers/" + classPrefix + "Controller.cs");
+                            break;
+                        case "ListPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/Areas/" + modelsuffix + "/Views/" + classPrefix + "/" + classPrefix + "Index.cs");
+                            break;
+                        case "FormPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/Areas/" + modelsuffix + "/Views/" + classPrefix + "/" + classPrefix + "Form.cs");
+                            break;
+                        case "DetailsPath":
+                            $(ele).val($(ele).attr("data-prefix") + "/Areas/" + modelsuffix + "/Views/" + classPrefix + "/" + classPrefix + "Details.cs");
+                            break;
+                        default:
+                            $(ele).val($(ele).attr("data-prefix") + modelsuffix);
+                            break;
+                    }
+                }
+            });
+        });
+    }
+
+    //列表树
+    function initTreeView1() {
+        $("#tableFieldTree1").treeview({
+            showcheck: true,
+            url: "/SystemManage/CodeGenerator/GetTableFieldTree",
+            param: { tableName: tableName },
+            oncheckboxclick: function (item) {
+                if (colModel.indexOf(item.value) > 0) {
+                    colModel = colModel.replace(',' + item.value, '');
+                } else {
+                    colModel += ',' + item.value;
+                }
+                $("#frameList").attr("src", iframeSrc + colModel);
+            }
+        });
+    }
+
+    //表单树
+    function initTreeView2() {
+        $("#tableFieldTree2").treeview({
+            showcheck: true,
+            url: "/SystemManage/CodeGenerator/GetTableFieldTree",
+            param: { tableName: tableName },
+            oncheckboxclick: function (item) {
+                if ($("#tr_" + item.value).length > 0) {
+                    if ($("#tr_" + item.value).css("display") == "none") {
+                        $("#tr_" + item.value).show();
+                    } else {
+                        $("#tr_" + item.value).hide();
+                    }
+                } else {
+                    var trField = "<tr id='tr_" + item.value + "'>";
+                    trField += "<th class='formTitle'>" + item.text + "</th>";
+                    trField += "<td class='formValue'>";
+                    trField += "<input id='" + item.value + "' type='text' class='form-control' />";
+                    trField += "</td></tr>";
+                    $("#tableField").append(trField);
+                }
+            }
+        });
+    }
+
+    function submitForm() {
+        
+    }
+
+    function createCode() {
+        $.submitForm({
+            url: "/SystemManage/CodeGenerator/CreateCode",
+            param: { tableId: id },
+            success: function (data) {
+                
+            },
+            close: false
+        });
+    }
+</script>
+<div class="widget-body" style="overflow:auto;">
+    <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+        <ul class="steps">
+            <li data-target="#step-1" class="active"><span class="step">1</span>基本配置<span class="chevron"></span></li>
+            <li data-target="#step-2"><span class="step">2</span>列表页面<span class="chevron"></span></li>
+            <li data-target="#step-3"><span class="step">3</span>表单页面<span class="chevron"></span></li>
+            <li data-target="#step-4"><span class="step">4</span>代码预览<span class="chevron"></span></li>
+            <li data-target="#step-5"><span class="step">5</span>生成完毕<span class="chevron"></span></li>
+        </ul>
+    </div>
+    <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+        <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    文件名配置
+                </div>
+                <div class="panel-body" style="width: 98%;">
+                    <form id="FileConfigForm">
+                        <table class="form">
+                            <tr>
+                                <th class="formTitle">类名前缀</th>
+                                <td class="formValue">
+                                    <input id="ClassPrefix" type="text" class="form-control required" placeholder="请输入类名前缀" />
+                                </td>
+                                <th class="formTitle">创建人员</th>
+                                <td class="formValue">
+                                    <input id="CreateUser" type="text" class="form-control" value="@ViewBag.Creator" readonly="readonly" />
+                                </td>
+                                <th class="formTitle">创建时间</th>
+                                <td class="formValue">
+                                    <input id="CreateDate" type="text" class="form-control" value="@DateTime.Now.ToString()" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">实体类名</th>
+                                <td class="formValue">
+                                    <input id="EntityName" type="text" class="form-control" data-suffix="Entity" readonly="readonly" />
+                                </td>
+                                <th class="formTitle">接口类名</th>
+                                <td class="formValue">
+                                    <input id="InterfaceName" type="text" class="form-control" data-suffix="Repository" readonly="readonly" />
+                                </td>
+                                <th class="formTitle">仓库类名</th>
+                                <td class="formValue">
+                                    <input id="RepositoryName" type="text" class="form-control" data-suffix="Repository" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">映射类名</th>
+                                <td class="formValue">
+                                    <input id="MapName" type="text" class="form-control" data-suffix="Map" readonly="readonly" />
+                                </td>
+                                <th class="formTitle">业务类名</th>
+                                <td class="formValue">
+                                    <input id="AppName" type="text" class="form-control" data-suffix="App" readonly="readonly" />
+                                </td>
+                                <th class="formTitle">控制器名</th>
+                                <td class="formValue">
+                                    <input id="ControllerName" type="text" class="form-control" data-suffix="Controller" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">列表页名</th>
+                                <td class="formValue">
+                                    <input id="IndexName" type="text" class="form-control" data-suffix="Index" readonly="readonly" />
+                                </td>
+                                <th class="formTitle">表单页名</th>
+                                <td class="formValue">
+                                    <input id="FormName" type="text" class="form-control" data-suffix="Form" readonly="readonly" />
+                                </td>
+                                <th class="formTitle">查看页名</th>
+                                <td class="formValue">
+                                    <input id="DetailsName" type="text" class="form-control" data-suffix="Details" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">类名描述</th>
+                                <td class="formValue" colspan="5">
+                                    <input id="Description" type="text" class="form-control" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    输出目录
+                </div>
+                <div class="panel-body" style="width: 98%;">
+                    <form id="OutputConfigForm">
+                        <table class="form">
+                            <tr>
+                                <th class="formTitle">输出模块</th>
+                                <td class="formValue">
+                                    <select id="OutputModel" name="F_ParentId" class="form-control required">
+                                        <option value="">==请选择==</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">实体目录</th>
+                                <td class="formValue">
+                                    <input id="EntityPath" type="text" class="form-control" data-prefix="@ViewBag.DomainPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">接口目录</th>
+                                <td class="formValue">
+                                    <input id="IRepositoryPath" type="text" class="form-control" data-prefix="@ViewBag.DomainPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">仓库目录</th>
+                                <td class="formValue">
+                                    <input id="RepositoryPath" type="text" class="form-control" data-prefix="@ViewBag.RepositoryPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">映射目录</th>
+                                <td class="formValue">
+                                    <input id="MapPath" type="text" class="form-control" data-prefix="@ViewBag.MapPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">业务目录</th>
+                                <td class="formValue">
+                                    <input id="ApplicationPath" type="text" class="form-control" data-prefix="@ViewBag.ApplicationPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">控制目录</th>
+                                <td class="formValue">
+                                    <input id="ControllorPath" type="text" class="form-control" data-prefix="@ViewBag.WebPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">列表目录</th>
+                                <td class="formValue">
+                                    <input id="ListPath" type="text" class="form-control" data-prefix="@ViewBag.WebPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">表单目录</th>
+                                <td class="formValue">
+                                    <input id="FormPath" type="text" class="form-control" data-prefix="@ViewBag.WebPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="formTitle">明细目录</th>
+                                <td class="formValue">
+                                    <input id="DetailsPath" type="text" class="form-control" data-prefix="@ViewBag.WebPath" readonly="readonly" />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="step-pane" id="step-2">
+            <div class="ui-layout" id="layout" style="width: 100%; padding:28px;">
+                <div class="ui-layout-west" style="float:left; width:20%;">
+                    <div id="tableFieldTree1"></div>
+                </div>
+                <div class="ui-layout-center" style="float:left; width:78%;">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fa fa-warning"></i>请在左侧勾选需要展示的字段
+                    </div>
+                    <iframe id="frameList" src="/SystemManage/CodeGenerator/ListIndex" style="width:100%; height:400px; border:none;"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="step-pane" id="step-3">
+            <div class="ui-layout" id="layout" style="width: 100%; padding:28px;">
+                <div class="ui-layout-west" style="float:left; width:20%;">
+                    <div id="tableFieldTree2"></div>
+                </div>
+                <div class="ui-layout-center" style="float:left; width:78%;">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fa fa-warning"></i>请在左侧勾选需要展示的字段
+                    </div>
+                    <div style="margin: 10px; margin-bottom: 0px;">
+                        <div class="panel panel-default">
+                            <div class="panel-body" style="width: 98%;">
+                                <table class="form" id="tableField">
+                                    <tr>
+                                        <th class="formTitle">示例</th>
+                                        <td class="formValue">
+                                            <input id="Id" type="text" class="form-control" placeholder="请输入示例" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="step-pane" id="step-4">
+            <iframe id="framePreview" style="width:98%; border:none;"></iframe>
+        </div>
+        <div class="step-pane" id="step-5">
+            <div style="padding:180px; padding-left:240px; padding-right:240px; text-align:center;">
+                <div class="alert alert-success" role="alert">
+                    <i class="fa fa-flag" style="position: relative; top: 1px; font-size: 26px; padding-right: 5px;"></i>
+                    <span style="font-size:26px;">生成成功！</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-button" id="wizard-actions">
+    <a id="btnLast" disabled class="btn btn-default btn-prev">上一步</a>
+    <a id="btnNext" class="btn btn-default btn-next">下一步</a>
+    <a id="btnFinish" class="btn btn-default" style="display: none;" onclick="$.modalClose();">完成</a>
+</div>
+

@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<script>
+    var inventoryId = $.request("inventoryId")
+    $(function () {
+        initControl();
+
+        if (!!inventoryId) {
+            $.ajax({
+                url: "/ProductManage/Inventory/GetFormJson",
+                data: { keyValue: inventoryId },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    data.Weight = null;
+                    $("#form1").formSerialize(data);
+                }
+            });
+        }
+    })
+
+    function initControl() {
+        $("#InventoryId").val(inventoryId);
+        //品类
+        $("#ProductType").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "Product", itemCode: "ProductCode", itemName: "ProductName", condition: "", sort: "Sort", asc: true },
+        });
+    }
+
+    function submitForm() {
+        var postData = $("#form1").formSerialize();
+        $.submitForm({
+            url: "/ProductManage/Inventory/SubmitOutForm",
+            param: postData,
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        });
+    }
+</script>
+<form id="form1">
+    <div class="widget-body">
+        <div class="step-pane active" style="margin: 10px; margin-bottom: 0px;">
+            <div class="panel panel-default">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <th class="formTitle">仓库</th>
+                            <td class="formValue">
+                                <input id="WareName" name="WareName" type="text" class="form-control" disabled="disabled" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">产品类别</th>
+                            <td class="formValue">
+                                <select id="ProductType" name="ProductType" class="form-control required" disabled="disabled"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">出库重量</th>
+                            <td class="formValue">
+                                <input id="Weight" name="Weight" type="text" class="form-control required" placeholder="请输入出库重量" />
+                            </td>
+                        </tr>
+                        <tr style="display:none">
+                            <th class="formTitle">商品主键</th>
+                            <td class="formValue">
+                                <input id="InventoryId" name="InventoryId" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-button" id="wizard-actions">
+        <a id="btn_finish" class="btn btn-default" onclick="submitForm()">完成</a>
+    </div>
+</form>

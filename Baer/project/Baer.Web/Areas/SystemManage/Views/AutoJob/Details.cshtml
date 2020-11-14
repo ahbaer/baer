@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Details.cshtml";
+}
+<script>
+    var keyValue = $.request("keyValue");
+    $(function () {
+        $.ajax({
+            url: "/SystemManage/AutoJob/GetFormJson",
+            data: { keyValue: keyValue },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#form1").formSerialize(data);
+                $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
+                $("#form1").find('select').attr('disabled', 'disabled');
+                $("#form1").find('select').addClass('selectNoBorder');
+                $("#form1").find('div.ckbox label').attr('for', '');
+            }
+        });
+    });
+</script>
+<form id="form1">
+    <div style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+        <div style="padding-top: 20px;">
+            <div class="panel panel-default">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <th class="formTitle">任务组</th>
+                            <td class="formValue">
+                                <input id="JobGroupName" name="JobGroupName" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">任务名称</th>
+                            <td class="formValue">
+                                <input id="JobName" name="JobName" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">Cron表达式</th>
+                            <td class="formValue">
+                                <input id="CronExpression" name="CronExpression" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">开始时间</th>
+                            <td class="formValue">
+                                <input id="StartTime" name="StartTime" type="text" class="form-control"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">结束时间</th>
+                            <td class="formValue">
+                                <input id="EndTime" name="EndTime" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">状态</th>
+                            <td class="formValue">
+                                <select id="JobStatus" name="JobStatus" class="form-control">
+                                    <option value="1">启用</option>
+                                    <option value="0">禁用</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">备注</th>
+                            <td class="formValue">
+                                <input id="Description" name="Description" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

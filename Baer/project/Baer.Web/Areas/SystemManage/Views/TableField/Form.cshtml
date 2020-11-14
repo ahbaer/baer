@@ -1,0 +1,173 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<script>
+    var tableId = $.request("tableId");
+    var id = $.request("id");
+    $(function () {
+        initControl();
+        $('#ShowType').change();
+        $('#FieldType').change();
+
+        if (!!id) {
+            $.ajax({
+                url: "/SystemManage/TableField/GetFormJson",
+                data: { id: id },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                    $("#FieldName").attr("disabled", "disabled");
+                    $("#FieldType").attr("disabled", "disabled");
+                    $("#AllowDelete").attr("disabled", "disabled");
+                }
+            });
+        } else {
+            $("#TableId").val(tableId);
+        }
+    });
+
+    function initControl() {
+        //数据字典
+        $("#DataSource").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "Sys_Items", itemCode: "F_EnCode", itemName: "F_FullName", condition: "", sort: "F_SortCode", asc: true },
+        });
+
+        $('#ShowType').change(function () {
+            if ($("#ShowType").get(0).selectedIndex == 2) {
+                $("#tdDataSourceTitle").show();
+                $("#tdDataSource").show();
+            } else {
+                $("#tdDataSourceTitle").hide();
+                $("#tdDataSource").hide();
+            }
+        });
+
+        $('#FieldType').change(function () {
+            if ($("#FieldType").get(0).selectedIndex == 0
+                || ($("#FieldType").get(0).selectedIndex > 2 && $("#FieldType").get(0).selectedIndex < 7)
+                || $("#FieldType").get(0).selectedIndex > 15) {
+                $("#tdFieldLengthTitle").show();
+                $("#tdFieldLength").show();
+                $("#FieldLength").addClass("required");
+                $("#trFieldAccuracy").hide();
+                $("#FieldAccuracy").removeClass("required");
+            } else if ($("#FieldType").get(0).selectedIndex == 12 || $("#FieldType").get(0).selectedIndex == 13) {
+                $("#tdFieldLengthTitle").show();
+                $("#tdFieldLength").show();
+                $("#FieldLength").addClass("required");
+                $("#trFieldAccuracy").show();
+                $("#FieldAccuracy").addClass("required");
+            } else {
+                $("#tdFieldLengthTitle").hide();
+                $("#tdFieldLength").hide();
+                $("#FieldLength").removeClass("required");
+                $("#trFieldAccuracy").hide();
+                $("#FieldAccuracy").removeClass("required");
+            }
+        });
+    }
+
+    function submitForm() {
+        if (!$('#form1').formValid()) {
+            return false;
+        }
+
+        $.submitForm({
+            url: "/SystemManage/TableField/SubmitForm?id=" + id,
+            param: $("#form1").formSerialize(),
+            success: function () {
+                top.frames["FieldIndex"].$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+</script>
+
+<form id="form1">
+    <div style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+        <div style="padding-top: 20px;">
+            <div class="panel panel-default">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <th class="formTitle">字段名称</th>
+                            <td class="formValue">
+                                <input id="FieldName" type="text" class="form-control required" placeholder="请输入字段名称" />
+                            </td>
+                            <th class="formTitle">中文名称</th>
+                            <td class="formValue">
+                                <input id="FieldChineseName" type="text" class="form-control required" placeholder="请输入中文名称" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">显示类型</th>
+                            <td class="formValue">
+                                <select id="ShowType" class="form-control required">
+                                    <option value="0">文本框</option>
+                                    <option value="1">时间框</option>
+                                    <option value="2">下拉框</option>
+                                </select>
+                            </td>
+                            <th class="formTitle" id="tdDataSourceTitle" style="display:none;">数据字典</th>
+                            <td class="formValue" id="tdDataSource" style="display:none;">
+                                <select id="DataSource" class="form-control"></select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle" style="height: 35px;">字段类型</th>
+                            <td class="formValue">
+                                <select id="FieldType" class="form-control required">
+                                    <option value="binary">binary</option>
+                                    <option value="image">image</option>
+                                    <option value="bit">bit</option>
+                                    <option value="char">char</option>
+                                    <option value="nchar">nchar</option>
+                                    <option value="varchar">varchar</option>
+                                    <option value="nvarchar">nvarchar</option>
+                                    <option value="text">text</option>
+                                    <option value="int">int</option>
+                                    <option value="bigint">bigint</option>
+                                    <option value="float">float</option>
+                                    <option value="money">money</option>
+                                    <option value="numeric">numeric</option>
+                                    <option value="decimal">decimal</option>
+                                    <option value="date">date</option>
+                                    <option value="datetime">datetime</option>
+                                    <option value="datetime2">datetime2</option>
+                                    <option value="datetimeoffset">datetimeoffset</option>
+                                </select>
+                            </td>
+                            <th class="formTitle" id="tdFieldLengthTitle">字段长度</th>
+                            <td class="formValue" id="tdFieldLength">
+                                <input id="FieldLength" type="text" class="form-control" value="50" placeholder="请输入字段长度" />
+                            </td>
+                        </tr>
+                        <tr id="trFieldAccuracy">
+                            <th class="formTitle">字段精度</th>
+                            <td class="formValue">
+                                <input id="FieldAccuracy" type="text" class="form-control" value="2" placeholder="请输入字段精度" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle" valign="top" style="padding-top: 5px;">
+                                说明描述
+                            </th>
+                            <td class="formValue" colspan="3">
+                                <textarea id="Description" class="form-control" style="height: 60px;"></textarea>
+                            </td>
+                        </tr>
+                        <tr style="display:none">
+                            <th class="formTitle">关联主键</th>
+                            <td class="formValue">
+                                <input id="TableId" type="text" class="form-control required" placeholder="请输入关联主键" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

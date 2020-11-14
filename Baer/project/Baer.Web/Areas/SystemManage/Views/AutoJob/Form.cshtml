@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    var keyValue = $.request("keyValue");
+    $(function () {
+        if (!!keyValue) {
+            $.ajax({
+                url: "/SystemManage/AutoJob/GetFormJson",
+                data: { keyValue: keyValue },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                }
+            });
+        }
+    });
+
+    function submitForm() {
+        if (!$('#form1').formValid()) {
+            return false;
+        }
+        $.submitForm({
+            url: "/SystemManage/AutoJob/SubmitForm?keyValue=" + keyValue,
+            param: $("#form1").formSerialize(),
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+</script>
+<form id="form1">
+    <div style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+        <div style="padding-top: 20px;">
+            <div class="panel panel-default">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <th class="formTitle">任务组</th>
+                            <td class="formValue">
+                                <input id="JobGroupName" name="JobGroupName" type="text" class="form-control required" placeholder="请输入任务组" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">任务名称</th>
+                            <td class="formValue">
+                                <input id="JobName" name="JobName" type="text" class="form-control required" placeholder="请输入任务名称" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">Cron表达式</th>
+                            <td class="formValue">
+                                <input id="CronExpression" name="CronExpression" type="text" class="form-control required" placeholder="请输入Cron表达式" />
+                                <div style="color:red; margin-top:10px;">
+                                    <i class="fa fa-warning"></i>请在禁用状态下修改，再启用
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">开始时间</th>
+                            <td class="formValue">
+                                <input id="StartTime" name="StartTime" type="text" class="form-control input-wdatepicker" onfocus="WdatePicker()" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">结束时间</th>
+                            <td class="formValue">
+                                <input id="EndTime" name="EndTime" type="text" class="form-control input-wdatepicker" onfocus="WdatePicker()" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">状态</th>
+                            <td class="formValue">
+                                <select id="JobStatus" name="JobStatus" class="form-control required">
+                                    <option value="1">启用</option>
+                                    <option value="0">禁用</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle" valign="top" style="padding-top: 5px;">
+                                备注
+                            </th>
+                            <td class="formValue">
+                                <textarea id="Description" name="Description" class="form-control" style="height: 60px;"></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

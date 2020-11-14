@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/css/upload.css" />
+<script src="~/Content/layui/layui.js" charset="utf-8"></script>
+<script>
+    var count = 0;
+    var guid = "baner";
+
+    $(function () {
+        getFile();//获取图片
+    })
+
+    //预览图获取
+    function getFile() {
+        $.ajax({
+            url: "/SystemManage/File/GetListJson",
+            data: { related_Id: guid },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                count = 0;
+                $("#gallery_nav").empty();
+                $("#gallery_output").empty();
+                for (var i = 0; i < data.length; i++) {
+                    $("#gallery_nav").append("<a rel='picRel_" + i + "' href='javascript:;'><img id='" + data[i].Id + "' src='" + data[i].FileContent + "' style='width:135px;' /></a>");
+                    $("#gallery_output").append("<img id='picRel_" + i + "' src='" + data[i].FileContent + "' style='width:542px;' />");
+                    count++;
+                }
+                for (var i = data.length; i < 4; i++) {
+                    $("#gallery_nav").append("<a rel='picRel_" + i + "' href='javascript:;'><img id='pic_" + i + "' style='width:135px;' /></a>");
+                    $("#gallery_output").append("<img id='picRel_" + i + "' style='width:542px;' />");
+                }
+            }
+        });
+
+        showFile();//展示图片
+    }
+
+    //预览图展示
+    function showFile() {
+        $("#gallery_output img").not(":first").hide();
+        $("#gallery a").click(function () {
+            $("#gallery a").removeClass('on');
+            $(this).addClass("on");
+            if ($("#" + this.rel).is(":hidden")) {
+                $("#gallery_output img").slideUp();
+                $("#" + this.rel).slideDown();
+            }
+            $("#gallery_delete").show();
+        });
+    }
+
+    function deleteFile() {
+        var f_Id = $("#gallery_nav a.on img")[0].id;
+        //删除附件
+        $.ajax({
+            url: "/SystemManage/File/DeleteFile",
+            data: { f_Id: f_Id },
+            type: "post",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                getFile();
+                $('#pic_' + count).click();
+            }
+        });
+    }
+
+    layui.use('upload', function () {
+        var $ = layui.jquery, upload = layui.upload;
+
+        //多图片上传
+        upload.render({
+            elem: '#btnUpload',
+            url: '/SystemManage/File/UploadFile',//接口
+            size: 1024,//单位kb
+            accept: 'images',
+            data: { related_Id: guid },
+            param: '',
+            before: function (obj) {
+                if (count > 3) {
+                    alert("最多上传四张图片！");
+                    return;
+                }
+
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#pic_' + count).attr('src', result);//图片链接（base64）
+                    $('#picRel_' + count).attr('src', result);
+                    $('#pic_' + count).click();
+                });
+            },
+            done: function (res) {
+                $("#gallery_nav a img")[count].id = res.data;
+                count++;
+
+                $.ajax({
+                    url: "/ProductManage/Banner/Log",
+                    type: "post",
+                    dataType: "json",
+                    success: function (data) {
+                    }
+                });
+            }
+        });
+    });
+</script>
+<form id="form1">
+    <div class="widget-body">
+        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+            <ul class="steps">
+                <li data-target="#step-1" class="active"><span class="step">1</span>轮播图<span class="chevron"></span></li>
+            </ul>
+        </div>
+        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+            <div class="step-pane active" id="step-1" style="margin: 10px; margin-bottom: 0px;">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="width: 98%;">
+                        <table class="form">
+                            <tr>
+                                <td class="formValue">
+                                    <div class="layui-upload">
+                                        <button type="button" class="btn btn-primary" id="btnRefresh" style="margin-left:85px;" onclick="$.reload()">
+                                            <i class="fa fa-refresh fa-spin" style="margin-right:5px;"></i>刷新
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="btnUpload">
+                                            <i class="fa fa-upload" style="margin-right:5px;"></i>上传
+                                        </button>
+                                        <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                                            <div id="gallery" style="height:280px; margin-left:55px;">
+                                                <div id="gallery_nav">
+                                                </div>
+                                                <div id="gallery_output" style="margin-left:10px;">
+                                                </div>
+                                                <div id="gallery_delete" style="display:none;">
+                                                    <a href="#" style="position:relative; top:230px; border:0px;" onclick="deleteFile();">
+                                                        <img src="~/Content/img/delete.gif" style="height:25px;" title="删除" />
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </blockquote>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-button" id="wizard-actions">
+        </div>
+    </div>
+</form>

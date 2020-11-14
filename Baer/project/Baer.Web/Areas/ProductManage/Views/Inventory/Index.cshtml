@@ -1,0 +1,402 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<style>
+    .section-search {
+        width: 120px !important;
+        margin-left: 10px !important;
+    }
+
+    .topPanel {
+        height: 100px !important;
+    }
+
+    .formValue{
+        padding-bottom: 0px !important;
+    }
+</style>
+<script>
+    $(function () {
+        initSearch();
+        getAllWeight('{}');
+        gridList();
+
+        var $cb = $("#cb_gridList");
+        if ($cb != null) {
+            $cb.parent().removeClass("ckbox");
+        }
+    })
+
+    function initSearch() {
+        //品类
+        $("#stProductType").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "Product", itemCode: "ProductCode", itemName: "ProductName", condition: "", sort: "Sort", asc: true },
+        });
+        //等级
+        $("#stGrade").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0202" },
+        });
+        //长度
+        $("#stLength").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0208" },
+        });
+        //码值
+        $("#stHorseValue").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0203" },
+        });
+        //仓库
+        $("#stWareId").bindSelect({
+            url: "/SystemManage/SelData/GetSelectJson",
+            param: { table: "WareHouse", itemCode: "Id", itemName: "WareName" },
+        });
+        //产品状态
+        $("#stStatus").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0207" },
+        });
+        //报价方式
+        $("#stQuoteType").bindSelect({
+            url: "/SystemManage/ItemsData/GetSelectJson",
+            param: { enCode: "0206" },
+        });
+    }
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/ProductManage/Inventory/GetGridJson",
+            height: $(window).height() - 180,
+            colModel: [
+                { label: "主键", name: "Id", hidden: true, key: true },
+                { label: '分类', name: 'ProductType', width: 50, align: 'left' },
+                { label: '年度', name: 'Year', width: 40, align: 'left' },
+                {
+                    label: '等级', name: 'Grade', width: 40, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0202"][cellvalue] == null ? "" : top.clients.dataItems["0202"][cellvalue];
+                    }
+                },
+                {
+                    label: '长度', name: 'Length', width: 40, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0208"][cellvalue] == null ? "" : top.clients.dataItems["0208"][cellvalue];
+                    }
+                },
+                { label: '强力', name: 'Strength', width: 40, align: 'left' },
+                {
+                    label: '码值', name: 'HorseValue', width: 40, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0203"][cellvalue] == null ? "" : top.clients.dataItems["0203"][cellvalue];
+                    }
+                },
+                { label: '仓库', name: 'WareName', width: 100, align: 'left' },
+                { label: '库存/吨', name: 'Weight', width: 50, align: 'left' },
+                { label: '提单号', name: 'OrderNo', width: 90, align: 'left' },
+                {
+                    label: '状态', name: 'Status', width: 60, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0207"][cellvalue] == null ? "" : top.clients.dataItems["0207"][cellvalue];
+                    }
+                },
+                { label: '船期', name: 'SailingSchedule', width: 70, align: 'left' },
+                {
+                    label: '报价方式', name: 'QuoteType', width: 90, align: 'left',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return top.clients.dataItems["0206"][cellvalue] == null ? "" : top.clients.dataItems["0206"][cellvalue];
+                    }
+                },
+                {
+                    label: '报价', name: 'Price', width: 50, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return row.QuoteType != "Futures" ? row.Price : "";
+                    }
+                },
+                {
+                    label: '合约', name: 'Contract', width: 50, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return row.QuoteType != "Futures" ? "" : row.Contract;
+                    }
+                },
+                {
+                    label: '基差', name: 'Basis', width: 40, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return row.QuoteType != "Futures" ? "" : row.Basis;
+                    }
+                },
+                {
+                    label: '推荐', name: 'IsRecommend', width: 40, align: 'center',
+                    formatter: function (cellvalue) {
+                        return cellvalue == true ? "<i class='fa fa-thumbs-up'></i>" : "";
+                    }
+                },
+                {
+                    label: '修改', name: '', width: 40, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>';
+                    }
+                },
+                {
+                    label: '查看', name: '', width: 40, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                    }
+                },
+                {
+                    label: '出库', name: '', width: 40, align: 'center',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnOut" authorize="yes" class="btn" onclick="btnOut(\'' + row.Id + '\')"><i class="fa fa-sign-out"></i></a>';
+                    }
+                },
+                {
+                    label: '纪录', name: '', width: 40, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnOutHistory(\'' + row.Id + '\')"><i class="fa fa-history"></i></a>';
+                    }
+                }
+            ],
+            pager: "#gridPager",
+            sortname: 'CreatorTime',
+            sortorder: "desc",
+            viewrecords: true,
+            multiselect: true
+        });
+
+        $("#btnSearch").click(function () {
+            var queryJson = {
+                productType: $("#stProductType").val(),
+                grade: $("#stGrade").val(),
+                length: $("#stLength").val(),
+                strength: $("#txtStrength").val(),
+                horseValue: $("#stHorseValue").val(),
+                wareId: $("#stWareId").val(),
+                orderNo: $("#txtOrderNo").val(),
+                status: $("#stStatus").val(),
+                quoteType: $("#stQuoteType").val(),
+                isRecommend: $("#stIsRecommend").val()
+            }
+            $gridList.jqGrid('setGridParam', {
+                postData: { queryJson: JSON.stringify(queryJson) },
+            }).trigger('reloadGrid');
+
+            getAllWeight(JSON.stringify(queryJson));
+        });
+
+        $("#btnClear").click(function () {
+            $("#stProductType").get(0).selectedIndex = 0;
+            $("#stGrade").get(0).selectedIndex = 0;
+            $("#stLength").get(0).selectedIndex = 0;
+            $("#txtStrength").val('');
+            $("#stWareId").get(0).selectedIndex = 0;
+            $("#txtOrderNo").val('');
+            $("#stStatus").get(0).selectedIndex = 0;
+            $("#stQuoteType").get(0).selectedIndex = 0;
+            $("#stIsRecommend").get(0).selectedIndex = 0;
+        });
+    }
+
+    function getAllWeight(queryJson) {
+        $.ajax({
+            url: "/ProductManage/Inventory/GetTotalWeight",
+            data: { queryJson: queryJson },
+            type: "get",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#spanWeight").html(data);
+            }
+        });
+    }
+
+    function btnOperate(id) {
+        var title = !!id ? "修改产品" : "新增产品";
+        $.modalOpen({
+            id: "Form",
+            title: title,
+            url: "/ProductManage/Inventory/Form?id=" + id,
+            width: "750px",
+            height: "570px",
+            btn: null
+        });
+    }
+
+    function btnDetails(id) {
+        $.modalOpen({
+            id: "Details",
+            title: "库存详情",
+            url: "/ProductManage/Inventory/Details?id=" + id,
+            width: "750px",
+            height: "540px",
+            btn: null,
+        });
+    }
+
+    function btnDelete() {
+        var ids = $("#gridList").jqGrid('getGridParam', 'selarrrow');
+        if (ids.length == 0) {
+            this.alert("请选中项删除！");
+            return;
+        }
+
+        $.deleteForm({
+            url: "/ProductManage/Inventory/DeleteForm",
+            param: { ids: ids.toString() },
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+
+    function btnOut(id) {
+        $.modalOpen({
+            id: "OutForm",
+            title: "出库",
+            url: "/ProductManage/Inventory/OutForm?inventoryId=" + id,
+            width: "450px",
+            height: "260px",
+            btn: null,
+        });
+    }
+
+    function btnOutHistory(id) {
+        $.modalOpen({
+            id: "OutIndex",
+            title: "出库纪录",
+            url: "/ProductManage/Inventory/OutIndex?inventoryId=" + id,
+            width: "600px",
+            height: "560px",
+            btn: null,
+        });
+    }
+</script>
+
+<div class="topPanel">
+    <div class="toolbar" style="margin-top:25px;">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <i class="fa fa-refresh fa-spin"></i>刷新
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnDelete" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnDelete()">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnAdd" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnOperate('')">
+                <i class="fa fa-plus"></i>新增
+            </a>
+        </div>
+        <script>$('.toolbar').authorizeButton()</script>
+    </div>
+    <div class="search">
+        <table>
+            <tr>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stProductType" class="form-control section-search">
+                            <option value="">产品分类</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stGrade" class="form-control section-search">
+                            <option value="">等级</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stLength" class="form-control section-search">
+                            <option value="">长度</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group" style="float:left;">
+                        <input id="txtStrength" type="text" class="form-control section-search" placeholder="强力：小~大">
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stHorseValue" class="form-control section-search">
+                            <option value="">码值</option>
+                        </select>
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button id="btnSearch" type="button" class="btn  btn-primary" style="margin-left:8px !important; border-radius: 5px;">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button id="btnClear" type="button" class="btn  btn-primary" style="margin-left:8px !important; border-radius: 5px;">
+                                <i class="fa fa-mail-reply-all"></i>
+                            </button>
+                        </span>
+                    </div>
+                </td>
+                <td rowspan="2">
+                    <div style="margin-left:8px !important;">
+                        <span style="font-size:12px">总库存：</span>
+                        <span id="spanWeight" style="font-size:18px; color:red;"></span>
+                        <span style="font-size:12px">吨</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stWareId" class="form-control section-search">
+                            <option value="">仓库</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input id="txtOrderNo" type="text" class="form-control section-search" placeholder="提单号">
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stStatus" class="form-control section-search">
+                            <option value="">产品状态</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stQuoteType" class="form-control section-search">
+                            <option value="">报价方式</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="formValue">
+                    <div class="input-group">
+                        <select id="stIsRecommend" class="form-control section-search">
+                            <option value="">首页推荐</option>
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+    <div id="gridPager"></div>
+</div>

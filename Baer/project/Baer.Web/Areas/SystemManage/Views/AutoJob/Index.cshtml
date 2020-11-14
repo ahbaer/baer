@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    $(function () {
+        $(function () {
+            var $cb = $("#cb_gridList");
+            if ($cb != null) {
+                $cb.parent().removeClass("ckbox");
+            }
+        })
+
+        gridList();
+    })
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/SystemManage/AutoJob/GetGridJson",
+            height: $(window).height() - 128,
+            colModel: [
+                { label: '主键', name: 'Id', hidden: true, key: true },
+                { label: '任务组', name: 'JobGroupName', width: 100, align: 'left' },
+                { label: '任务名称', name: 'JobName', width: 100, align: 'left' },
+                { label: 'Cron表达式', name: 'CronExpression', width: 100, align: 'left' },
+                {
+                    label: '开始时间', name: 'StartTime', width: 140, align: 'left'
+                },
+                {
+                    label: '结束时间', name: 'EndTime', width: 140, align: 'left'
+                },
+                {
+                    label: '下次运行时间', name: 'NextStartTime', width: 140, align: 'left'
+                },
+                {
+                    label: '状态', name: 'JobStatus', width: 60, align: 'left',
+                    formatter: function (cellvalue) {
+                        return cellvalue == 1 ? "<i class='fa fa-toggle-on'></i>" : "<i class='fa fa-toggle-off'></i>";
+                    }
+                },
+                {
+                    label: '修改', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>';
+                    }
+                },
+                {
+                    label: '查看', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                    }
+                },
+                {
+                    label: '日志', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnLog" authorize="yes" class="btn" onclick="btnLog(\'' + row.JobName + '\')"><i class="fa fa-book"></i></a>';
+                    }
+                }
+            ],
+            multiselect: true
+        });
+
+        $("#btn_search").click(function () {
+            $gridList.jqGrid('setGridParam', {
+                postData: { keyword: $("#txt_keyword").val() },
+            }).trigger('reloadGrid');
+        });
+    }
+
+    function btnOperate(f_Id) {
+        var title = !!f_Id ? "修改任务" : "新增任务";
+        $.modalOpen({
+            id: "Form",
+            title: title,
+            url: "/SystemManage/AutoJob/Form?keyValue=" + f_Id,
+            width: "450px",
+            height: "510px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].submitForm();
+            }
+        });
+    }
+
+    function btnDetails(f_Id) {
+        $.modalOpen({
+            id: "Details",
+            title: "查看任务",
+            url: "/SystemManage/AutoJob/Details?keyValue=" + f_Id,
+            width: "450px",
+            height: "450px",
+            btn: null,
+        });
+    }
+
+    function btnLog(jobName) {
+        $.modalOpen({
+            id: "LogIndex",
+            title: "查看日志",
+            url: "/SystemManage/AutoJobLog/Index?jobName=" + jobName,
+            width: "1000px",
+            height: "600px",
+            btn: null,
+        });
+    }
+
+    function btnDelete() {
+        var f_Ids = $("#gridList").jqGrid('getGridParam', 'selarrrow');
+        if (f_Ids.length == 0) {
+            this.alert("请选中项删除！");
+            return;
+        }
+
+        $.deleteForm({
+            url: "/SystemManage/User/DeleteForm",
+            param: { f_Ids: f_Ids.toString() },
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+</script>
+
+<div class="topPanel">
+    <div class="toolbar">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <i class="fa fa-refresh fa-spin"></i>刷新
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnDelete" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnDelete()">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnAdd" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnOperate()">
+                <i class="fa fa-plus"></i>新建
+            </a>
+        </div>
+        <script>$('.toolbar').authorizeButton()</script>
+    </div>
+    <div class="search">
+        <table>
+            <tr>
+                <td>
+                    <div class="input-group">
+                        <input id="txt_keyword" type="text" class="form-control" placeholder="任务名称" style="width: 200px;">
+                        <span class="input-group-btn">
+                            <button id="btn_search" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+</div>

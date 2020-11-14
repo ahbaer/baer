@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<script>
+    $(function () {
+        gridList();
+
+        var $cb = $("#cb_gridList");
+        if ($cb != null) {
+            $cb.parent().removeClass("ckbox");
+        }
+    })
+
+    function gridList() {
+        var $gridList = $("#gridList");
+        $gridList.dataGrid({
+            url: "/ProductManage/WareHouse/GetGridJson",
+            height: $(window).height() - 128,
+            colModel: [
+                { label: "主键", name: "Id", hidden: true, key: true },
+                { label: '仓库', name: 'WareName', width: 200, align: 'left' },
+                { label: '主管', name: 'Director', width: 120, align: 'left' },
+                { label: '主管电话', name: 'Mobile', width: 120, align: 'left' },
+                { label: '经度', name: 'Longitude', width: 120, align: 'left' },
+                { label: '纬度', name: 'Latitude', width: 120, align: 'left' },
+                { label: '地址', name: 'Address', width: 200, align: 'left' },
+                {
+                    label: '修改', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>';
+                    }
+                },
+                {
+                    label: '查看', name: '', width: 60, align: 'left',
+                    formatter: function (val, obj, row, act) {
+                        return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.Id + '\')"><i class="fa fa-search-plus"></i></a>';
+                    }
+                }
+            ],
+            pager: "#gridPager",
+            sortname: 'CreatorTime asc',
+            viewrecords: true,
+            multiselect: true
+        });
+
+        $("#btnSearch").click(function () {
+            $gridList.jqGrid('setGridParam', {
+                postData: { keyword: $("#txt_keyword").val() },
+            }).trigger('reloadGrid');
+        });
+    }
+
+    function btnOperate(id) {
+        var title = !!id ? "修改仓库" : "新增仓库";
+        $.modalOpen({
+            id: "Form",
+            title: title,
+            url: "/ProductManage/WareHouse/Form?id=" + id,
+            width: "550px",
+            height: "440px",
+            btn: null
+        });
+    }
+
+    function btnDetails(id) {
+        $.modalOpen({
+            id: "Details",
+            title: "查看仓库",
+            url: "/ProductManage/WareHouse/Details?id=" + id,
+            width: "550px",
+            height: "400px",
+            btn: null,
+        });
+    }
+
+    function btnDelete() {
+        var ids = $("#gridList").jqGrid('getGridParam', 'selarrrow');
+        if (ids.length == 0) {
+            this.alert("请选中项删除！");
+            return;
+        }
+
+        $.deleteForm({
+            url: "/ProductManage/WareHouse/DeleteForm",
+            param: { ids: ids.toString() },
+            success: function () {
+                $.currentWindow().$("#gridList").trigger("reloadGrid");
+            }
+        })
+    }
+</script>
+
+<div class="topPanel">
+    <div class="toolbar">
+        <div class="btn-group">
+            <a class="btn btn-primary" onclick="$.reload()">
+                <i class="fa fa-refresh fa-spin"></i>刷新
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnDelete" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnDelete();">
+                <i class="fa fa-trash-o"></i>删除
+            </a>
+        </div>
+        <div class="btn-group">
+            <a id="btnAdd" authorize="yes" class="btn btn-primary dropdown-text" onclick="btnOperate('');">
+                <i class="fa fa-plus"></i>新建
+            </a>
+        </div>
+        <script>$('.toolbar').authorizeButton()</script>
+    </div>
+    <div class="search">
+        <table>
+            <tr>
+                <td>
+                    <div class="input-group">
+                        <input id="txt_keyword" type="text" class="form-control" placeholder="仓库名称/地址" style="width: 200px;">
+                        <span class="input-group-btn">
+                            <button id="btnSearch" type="button" class="btn  btn-primary"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="gridPanel">
+    <table id="gridList"></table>
+    <div id="gridPager"></div>
+</div>

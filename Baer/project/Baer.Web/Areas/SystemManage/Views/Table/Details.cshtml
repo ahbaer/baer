@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Details.cshtml";
+}
+<script>
+    var id = $.request("id");
+    $(function () {
+        $.ajax({
+            url: "/SystemManage/Table/GetFormJson",
+            data: { id: id },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                $("#form1").formSerialize(data);
+                $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
+                $("#form1").find('div.ckbox label').attr('for', '');
+            }
+        });
+    })
+</script>
+<form id="form1">
+    <div style="margin-top: 10px; margin-left: 10px; margin-right: 10px;">
+        <div style="padding-top: 20px;">
+            <div class="panel panel-default">
+                <div class="panel-body" style="width: 98%;">
+                    <table class="form">
+                        <tr>
+                            <th class="formTitle">表名</th>
+                            <td class="formValue">
+                                <input id="TableName" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">表名(中文)</th>
+                            <td class="formValue">
+                                <input id="TableChineseName" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="formTitle">备注</th>
+                            <td class="formValue">
+                                <input id="Description" type="text" class="form-control" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

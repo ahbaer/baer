@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Details.cshtml";
+}
+
+<script>
+    var keyValue = $.request("keyValue");
+    $(function () {
+        $("#F_ParentId").bindSelect({
+            url: "/SystemManage/ConfigCategory/GetTreeSelectJson"
+        });
+
+        if (!!keyValue) {
+            $.ajax({
+                url: "/SystemManage/ConfigCategory/GetFormJson",
+                data: { keyValue: keyValue },
+                dataType: "json",
+                async: false,
+                success: function (data) {
+                    $("#form1").formSerialize(data);
+                    $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
+                    $("#form1").find('select').attr('disabled', 'disabled');
+                    $("#form1").find('div.ckbox label').attr('for', '');
+                }
+            });
+        }
+    });
+</script>
+
+<form id="form1">
+    <div class="step-pane active" style="margin: 10px; margin-bottom: 0px;">
+        <div class="panel panel-default">
+            <div class="panel-body" style="width: 98%;">
+                <table class="form">
+                    <tr>
+                        <th class="formTitle">上级</th>
+                        <td class="formValue">
+                            <select id="F_ParentId" name="F_ParentId" class="form-control">
+                                <option value="0">父节点</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">名称</th>
+                        <td class="formValue">
+                            <input id="CategoryName" name="CategoryName" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle">排序</th>
+                        <td class="formValue">
+                            <input id="F_SortCode" name="F_SortCode" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="formTitle" valign="top" style="padding-top: 5px;">
+                            备注
+                        </th>
+                        <td class="formValue">
+                            <input id="Description" name="Description" type="text" class="form-control" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>

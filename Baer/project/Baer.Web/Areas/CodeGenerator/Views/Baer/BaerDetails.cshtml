@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Details.cshtml";
+}
+
+<script>
+    var id = $.request('id');
+    $(function () {
+        initControl();
+
+        $.ajax({
+            url: '/CodeGenerator/Baer/GetFormJson',
+            data: { id: id },
+            dataType: 'json',
+            async: false,
+            success: function (data) {
+                $('#form1').formSerialize(data);
+                $('#form1').find('.form-control,select,input').attr('readonly', 'readonly');
+                $('#form1').find('select').attr('disabled', 'disabled');
+                $('#form1').find('div.ckbox label').attr('for', '');
+            }
+        })
+    })
+
+    function initControl() {
+       $('#field3').bindSelect({
+           url: '/SystemManage/ItemsData/GetSelectJson',
+           param: { enCode: '102' },
+       });
+    }
+</script>
+
+<form id='form1'>
+    <div style='margin: 10px;'>
+        <div class='panel panel-default'>
+            <div class='panel-body' style='width: 98%;'>
+                <table class='form'>
+                    <tr>
+                        <th class='formTitle'>字段1</th>
+                        <td class='formValue'>
+                            <input id='field1' type='text' class='form-control'/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class='formTitle'>字段2</th>
+                        <td class='formValue'>
+                            <input id='field2' type='text' class='form-control input-wdatepicker' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class='formTitle'>字段3</th>
+                        <td class='formValue'>
+                            <select id='field3' class='form-control'>
+                               <option value=''>==请选择==</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</form>

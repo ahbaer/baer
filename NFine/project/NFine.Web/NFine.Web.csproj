@@ -154,7 +154,6 @@
     <Compile Include="Areas\ExampleManage\Controllers\SendMessagesController.cs" />
     <Compile Include="Areas\ExampleManage\Controllers\SignetController.cs" />
     <Compile Include="Areas\ExampleManage\ExampleManageAreaRegistration.cs" />
-    <Compile Include="Areas\ProductManage\Controllers\ContractController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\BannerController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\InventoryController.cs" />
     <Compile Include="Areas\ProductManage\Controllers\ProductController.cs" />
@@ -163,7 +162,6 @@
     <Compile Include="Areas\ReportManage\Controllers\EchartsController.cs" />
     <Compile Include="Areas\ReportManage\Controllers\HighchartsController.cs" />
     <Compile Include="Areas\ReportManage\ReportManageAreaRegistration.cs" />
-    <Compile Include="Areas\SystemManage\Controllers\CodeGeneratorController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\TableFieldController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\TableController.cs" />
     <Compile Include="Areas\SystemManage\Controllers\AutoJobLogController.cs" />
@@ -202,7 +200,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Content Include="Content\css\jqgridcol.css" />
-    <Content Include="Content\css\vs.css" />
     <Content Include="Content\img\background.jpg" />
     <Content Include="Content\img\background_small.jpg" />
     <Content Include="Content\img\delete.gif" />
@@ -321,7 +318,6 @@
     <Content Include="Content\js\highcharts\themes\gray.js" />
     <Content Include="Content\js\highcharts\themes\grid.js" />
     <Content Include="Content\js\highcharts\themes\skies.js" />
-    <Content Include="Content\js\highlight.pack.js" />
     <Content Include="Content\js\index.js" />
     <Content Include="Content\js\indextab.js" />
     <Content Include="Content\js\framework-ui.js" />
@@ -346,7 +342,6 @@
     <Content Include="Content\js\jquery-ui\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\js\jquery-ui\jquery-ui.min.css" />
     <Content Include="Content\js\jquery-ui\jquery-ui.min.js" />
-    <Content Include="Content\js\jquery.fireworks.js" />
     <Content Include="Content\js\jquery\jquery.js" />
     <Content Include="Content\js\jquery\jquery.min.js" />
     <Content Include="Content\js\layout\jquery.layout.js" />
@@ -820,11 +815,6 @@
     <Content Include="Areas\SystemManage\Views\TableField\Details.cshtml" />
     <Content Include="Areas\SystemManage\Views\TableField\Form.cshtml" />
     <Content Include="Areas\SystemManage\Views\TableField\Index.cshtml" />
-    <Content Include="Areas\SystemManage\Views\CodeGenerator\Index.cshtml" />
-    <Content Include="Areas\SystemManage\Views\CodeGenerator\Form.cshtml" />
-    <Content Include="Areas\ProductManage\Views\Contract\Index.cshtml" />
-    <Content Include="Areas\SystemManage\Views\CodeGenerator\ListIndex.cshtml" />
-    <Content Include="Areas\SystemManage\Views\CodeGenerator\Preview.cshtml" />
     <None Include="Properties\PublishProfiles\ZMB.Release.pubxml" />
     <Content Include="Views\Shared\_Details.cshtml" />
     <Content Include="Views\Auth\Auth.cshtml" />

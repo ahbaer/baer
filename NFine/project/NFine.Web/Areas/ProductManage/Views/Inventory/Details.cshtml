@@ -28,7 +28,7 @@
                 $("#form1").find('select').attr('disabled', 'disabled');
                 $("#form1").find('div.ckbox label').attr('for', '');
 
-                if (data.QuoteType != "Futures") {
+                if (data.QuoteType == "One") {
                     $("#trQuate1").show();
                     $("#trQuate2").hide();
                 } else {
@@ -77,7 +77,7 @@
             url: "/SystemManage/ItemsData/GetSelectJson",
             param: { enCode: "0203" },
         });
-        //合约
+        合约
         $("#Contract").bindSelect({
             url: "/SystemManage/SelData/GetSelectJson",
             param: { table: "Contract", itemCode: "ContractCode", itemName: "ContractName", condition: "", sort: "FS" },

@@ -19,10 +19,10 @@ namespace NFine.Domain.Entity.Application
         public string code { get; set; }
         public string selectedName { get; set; }
         public bool isActive { get; set; }
-        public List[] list { get; set; }
+        public SelectedList[] selectedList { get; set; }
     }
 
-    public class List
+    public class SelectedList
     {
         public string name { get; set; }
         public string code { get; set; }

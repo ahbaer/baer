@@ -13,11 +13,6 @@ namespace NFine.Application.SystemManage
         private ITableFieldRepository service = new TableFieldRepository();
         private ITableRepository tableService = new TableRepository();
 
-        public List<TableFieldEntity> GetList(string tableId)
-        {
-            return service.IQueryable(t => t.TableId.Equals(tableId)).OrderBy(t => t.FieldName).ToList();
-        }
-
         public List<TableFieldEntity> GetList(Pagination pagination, string tableId, string keyword)
         {
             var expression = ExtLinq.True<TableFieldEntity>();
@@ -37,28 +32,28 @@ namespace NFine.Application.SystemManage
         public void DeleteForm(string f_Id)
         {
             TableFieldEntity entity = GetForm(f_Id);
-            string tableName = new TableApp().GetForm(entity.TableId).TableName;
-            DbHelper.ExecuteNonQuery("alter table " + tableName + " drop column " + entity.FieldName);
+            string sqlTableName = new TableApp().GetForm(entity.TableId).SqlTableName;
+            DbHelper.ExecuteNonQuery("alter table " + sqlTableName + " drop column " + entity.FieldName);
             service.Delete(t => t.F_Id == f_Id);
         }
 
         public void SubmitForm(TableFieldEntity entity, string f_Id)
         {
-            string tableName = new TableApp().GetForm(entity.TableId).TableName;
+            string sqlTableName = new TableApp().GetForm(entity.TableId).SqlTableName;
             string strSql = "";
             if (!string.IsNullOrEmpty(f_Id))
             {
                 entity.Modify(f_Id);
                 service.Update(entity);
 
-                strSql = "alter table " + tableName + " alter column " + entity.FieldName + " " + entity.FieldType;
+                strSql = "alter table " + sqlTableName + " alter column " + entity.FieldName + " " + entity.FieldType;
             }
             else
             {
                 entity.Create();
                 service.Insert(entity);
 
-                strSql = "alter table " + tableName + " add " + entity.FieldName + " " + entity.FieldType;
+                strSql = "alter table " + sqlTableName + " add " + entity.FieldName + " " + entity.FieldType;
             }
 
             switch (entity.FieldType)

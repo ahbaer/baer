@@ -7,6 +7,8 @@
     var keyValue = $.request("keyValue");
 
     $(function () {
+        initControl();
+
         $.ajax({
             url: "/ProductManage/WareHouse/GetFormJson",
             data: { keyValue: keyValue },
@@ -14,16 +16,40 @@
             async: false,
             success: function (data) {
                 $("#form1").formSerialize(data);
+                //获取坐标
+                $("#iptCoordinate").val("(" + data.Longitude + "," + data.Latitude + ")");
                 $("#form1").find('.form-control,select,input').attr('readonly', 'readonly');
                 $("#form1").find('div.ckbox label').attr('for', '');
             }
         });
     })
+
+    function initControl() {
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $next = $("#btn_next");
+            if (data.direction == "next") {
+                switch (data.step) {
+                    case 1:
+                        $next.attr('disabled', 'disabled');
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                $next.removeAttr('disabled');
+            }
+        });
+    }
 </script>
 <form id="form1">
-    <div style="margin: 10px;">
-        <div class="panel panel-default">
-            <div class="panel-body" style="width: 98%;">
+    <div class="widget-body">
+        <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+            <ul class="steps">
+                <li data-target="#step-1" class="active"><span class="step">1</span>基本信息<span class="chevron"></span></li>
+            </ul>
+        </div>
+        <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none;">
+            <div class="step-pane active" id="step-1" style="padding-left: 5px; padding-top: 20px; margin-right: 20px;">
                 <table class="form">
                     <tr>
                         <th class="formTitle">仓库</th>
@@ -50,15 +76,9 @@
                         </td>
                     </tr>
                     <tr>
-                        <th class="formTitle">经度</th>
+                        <th class="formTitle">坐标</th>
                         <td class="formValue">
-                            <input id="Longitude" type="text" class="form-control" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th class="formTitle">纬度</th>
-                        <td class="formValue">
-                            <input id="Latitude" type="text" class="form-control" />
+                            <input id="iptCoordinate" name="iptCoordinate" type="text" class="form-control" />
                         </td>
                     </tr>
                     <tr>
@@ -69,6 +89,8 @@
                     </tr>
                 </table>
             </div>
+        </div>
+        <div class="form-button" id="wizard-actions" style="display:none">
         </div>
     </div>
 </form>

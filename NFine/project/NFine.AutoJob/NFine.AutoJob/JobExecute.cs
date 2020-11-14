@@ -77,10 +77,9 @@ namespace NFine.AutoJob
                             DbHelper.ExecuteNonQuery("update Sys_AutoJob set NextStartTime='" + context.NextFireTimeUtc.Value.DateTime.AddHours(8) + "' where F_Id='" + autoJobEntity.F_Id + "'");
 
                             //记录执行状态
-                            FRow fRow = new FRow("Sys_AutoJobLog", "", false);
-                            fRow["F_CreatorTime"] = DateTime.Now;
-                            fRow["JobGroupName"] = context.JobDetail.Key.Group;
-                            fRow["JobName"] = context.JobDetail.Key.Name;
+                            FRow fRow = new FRow("Sys_AutoJobLog");
+                            fRow["F_CreatorTime"] = context.JobDetail.Key.Group;
+                            fRow["JobGroupName"] = context.JobDetail.Key.Name;
                             fRow["LogStatus"] = logStatus;
                             fRow["F_Description"] = msg;
                             fRow.Insert();

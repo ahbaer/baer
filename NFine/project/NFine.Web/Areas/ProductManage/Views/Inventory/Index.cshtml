@@ -74,7 +74,7 @@
             height: $(window).height() - 180,
             colModel: [
                 { label: "主键", name: "F_Id", hidden: true, key: true },
-                { label: '分类', name: 'ProductType', width: 50, align: 'left' },
+                { label: '产品分类', name: 'ProductType', width: 70, align: 'left' },
                 { label: '年度', name: 'Year', width: 40, align: 'left' },
                 {
                     label: '等级', name: 'Grade', width: 40, align: 'left',
@@ -95,18 +95,18 @@
                         return top.clients.dataItems["0203"][cellvalue] == null ? "" : top.clients.dataItems["0203"][cellvalue];
                     }
                 },
-                { label: '仓库', name: 'WareName', width: 170, align: 'left' },
-                { label: '库存/吨', name: 'Weight', width: 50, align: 'left' },
+                { label: '仓库', name: 'WareName', width: 100, align: 'left' },
+                { label: '库存(吨)', name: 'Weight', width: 70, align: 'left' },
                 { label: '提单号', name: 'OrderNo', width: 70, align: 'left' },
                 {
-                    label: '状态', name: 'Status', width: 60, align: 'left',
+                    label: '产品状态', name: 'Status', width: 70, align: 'left',
                     formatter: function (cellvalue, options, rowObject) {
                         return top.clients.dataItems["0207"][cellvalue] == null ? "" : top.clients.dataItems["0207"][cellvalue];
                     }
                 },
                 { label: '船期', name: 'SailingSchedule', width: 70, align: 'left' },
                 {
-                    label: '报价方式', name: 'QuoteType', width: 80, align: 'left',
+                    label: '报价方式', name: 'QuoteType', width: 70, align: 'left',
                     formatter: function (cellvalue, options, rowObject) {
                         return top.clients.dataItems["0206"][cellvalue] == null ? "" : top.clients.dataItems["0206"][cellvalue];
                     }
@@ -114,19 +114,19 @@
                 {
                     label: '报价', name: 'Price', width: 40, align: 'left',
                     formatter: function (val, obj, row, act) {
-                        return row.QuoteType != "Futures" ? row.Price : "";
+                        return row.QuoteType == "One" ? row.Price : "";
                     }
                 },
                 {
                     label: '合约', name: 'Contract', width: 40, align: 'left',
                     formatter: function (val, obj, row, act) {
-                        return row.QuoteType != "Futures" ? "" : row.Contract;
+                        return row.QuoteType == "One" ? "" : row.Contract;
                     }
                 },
                 {
                     label: '基差', name: 'Basis', width: 40, align: 'left',
                     formatter: function (val, obj, row, act) {
-                        return row.QuoteType != "Futures" ? "" : row.Basis;
+                        return row.QuoteType == "One" ? "" : row.Basis;
                     }
                 },
                 {
@@ -172,7 +172,8 @@
                 productType: $("#stProductType").val(),
                 grade: $("#stGrade").val(),
                 length: $("#stLength").val(),
-                strength: $("#txtStrength").val(),
+                strengthMin: $("#txtStrengthMin").val(),
+                strengthMax: $("#txtStrengthMax").val(),
                 horseValue: $("#stHorseValue").val(),
                 wareId: $("#stWareId").val(),
                 orderNo: $("#txtOrderNo").val(),
@@ -191,9 +192,9 @@
             $("#stProductType").get(0).selectedIndex = 0;
             $("#stGrade").get(0).selectedIndex = 0;
             $("#stLength").get(0).selectedIndex = 0;
-            $("#txtStrength").val('');
+            $("#txtStrengthMin").val('');
+            $("#txtStrengthMax").val('');
             $("#stWareId").get(0).selectedIndex = 0;
-            $("#txtOrderNo").val('');
             $("#stStatus").get(0).selectedIndex = 0;
             $("#stQuoteType").get(0).selectedIndex = 0;
             $("#stIsRecommend").get(0).selectedIndex = 0;
@@ -320,7 +321,11 @@
                 </td>
                 <td class="formValue">
                     <div class="input-group" style="float:left;">
-                        <input id="txtStrength" type="text" class="form-control section-search" placeholder="强力：小~大">
+                        <input id="txtStrengthMin" type="text" class="form-control" style="width:51px;margin-left:10px;" placeholder="强力(小)">
+                    </div>
+                    <div class="input-group" style="float:left;width:10px;">~</div>
+                    <div class="input-group">
+                        <input id="txtStrengthMax" type="text" class="form-control" style="width:51px;" placeholder="强力(大)">
                     </div>
                 </td>
                 <td class="formValue">

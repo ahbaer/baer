@@ -46,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="01 Infrastructure\DbLogType.cs" />
-    <Compile Include="Application\ContractApp.cs" />
     <Compile Include="Application\ProductApp.cs" />
     <Compile Include="Application\InventoryOutApp.cs" />
     <Compile Include="Application\InventoryApp.cs" />

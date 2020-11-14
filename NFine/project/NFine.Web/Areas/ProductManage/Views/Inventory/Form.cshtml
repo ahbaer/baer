@@ -31,6 +31,7 @@
 
                     //获取图片
                     getFile();
+                    
                 }
             });
         }
@@ -78,7 +79,7 @@
         //合约
         $("#Contract").bindSelect({
             url: "/SystemManage/SelData/GetSelectJson",
-            param: { table: "Contract", itemCode: "ContractCode", itemName: "ContractCode", condition: " and FS not in ('USDCNH','CZCECF')", sort: "FS" },
+            param: { table: "Contract", itemCode: "ContractCode", itemName: "ContractName", condition: "", sort: "FS" },
         });
         $("#trQuate2").hide();
         $('#wizard').wizard().on('change', function (e, data) {
@@ -111,14 +112,7 @@
         });
 
         $('#QuoteType').change(function () {
-            if ($("#QuoteType").get(0).selectedIndex == 2) {
-                $("#trQuate1").hide();
-                $("#Price").removeClass("required");
-                $("#Price").val("");
-                $("#trQuate2").show();
-                $("#Contract").addClass("required");
-                $("#Basis").addClass("required");
-            } else {
+            if ($("#QuoteType").get(0).selectedIndex == 0) {
                 $("#trQuate1").show();
                 $("#Price").addClass("required");
                 $("#trQuate2").hide();
@@ -126,6 +120,13 @@
                 $("#Contract").get(0).selectedIndex = 0;
                 $("#Basis").removeClass("required");
                 $("#Basis").val("");
+            } else {
+                $("#trQuate1").hide();
+                $("#Price").removeClass("required");
+                $("#Price").val("");
+                $("#trQuate2").show();
+                $("#Contract").addClass("required");
+                $("#Basis").addClass("required");
             }
         });
     }

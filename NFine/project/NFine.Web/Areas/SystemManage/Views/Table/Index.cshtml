@@ -21,17 +21,17 @@
             height: $(window).height() - 128,
             colModel: [
                 { label: "主键", name: "F_Id", hidden: true, key: true },
-                { label: '表名', name: 'TableName', width: 200, align: 'left' },
-                { label: '中文表名', name: 'TableChineseName', width: 200, align: 'left' },
+                { label: '表名', name: 'SqlTableName', width: 200, align: 'left' },
+                { label: '中文表名', name: 'TableName', width: 200, align: 'left' },
                 { label: '备注', name: 'F_Description', width: 500, align: 'left' },
                 {
-                    label: '修改', name: '', width: 60, align: 'left',
+                    label: '修改', name: '', width: 60, align: 'center',
                     formatter: function (val, obj, row, act) {
                         return '<a id="btnEdit" authorize="yes" class="btn" onclick="btnOperate(\'' + row.F_Id + '\')"><i class="fa fa-pencil"></i></a>';
                     }
                 },
                 {
-                    label: '查看', name: '', width: 60, align: 'left',
+                    label: '查看', name: '', width: 60, align: 'center',
                     formatter: function (val, obj, row, act) {
                         return '<a id="btnDetails" authorize="yes" class="btn" onclick="btnDetails(\'' + row.F_Id + '\')"><i class="fa fa-search-plus"></i></a>';
                     }
@@ -44,7 +44,7 @@
                 }
             ],
             pager: "#gridPager",
-            sortname: 'TableName',
+            sortname: 'SqlTableName',
             sortorder: "asc",
             viewrecords: true,
             multiselect: true
@@ -103,8 +103,8 @@
             id: "FieldIndex",
             title: "字段列表",
             url: "/SystemManage/TableField/Index?tableId=" + f_Id,
-            width: "800px",
-            height: "980px",
+            width: "770px",
+            height: "950px",
             btn: null,
         });
     }

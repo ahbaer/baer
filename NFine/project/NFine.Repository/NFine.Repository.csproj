@@ -48,7 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application\InventoryOutRepository.cs" />
-    <Compile Include="Application\ContractRepository.cs" />
     <Compile Include="Application\ProductRepository.cs" />
     <Compile Include="Application\InventoryRepository.cs" />
     <Compile Include="Application\WareHouseRepository.cs" />

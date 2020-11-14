@@ -1,9 +1,16 @@
-﻿using NFine.Application.SystemSecurity;
+﻿using NFine.Application.SystemManage;
+using NFine.Application.SystemSecurity;
 using NFine.Code;
 using NFine.Domain.Entity.Application;
 using NFine.Domain.IRepository.Application;
+using NFine.Domain.IRepository.SystemManage;
 using NFine.Repository.Application;
+using NFine.Repository.SystemManage;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace NFine.Application.Application
 {
@@ -11,12 +18,6 @@ namespace NFine.Application.Application
     {
         private IWareHouseRepository service = new WareHouseRepository();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pagination"></param>
-        /// <param name="keyword"></param>
-        /// <returns></returns>
         public List<WareHouseEntity> GetList(Pagination pagination, string keyword = "")
         {
             var expression = ExtLinq.True<WareHouseEntity>();
@@ -33,11 +34,11 @@ namespace NFine.Application.Application
             return service.FindEntity(f_Id);
         }
 
-        public void DeleteForm(string f_Id)
+        public void DeleteForm(string f_id)
         {
-            new LogApp().WriteDbLog("删除仓库：" + GetForm(f_Id).WareName, DbLogType.Delete);
+            new LogApp().WriteDbLog("删除仓库：" + GetForm(f_id).WareName, DbLogType.Delete);
 
-            service.Delete(t => t.F_Id == f_Id);
+            service.Delete(t => t.F_Id == f_id);
         }
 
         public void SubmitForm(WareHouseEntity wareHouseEntity, string keyValue)
